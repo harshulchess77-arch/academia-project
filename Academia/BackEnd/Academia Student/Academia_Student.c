@@ -1,6 +1,6 @@
 /*
 Harshul Gupta
 Cs50 c project
-common functions
+Student functions
 10.22.26
 */

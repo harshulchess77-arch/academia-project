@@ -1,7 +1,7 @@
 /*
 Lawrence Mao
 Cs50 c project
-common functions
+Staff functions
 10.22.26
 */
 
