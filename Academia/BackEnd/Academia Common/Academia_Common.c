@@ -2,4 +2,6 @@
 Lawrence Mao
 Suengho Kim
 Harshul Gupta
-Di*/
+Dmitri Buiamov
+
+Cs50 ap*/
