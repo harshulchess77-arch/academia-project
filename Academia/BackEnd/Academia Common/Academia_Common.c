@@ -4,4 +4,7 @@ Suengho Kim
 Harshul Gupta
 Dmitri Buiamov
 
-Cs50 ap*/
+Cs50 c project
+common functions
+
+*/
