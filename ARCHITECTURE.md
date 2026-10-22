@@ -8,15 +8,15 @@ This section provides a high-level overview of the project's directory and file 
 ├── Academia/             # Main application directory
 │   ├── BackEnd/          # C-based backend modules
 │   │   ├── Academia Common/       # Shared utilities and common functions
-│   │   │   └── Academia.c
+│   │   │   └── Academia_common.c
 │   │   ├── Academia Database/     # Database schema and initialization
 │   │   │   └── Academia.sql
 │   │   ├── Academia School Staff/ # Staff-specific business logic
 │   │   │   └── Academia_School_Staff.c
 │   │   ├── Academia Student/      # Student-specific business logic
 │   │   │   └── Academia_Student.c
-│   │   └── Academia Teacher/     # Teacher-specific business logic
-│   │       └── Academia_Teacher.c
+│   │   └── Academia Parents/     # Parent-specific business logic
+│   │       └── Academia_Parents.c
 │   └── FrontEnd/         # HTML/CSS/JS frontend interface
 │       ├── Academia Authrization/  # Login and authentication UI
 │       │   └── Academia_Auth.html

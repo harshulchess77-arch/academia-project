@@ -9,7 +9,16 @@ common functions
 10.22.26
 */
 
+#include <stdio.h>
+#include <cs50.h>
+#include <sqlite3.h>
 
+
+
+int main()
+{
+
+}
 
 
 
