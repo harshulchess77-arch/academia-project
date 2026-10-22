@@ -28,68 +28,26 @@ Schools often rely on separate websites and tools for academic records and commu
 - Record attendance.
 - Publish announcements.
 
-### Project goals
+### Future Project goals
 
 - **Role-based access:** Give users access to the information and tools appropriate to their responsibilities.
 - **A reliable core first:** Complete and test essential features before expanding the scope.
 - **Modular design:** Keep the system ready for future additions without making the core harder to maintain.
 - **Accessible setup:** Aim to run without special hardware and provide sample data for learning and testing.
-
-## Possible future enhancements
-
-Schedules, course resources, parent-teacher messaging, weather updates, college and scholarship planning, advanced reporting, database support, and a graphical interface are ideas for future development—not current features.
+- With Addititonal features: Schedules, course resources, parent-teacher messaging, weather updates, college and scholarship planning, advanced reporting, database support, and a graphical interface are ideas for future development—not current features.
 
 ## Technology and current repository
 
-The current solution is built with **C# and .NET 10**:
-
-- `SampleApp/FrontEnd` is a Blazor Server web application.
-- `SampleApp/BackEnd` is an ASP.NET Core API with a sample weather forecast endpoint and development OpenAPI documentation.
-
-The current app is still the framework starter scaffold; it does not yet store or manage Academia school data. The original project concept mentions C, file handling, and structures, but those are not the technologies in the current solution.
-
-## Run locally
-
-### Prerequisites
-
-- The .NET 10 SDK.
-
-### Start the backend
-
-In a terminal from the repository root:
-
-```powershell
-dotnet run --project SampleApp\BackEnd
-```
-
-The backend's HTTP launch profile uses `http://localhost:8080`.
-
-### Start the frontend
-
-In a second terminal from the repository root:
-
-```powershell
-dotnet run --project SampleApp\FrontEnd
-```
-
-Open `http://localhost:8081`. The frontend's `WEATHER_URL` setting defaults to `http://localhost:8080`, so start the backend as well when using the sample weather page.
-
-To build both projects:
-
-```powershell
-dotnet build SampleApp\SampleApp.sln
-```
+The current solution is built with **C# and Full-Stack**:
 
 ## Project structure
-
-```text
-SampleApp/
-  BackEnd/    ASP.NET Core API
-  FrontEnd/   Blazor Server application
-  SampleApp.sln
-images/       Project images
-```
+Refer to the ARCHITECTURE.md file for more information
 
 ## Contributing
+The Contributors to this Project are:
+  1. Harshul Gupta
+  2. Lawrence Mao
+  3. Dmitrii Buianov
+  4. Suengho Kim
 
-Work toward the planned features by starting with a small, tested core. Keep the implementation and documentation aligned, and update this README as features become available.
+We work toward the planned features by starting with a small, tested core. Keep the implementation and documentation aligned, and update this README as features become available.
