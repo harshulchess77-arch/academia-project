@@ -13,11 +13,15 @@ common functions
 #include <cs50.h>
 #include <sqlite3.h>
 
+#include "Academia_Parents.c"
+#include "Academia_Student.c"
+#include "Academia_school_Staff.c"
+
 
 
 int main()
 {
-
+    
 }
 
 
