@@ -2,7 +2,7 @@
 Lawrence Mao
 Suengho Kim
 Harshul Gupta
-Dmitri Buiamov
+Dmitrii Buianov
 
 Cs50 c project
 common functions
@@ -19,7 +19,3 @@ int main()
 {
 
 }
-
-
-
-
