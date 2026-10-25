@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Academia - Login</title>
+    <link rel="stylesheet" href="../Academia.css">
+</head>
+<body>
+    <div class="split-screen">
+        <div class="left-panel">
+            <h1>Academia</h1>
+            <div class="yellow-line"></div>
+            <h2>One System.<br>A Stronger School Community.</h2>
+            <p>Students. Parents. Staff. All Connected.</p>
+            <img src="../../Images/BrandSheet.png" alt="Academia" class="auth-img">
+        </div>
+
+        <div class="right-panel">
+            <div class="form-box">
+                <h2 id="form-title">Sign In</h2>
+                <p id="error-msg"></p>
+
+                <input type="text" id="username" placeholder="Username">
+                <input type="password" id="password" placeholder="Password">
+
+                <div id="signup-fields" style="display: none;">
+                    <select id="role">
+                        <option value="student">Student</option>
+                        <option value="parent">Parent</option>
+                        <option value="staff">School Staff</option>
+                    </select>
+                    <input type="text" id="studentId" placeholder="Student ID (e.g. STU01)">
+                </div>
+
+                <button id="main-btn" onclick="handleAuth()">Login</button>
+                <p class="switch-text" onclick="toggleMode()" id="toggle-link">
+                    Need an account? Sign Up
+                </p>
+                <a href="../Academia Landing/Academia_Landing.html" class="back-link">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Academia.js"></script>
+    <script>
+        var isSignup = false;
+
+        function toggleMode() {
+            isSignup = !isSignup;
+            document.getElementById("error-msg").innerText = "";
+            if (isSignup) {
+                document.getElementById("form-title").innerText = "Create Account";
+                document.getElementById("signup-fields").style.display = "block";
+                document.getElementById("main-btn").innerText = "Sign Up";
+                document.getElementById("toggle-link").innerText = "Already have an account? Login";
+            } else {
+                document.getElementById("form-title").innerText = "Sign In";
+                document.getElementById("signup-fields").style.display = "none";
+                document.getElementById("main-btn").innerText = "Login";
+                document.getElementById("toggle-link").innerText = "Need an account? Sign Up";
+            }
+        }
+
+        function handleAuth() {
+            var u = document.getElementById("username").value;
+            var p = document.getElementById("password").value;
+            var users = JSON.parse(localStorage.getItem("users"));
+
+            if (u === "" || p === "") {
+                document.getElementById("error-msg").innerText = "Please enter username and password.";
+                return;
+            }
+
+            if (isSignup) {
+                var r = document.getElementById("role").value;
+                var sid = document.getElementById("studentId").value || "STU01";
+                users.push({ username: u, password: p, role: r, studentId: sid });
+                localStorage.setItem("users", JSON.stringify(users));
+                alert("Account created! You can now log in.");
+                toggleMode();
+                return;
+            }
+
+            for (var i = 0; i < users.length; i++) {
+                if (users[i].username === u && users[i].password === p) {
+                    localStorage.setItem("currentUser", JSON.stringify(users[i]));
+                    if (users[i].role === "student") {
+                        window.location.href = "../Academia Student/Academia_Student.html";
+                    } else if (users[i].role === "parent") {
+                        window.location.href = "../Academia Parents/Academia_Parents.html";
+                    } else if (users[i].role === "staff") {
+                        window.location.href = "../Academia School Staff/Academia_School_Staff.html";
+                    }
+                    return;
+                }
+            }
+            document.getElementById("error-msg").innerText = "Wrong username or password.";
+        }
+    </script>
+</body>
+</html>
