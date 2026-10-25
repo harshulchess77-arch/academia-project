@@ -1,36 +1,46 @@
 # Architecture Overview
-This document serves as a critical, living template designed to equip agents with a rapid and comprehensive understanding of the codebase's architecture, enabling efficient navigation and effective contribution from day one. Update this document as the codebase evolves.
+
+This document provides a detailed guidance to Academia's repository layout. Academia is being developed as a modular school management system, with C modules for application logic and data access, SQLite for structured records, and HTML/CSS/JavaScript files for the user interface. The directory structure shows planned module boundaries, but not every module or integration is provided as completed version as we mentioned to be provided with as little features and later add on if time permits.
 
 ## Project Structure
-This section provides a high-level overview of the project's directory and file structure, categorised by architectural layer or major functional area. It is essential for quickly navigating the codebase, locating relevant files, and understanding the overall organization and separation of concerns.
+
+The tree below reflects the current repository. Comments distinguish existing files from intended responsibilities; they do not imply that a feature is finished.
 
 [academia-project]/
-├── Academia/             # Main application directory
-│   ├── BackEnd/          # C-based backend modules
-│   │   ├── Academia Common/       # Shared utilities and common functions
-│   │   │   └── Academia_common.c
-│   │   ├── Academia Database/     # Database schema and initialization
-│   │   │   └── Academia.sql
-│   │   ├── Academia School Staff/ # Staff-specific business logic
-│   │   │   └── Academia_School_Staff.c
-│   │   ├── Academia Student/      # Student-specific business logic
-│   │   │   └── Academia_Student.c
-│   │   └── Academia Parents/     # Parent-specific business logic
-│   │       └── Academia_Parents.c
-│   └── FrontEnd/         # HTML/CSS/JS frontend interface
-│       ├── Academia Authrization/  # Login and authentication UI
-│       │   └── Academia_Auth.html
-│       ├── Academia Landing/      # Landing page
-│       │   └── Academia_Landing.html
-│       ├── Academia Parents/      # Parent portal UI
-│       │   └── Academia_Parents.html
-│       ├── Academia School Staff/ # Staff portal UI
-│       │   └── Academia_School_Staff.html
-│       ├── Academia Student/      # Student portal UI
-│       │   └── Academia_Student.html
-│       ├── Academia.css           # Global styles
-│       └── Academia.js            # Client-side JavaScript
-├── Images/               # Project images and documentation assets
-│   └── BrandSheet.png    # Academia branding information, logo, and banner
-├── README.md             # Project overview about Academia
-└── ARCHITECTURE.md       # This document shows user about how the project is laid out about Academia
+├── Academia/
+│   ├── BackEnd/                         # C application and data-access code
+│   │   ├── Academia Common/
+│   │   │   └── Academia_Common.c        # Shared entry point; opens SQLite database
+│   │   ├── Academia Database/
+│   │   │   ├── Academia.sql             
+│   │   │   └── SQLite3/
+│   │   │       ├── sqlite3.c             # SQLite implementation source
+│   │   │       └── sqlite3.h             # SQLite API declarations
+│   │   ├── Academia Parents/
+│   │   │   └── Academia_Parents.c       # Parent module scaffold
+│   │   ├── Academia School Staff/
+│   │   │   └── Academia_School_Staff.c  # Staff module scaffold
+│   │   └── Academia Student/
+│   │       ├── Academia_Student.c       # Student data/GPA/attendance prototype
+│   ├── FrontEnd/                        # HTML/CSS/JS presentation layer
+│   │   ├── Academia Authrization/       # Login mockup and styles
+│   │   │   ├── Academia_Auth.html
+│   │   │   └── Auth_Style.css
+│   │   ├── Academia Landing/
+│   │   │   └── Academia_Landing.html    # Landing page mockup
+│   │   ├── Academia Parents/
+│   │   │   ├── Academia_Parents.html    # Parent dashboard mockup
+│   │   │   └── Par_Style.css
+│   │   ├── Academia School Staff/
+│   │   │   ├── Academia_School_Staff.html # Staff dashboard mockup
+│   │   │   └── Tea_Style.css
+│   │   ├── Academia Student/
+│   │   │   ├── Academia_Student.html    # Student dashboard mockup
+│   │   │   └── Stu_style.css
+│   │   ├── Academia.css                 # Shared styles
+│   │   └── Academia.js                  # Shared frontend behavior (currently empty)
+│   └── Images/                          # Branding and interface/error images
+├── .vscode/
+│   └── settings.json                    # VS Code workspace settings
+├── readme.md                            # Project overview and setup information
+└── ARCHITECTURE.md                      # This architecture and repository guide
