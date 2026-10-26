@@ -17,12 +17,19 @@ var defaultAttendance = [
 ];
 
 var defaultAnnouncements = [
-    { date: "2026-10-25", message: "Welcome to Academia! Quarter 1 grades are posted." }
+    { date: "2026-10-25", message: "Welcome to Academia! Quarter 1 grades are posted." },
+    { date: "2026-10-26", message: "Parent-Teacher conferences are next week." }
 ];
 
 if (!localStorage.getItem("users")) {
     localStorage.setItem("users", JSON.stringify(defaultUsers));
+}
+if (!localStorage.getItem("grades")) {
     localStorage.setItem("grades", JSON.stringify(defaultGrades));
+}
+if (!localStorage.getItem("attendance")) {
     localStorage.setItem("attendance", JSON.stringify(defaultAttendance));
+}
+if (!localStorage.getItem("announcements")) {
     localStorage.setItem("announcements", JSON.stringify(defaultAnnouncements));
 }

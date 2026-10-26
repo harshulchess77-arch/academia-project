@@ -1,420 +1,105 @@
 /* Dmitrii Buianov */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', Arial, sans-serif;
     background-color: #E5E7EB;
     color: #0B3D91;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
 }
 
-/* Navbar & Footer */
 .navbar {
     background-color: #0B3D91;
     color: white;
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 15px;
     border-bottom: 4px solid #FACC15;
 }
 
-.nav-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.nav-logo {
-    height: 40px;
-    width: auto;
-    border-radius: 6px;
-    background-color: white;
-    padding: 2px;
-}
-
-.navbar h2 {
-    margin: 0;
-}
-
 .navbar a {
-    color: #0B3D91;
-    background-color: #FACC15;
-    padding: 8px 18px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: 600;
-}
-
-.footer {
-    background-color: #0B3D91;
-    color: white;
-    text-align: center;
-    padding: 16px;
-    margin-top: auto;
-    font-size: 14px;
-    border-top: 3px solid #FACC15;
-}
-
-/* Marketing Landing Page (Academia_Landing.html) */
-.hero-section {
-    background-color: #0B3D91;
-    color: white;
-    padding: 60px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 40px;
-    flex-wrap: wrap;
-}
-
-.hero-text {
-    flex: 1;
-    min-width: 300px;
-    max-width: 560px;
-}
-
-.hero-badge {
-    background-color: #2563EB;
-    color: #FACC15;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 15px;
-}
-
-.hero-text h1 {
-    font-size: 42px;
-    margin: 0 0 15px 0;
-    line-height: 1.2;
-}
-
-.hero-text p {
-    color: #E5E7EB;
-    font-size: 17px;
-    margin-bottom: 25px;
-}
-
-.cta-gold {
     background-color: #FACC15;
     color: #0B3D91;
-    padding: 14px 28px;
+    padding: 6px 12px;
     text-decoration: none;
-    border-radius: 6px;
-    font-weight: 700;
-    display: inline-block;
-    margin-right: 12px;
+    font-weight: bold;
+    float: right;
 }
 
-.cta-outline {
-    border: 2px solid #60A5FA;
-    color: white;
-    padding: 12px 24px;
-    text-decoration: none;
-    border-radius: 6px;
-    font-weight: 600;
-    display: inline-block;
-}
-
-.hero-image-box {
-    flex: 1;
-    min-width: 300px;
-    text-align: center;
-}
-
-.hero-img {
-    max-width: 100%;
-    max-height: 380px;
-    border-radius: 12px;
-    border: 3px solid #FACC15;
-}
-
-.stats-bar {
-    background-color: #2563EB;
-    color: white;
-    display: flex;
-    justify-content: space-around;
+.box {
+    background-color: white;
+    width: 80%;
+    margin: 20px auto;
     padding: 20px;
-    text-align: center;
-    flex-wrap: wrap;
+    border: 2px solid #2563EB;
 }
 
-.stat-item h3 {
-    margin: 0;
-    font-size: 26px;
-    color: #FACC15;
-}
-
-.stat-item p {
-    margin: 4px 0 0 0;
-    font-size: 14px;
-}
-
-.landing-section {
-    max-width: 1000px;
-    margin: 40px auto;
-    padding: 0 20px;
-    text-align: center;
-}
-
-.landing-section h2 {
-    font-size: 30px;
-    margin-bottom: 10px;
-}
-
-.section-sub {
-    color: #2563EB;
-    max-width: 700px;
-    margin: 0 auto 30px auto;
-}
-
-.grid-3 {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.feature-card {
-    background-color: white;
-    flex: 1;
-    min-width: 250px;
-    padding: 24px;
-    border-radius: 10px;
-    border-top: 5px solid #2563EB;
-    text-align: left;
-}
-
-.feature-card h3 {
-    margin-top: 0;
-    color: #0B3D91;
-}
-
-.highlight-card {
-    border-top: 5px solid #FACC15;
-}
-
-.cta-banner {
-    background-color: #0B3D91;
+.btn {
+    background-color: #2563EB;
     color: white;
-    max-width: 950px;
-    margin: 20px auto 50px auto;
-    padding: 40px 20px;
-    border-radius: 12px;
-    text-align: center;
+    padding: 10px 18px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-/* Split-Screen Login & Sign-Up Page (Academia_Auth.html) */
-.split-screen {
-    display: flex;
-    min-height: 100vh;
-}
-
-.left-panel {
-    flex: 1;
-    background-color: #0B3D91;
-    color: white;
-    padding: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.left-panel h1 {
-    font-size: 42px;
-    margin: 0 0 10px 0;
-}
-
-.yellow-line {
-    width: 60px;
-    height: 5px;
+.btn-yellow {
     background-color: #FACC15;
-    margin-bottom: 20px;
-}
-
-.left-panel p {
-    color: #60A5FA;
-    font-size: 18px;
-}
-
-.auth-img {
-    max-width: 85%;
-    border-radius: 10px;
-    margin-top: 25px;
-    border: 2px solid #FACC15;
-}
-
-.right-panel {
-    flex: 1;
-    background-color: #E5E7EB;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.form-box {
-    background-color: white;
-    padding: 40px;
-    border-radius: 10px;
-    width: 340px;
-    text-align: center;
-    border-top: 6px solid #0B3D91;
-}
-
-.form-box input, .form-box select {
-    width: 90%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #E5E7EB;
-    border-radius: 5px;
-    font-family: 'Poppins', sans-serif;
-}
-
-.form-box button {
-    width: 96%;
-    padding: 12px;
-    background-color: #2563EB;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-#error-msg {
-    color: red;
-    font-size: 14px;
-}
-
-.switch-text {
-    color: #2563EB;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 15px;
-}
-
-.back-link {
-    display: block;
-    margin-top: 10px;
-    font-size: 13px;
     color: #0B3D91;
-}
-
-/* Student, Parent, and Staff Dashboards */
-.main-box {
-    max-width: 850px;
-    width: 90%;
-    margin: 30px auto;
-    padding: 0 15px;
-}
-
-.top-cards {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.card {
-    flex: 1;
-    background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    border-top: 5px solid #2563EB;
-    text-align: center;
-}
-
-.card p {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 5px 0 0 0;
-}
-
-.panel {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-.panel h3 {
-    margin-top: 0;
-    border-bottom: 2px solid #E5E7EB;
-    padding-bottom: 8px;
-}
-
-.panel input, .panel select {
-    padding: 8px;
-    margin: 5px 5px 5px 0;
-    border: 1px solid #E5E7EB;
-    border-radius: 4px;
-    font-family: 'Poppins', sans-serif;
-}
-
-.panel button {
-    padding: 8px 16px;
-    background-color: #2563EB;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
+    padding: 10px 18px;
+    text-decoration: none;
+    font-weight: bold;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-}
-
-th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #E5E7EB;
+    margin-top: 10px;
 }
 
 th {
-    background-color: #E5E7EB;
+    background-color: #60A5FA;
+    color: #0B3D91;
+    padding: 8px;
+    border: 1px solid #0B3D91;
+    text-align: left;
 }
 
-.notice {
-    background-color: #E5E7EB;
-    border-left: 4px solid #FACC15;
-    padding: 10px;
-    margin-bottom: 8px;
+td {
+    padding: 8px;
+    border: 1px solid #0B3D91;
 }
 
-/* Error Pages */
-.error-box {
-    width: 80%;
-    max-width: 700px;
-    margin: auto;
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
+input, select {
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #0B3D91;
+}
+
+/* Split Screen for Auth Page */
+.left-half {
+    width: 45%;
+    float: left;
+    background-color: #0B3D91;
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
     text-align: center;
 }
 
-.error-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 25px;
+.right-half {
+    width: 45%;
+    float: right;
+    padding: 20px;
+    margin-top: 60px;
+    text-align: center;
 }
 
-.home-btn {
-    display: inline-block;
-    background-color: #2563EB;
+.footer {
+    clear: both;
+    background-color: #0B3D91;
     color: white;
-    padding: 12px 24px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: 600;
+    text-align: center;
+    padding: 12px;
+    margin-top: 30px;
+    border-top: 4px solid #FACC15;
 }

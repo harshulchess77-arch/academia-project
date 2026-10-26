@@ -3,109 +3,79 @@
 <head>
     <title>Academia - Login</title>
     <link rel="stylesheet" href="../Academia.css">
-    <link rel="stylesheet" href="Academia.css">
 </head>
 <body>
-    <div class="split-screen">
-        <div class="left-panel">
-            <h1>Academia</h1>
-            <div class="yellow-line"></div>
-            <h2>One System.<br>A Stronger School Community.</h2>
-            <p>Students. Parents. Staff. All Connected.</p>
-            <img src="../../Images/BrandSheet.png" onerror="this.onerror=null; this.src='../../../Images/BrandSheet.png';" alt="Academia BrandSheet" class="auth-img">
-        </div>
 
-        <div class="right-panel">
-            <div class="form-box">
-                <h2 id="form-title">Sign In</h2>
-                <p id="error-msg"></p>
+    <div class="left-half">
+        <h1>Academia</h1>
+        <h2>One System.<br>A Stronger School Community.</h2>
+        <p style="color: #60A5FA;">Students. Parents. Staff. All Connected.</p>
+        <img id="slide" src="../../Images/AuthPage1.png" width="380" alt="Slide Image">
+    </div>
 
-                <input type="text" id="username" placeholder="Username">
-                <input type="password" id="password" placeholder="Password">
+    <div class="right-half">
+        <div class="box" style="width: 300px;">
+            <h2>Login / Sign Up</h2>
+            <p>Username:</p>
+            <input type="text" id="user">
 
-                <div id="signup-fields" style="display: none;">
-                    <select id="role">
-                        <option value="student">Student</option>
-                        <option value="parent">Parent</option>
-                        <option value="staff">School Staff</option>
-                    </select>
-                    <input type="text" id="studentId" placeholder="Student ID (e.g. STU01)">
-                </div>
+            <p>Password:</p>
+            <input type="password" id="pass">
 
-                <button id="main-btn" onclick="handleAuth()">Login</button>
-                <p class="switch-text" onclick="toggleMode()" id="toggle-link">
-                    Need an account? Sign Up
-                </p>
-                <a href="../Academia Landing/Academia_Landing.html" class="back-link">Back to Landing Page</a>
-            </div>
+            <p>Select Role:</p>
+            <select id="role">
+                <option value="student">Student</option>
+                <option value="parent">Parent</option>
+                <option value="staff">School Staff</option>
+            </select>
+            <br><br>
+
+            <button class="btn" onclick="loginUser()">Submit</button>
+            <p id="msg" style="color: red;"></p>
+            <br>
+            <a href="../Academia Landing/Academia_Landing.html">Back to Landing Page</a>
         </div>
     </div>
 
-    <script src="../Academia.js"></script>
     <script>
-        var defaultUsers = [
-            { username: "student1", password: "123", role: "student", studentId: "STU01" },
-            { username: "parent1", password: "123", role: "parent", studentId: "STU01" },
-            { username: "staff1", password: "123", role: "staff", studentId: "NONE" }
+        // Put your 4 image names from Academia/Images/ here:
+        var pics = [
+            "../../Images/AuthPage1.png",
+            "../../Images/AuthPage2.png",
+            "../../Images/AuthPage3.png",
+            "../../Images/AuthPage4.png"
         ];
+        var num = 0;
 
-        if (!localStorage.getItem("users")) {
-            localStorage.setItem("users", JSON.stringify(defaultUsers));
-        }
-
-        var isSignup = false;
-
-        function toggleMode() {
-            isSignup = !isSignup;
-            document.getElementById("error-msg").innerText = "";
-            if (isSignup) {
-                document.getElementById("form-title").innerText = "Create Account";
-                document.getElementById("signup-fields").style.display = "block";
-                document.getElementById("main-btn").innerText = "Sign Up";
-                document.getElementById("toggle-link").innerText = "Already have an account? Login";
-            } else {
-                document.getElementById("form-title").innerText = "Sign In";
-                document.getElementById("signup-fields").style.display = "none";
-                document.getElementById("main-btn").innerText = "Login";
-                document.getElementById("toggle-link").innerText = "Need an account? Sign Up";
+        function nextPic() {
+            num = num + 1;
+            if (num == 4) {
+                num = 0;
             }
+            document.getElementById("slide").src = pics[num];
         }
 
-        function handleAuth() {
-            var u = document.getElementById("username").value;
-            var p = document.getElementById("password").value;
-            var users = JSON.parse(localStorage.getItem("users")) || defaultUsers;
+        setInterval(nextPic, 5000);
 
-            if (u === "" || p === "") {
-                document.getElementById("error-msg").innerText = "Please enter username and password.";
+        function loginUser() {
+            var u = document.getElementById("user").value;
+            var p = document.getElementById("pass").value;
+            var r = document.getElementById("role").value;
+
+            if (u == "" || p == "") {
+                document.getElementById("msg").innerHTML = "Please enter username and password.";
                 return;
             }
 
-            if (isSignup) {
-                var r = document.getElementById("role").value;
-                var sid = document.getElementById("studentId").value || "STU01";
-                users.push({ username: u, password: p, role: r, studentId: sid });
-                localStorage.setItem("users", JSON.stringify(users));
-                alert("Account created! You can now log in.");
-                toggleMode();
-                return;
+            if (r == "student") {
+                window.location.href = "../Academia Student/Academia_Student.html";
+            } else if (r == "parent") {
+                window.location.href = "../Academia Parents/Academia_Parents.html";
+            } else if (r == "staff") {
+                window.location.href = "../Academia School Staff/Academia_School_Staff.html";
             }
-
-            for (var i = 0; i < users.length; i++) {
-                if (users[i].username === u && users[i].password === p) {
-                    localStorage.setItem("currentUser", JSON.stringify(users[i]));
-                    if (users[i].role === "student") {
-                        window.location.href = "../Academia Student/Academia_Student.html";
-                    } else if (users[i].role === "parent") {
-                        window.location.href = "../Academia Parents/Academia_Parents.html";
-                    } else if (users[i].role === "staff") {
-                        window.location.href = "../Academia School Staff/Academia_School_Staff.html";
-                    }
-                    return;
-                }
-            }
-            document.getElementById("error-msg").innerText = "Wrong username or password.";
         }
     </script>
+
 </body>
 </html>

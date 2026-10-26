@@ -3,155 +3,62 @@
 <head>
     <title>Academia - Student Portal</title>
     <link rel="stylesheet" href="../Academia.css">
-    <link rel="stylesheet" href="Academia.css">
 </head>
 <body>
+
     <div class="navbar">
-        <div class="nav-brand">
-            <img src="../../Images/BrandSheet.png" onerror="this.onerror=null; this.src='../../../Images/BrandSheet.png';" alt="Academia Logo" class="nav-logo">
-            <h2>Academia | Student Portal</h2>
-        </div>
-        <div>
-            <span id="student-label" style="margin-right: 15px; font-weight: 600;"></span>
-            <a href="../Academia Authrization/Academia_Auth.html">Logout</a>
+        <b>Academia - Student Portal</b>
+        <a href="../Academia Authrization/Academia_Auth.html">Logout</a>
+    </div>
+
+    <div class="box">
+        <h2>Student Summary (ID: STU01)</h2>
+        <p><b>Cumulative GPA:</b> <span id="gpa-box">3.67</span> / 4.00</p>
+        <p><b>Course Average:</b> <span id="avg-box">91.7%</span></p>
+        <p><b>Attendance Rate:</b> <span id="att-box">67%</span></p>
+    </div>
+
+    <div class="box">
+        <h3>My Grades</h3>
+        <table>
+            <tr>
+                <th>Course</th>
+                <th>Score</th>
+            </tr>
+            <tbody id="student-grades">
+                <tr><td>Computer Science</td><td>95%</td></tr>
+                <tr><td>Calculus</td><td>88%</td></tr>
+                <tr><td>Physics</td><td>92%</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="box">
+        <h3>My Attendance</h3>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+            <tbody id="student-attendance">
+                <tr><td>2026-10-21</td><td>Present</td></tr>
+                <tr><td>2026-10-22</td><td>Present</td></tr>
+                <tr><td>2026-10-23</td><td>Absent</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="box">
+        <h3>School Announcements</h3>
+        <div id="student-announcements">
+            <p><b>2026-10-25:</b> Welcome to Academia! Quarter 1 grades are posted.</p>
         </div>
     </div>
 
-    <div class="main-box">
-        <div class="top-cards">
-            <div class="card">
-                <h3>My GPA</h3>
-                <p id="gpa-text">0.00</p>
-            </div>
-            <div class="card">
-                <h3>Average Grade</h3>
-                <p id="avg-text">0%</p>
-            </div>
-            <div class="card">
-                <h3>Attendance</h3>
-                <p id="att-text">0%</p>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h3>My Grades</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Course</th>
-                        <th>Score</th>
-                        <th>Letter Grade</th>
-                    </tr>
-                </thead>
-                <tbody id="grades-list"></tbody>
-            </table>
-        </div>
-
-        <div class="panel">
-            <h3>My Attendance</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="att-list"></tbody>
-            </table>
-        </div>
-
-        <div class="panel">
-            <h3>School Announcements</h3>
-            <div id="ann-list"></div>
-        </div>
+    <div class="footer">
+        EDUCATION TODAY. A BRIGHTER TOMORROW.
     </div>
-
-    <div class="footer">EDUCATION TODAY. A BRIGHTER TOMORROW.</div>
 
     <script src="../Academia.js"></script>
-    <script>
-        var defaultGrades = [
-            { studentId: "STU01", course: "Computer Science", score: 95 },
-            { studentId: "STU01", course: "Calculus", score: 88 },
-            { studentId: "STU01", course: "Physics", score: 92 }
-        ];
-
-        var defaultAttendance = [
-            { studentId: "STU01", date: "2026-10-21", status: "Present" },
-            { studentId: "STU01", date: "2026-10-22", status: "Present" },
-            { studentId: "STU01", date: "2026-10-23", status: "Absent" }
-        ];
-
-        var defaultAnnouncements = [
-            { date: "2026-10-25", message: "Welcome to Academia! Quarter 1 grades are posted." },
-            { date: "2026-10-26", message: "Parent-Teacher conferences start next week." }
-        ];
-
-        var user = JSON.parse(localStorage.getItem("currentUser")) || { username: "student1", studentId: "STU01" };
-        var grades = JSON.parse(localStorage.getItem("grades")) || defaultGrades;
-        var attendance = JSON.parse(localStorage.getItem("attendance")) || defaultAttendance;
-        var announcements = JSON.parse(localStorage.getItem("announcements")) || defaultAnnouncements;
-
-        document.getElementById("student-label").innerText = "Student: " + user.username + " (" + user.studentId + ")";
-
-        function getLetterGrade(score) {
-            if (score >= 90) return "A";
-            if (score >= 80) return "B";
-            if (score >= 70) return "C";
-            if (score >= 60) return "D";
-            return "F";
-        }
-
-        var totalScore = 0;
-        var gradeCount = 0;
-        var gradesHtml = "";
-
-        for (var i = 0; i < grades.length; i++) {
-            if (grades[i].studentId === user.studentId) {
-                var s = Number(grades[i].score);
-                gradesHtml += "<tr><td>" + grades[i].course + "</td><td>" + s + "%</td><td>" + getLetterGrade(s) + "</td></tr>";
-                totalScore += s;
-                gradeCount++;
-            }
-        }
-
-        if (gradeCount > 0) {
-            document.getElementById("grades-list").innerHTML = gradesHtml;
-            var avg = totalScore / gradeCount;
-            var gpa = (avg / 100) * 4.0;
-            document.getElementById("avg-text").innerText = avg.toFixed(1) + "%";
-            document.getElementById("gpa-text").innerText = gpa.toFixed(2);
-        } else {
-            document.getElementById("grades-list").innerHTML = "<tr><td colspan='3'>No grades recorded yet.</td></tr>";
-        }
-
-        var presentCount = 0;
-        var totalDays = 0;
-        var attHtml = "";
-
-        for (var j = 0; j < attendance.length; j++) {
-            if (attendance[j].studentId === user.studentId) {
-                attHtml += "<tr><td>" + attendance[j].date + "</td><td>" + attendance[j].status + "</td></tr>";
-                totalDays++;
-                if (attendance[j].status === "Present") {
-                    presentCount++;
-                }
-            }
-        }
-
-        if (totalDays > 0) {
-            document.getElementById("att-list").innerHTML = attHtml;
-            var rate = (presentCount / totalDays) * 100;
-            document.getElementById("att-text").innerText = rate.toFixed(0) + "%";
-        } else {
-            document.getElementById("att-list").innerHTML = "<tr><td colspan='2'>No attendance records yet.</td></tr>";
-        }
-
-        var annHtml = "";
-        for (var k = 0; k < announcements.length; k++) {
-            annHtml += "<div class='notice'><b>" + announcements[k].date + ":</b> " + announcements[k].message + "</div>";
-        }
-        document.getElementById("ann-list").innerHTML = annHtml || "<p>No announcements posted.</p>";
-    </script>
 </body>
 </html>
