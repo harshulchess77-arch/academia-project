@@ -1,14 +1,137 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Academia - Teacher Dashboard</title>
-    <link rel="stylesheet" href="Tea_Style.css">
+    <title>Academia - School Staff Portal</title>
+    <link rel="stylesheet" href="../Academia.css">
+    <link rel="stylesheet" href="Academia.css">
 </head>
 <body>
+    <div class="navbar">
+        <div class="nav-brand">
+            <img src="../../Images/BrandSheet.png" onerror="this.onerror=null; this.src='../../../Images/BrandSheet.png';" alt="Academia Logo" class="nav-logo">
+            <h2>Academia | School Staff Portal</h2>
+        </div>
+        <div>
+            <span id="staff-label" style="margin-right: 15px; font-weight: 600;"></span>
+            <a href="../Academia Authrization/Academia_Auth.html">Logout</a>
+        </div>
+    </div>
 
+    <div class="main-box">
+        <div class="panel">
+            <h3>Enter Student Grade</h3>
+            <input id="g-sid" placeholder="Student ID (e.g. STU01)">
+            <input id="g-course" placeholder="Course Name">
+            <input id="g-score" type="number" placeholder="Score (0-100)">
+            <button onclick="addGrade()">Save Grade</button>
+        </div>
 
+        <div class="panel">
+            <h3>Record Student Attendance</h3>
+            <input id="a-sid" placeholder="Student ID (e.g. STU01)">
+            <input id="a-date" placeholder="Date (YYYY-MM-DD)">
+            <select id="a-status">
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+            </select>
+            <button onclick="addAttendance()">Save Attendance</button>
+        </div>
 
+        <div class="panel">
+            <h3>Publish School Announcement</h3>
+            <input id="ann-date" placeholder="Date (YYYY-MM-DD)">
+            <input id="ann-msg" placeholder="Announcement Message" style="width: 320px;">
+            <button onclick="addAnnouncement()">Publish</button>
+        </div>
 
+        <div class="panel">
+            <h3>All Recorded Student Grades</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Course</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="all-grades-table"></tbody>
+            </table>
+        </div>
+    </div>
 
+    <div class="footer">EDUCATION TODAY. A BRIGHTER TOMORROW.</div>
+
+    <script src="../Academia.js"></script>
+    <script>
+        var defaultGrades = [
+            { studentId: "STU01", course: "Computer Science", score: 95 },
+            { studentId: "STU01", course: "Calculus", score: 88 },
+            { studentId: "STU01", course: "Physics", score: 92 }
+        ];
+
+        var defaultAttendance = [
+            { studentId: "STU01", date: "2026-10-21", status: "Present" },
+            { studentId: "STU01", date: "2026-10-22", status: "Present" },
+            { studentId: "STU01", date: "2026-10-23", status: "Absent" }
+        ];
+
+        var defaultAnnouncements = [
+            { date: "2026-10-25", message: "Welcome to Academia! Quarter 1 grades are posted." }
+        ];
+
+        if (!localStorage.getItem("grades")) localStorage.setItem("grades", JSON.stringify(defaultGrades));
+        if (!localStorage.getItem("attendance")) localStorage.setItem("attendance", JSON.stringify(defaultAttendance));
+        if (!localStorage.getItem("announcements")) localStorage.setItem("announcements", JSON.stringify(defaultAnnouncements));
+
+        var user = JSON.parse(localStorage.getItem("currentUser")) || { username: "staff1" };
+        document.getElementById("staff-label").innerText = "Staff: " + user.username;
+
+        function renderGradesTable() {
+            var grades = JSON.parse(localStorage.getItem("grades")) || [];
+            var rows = "";
+            for (var i = 0; i < grades.length; i++) {
+                rows += "<tr><td>" + grades[i].studentId + "</td><td>" + grades[i].course + "</td><td>" + grades[i].score + "%</td></tr>";
+            }
+            document.getElementById("all-grades-table").innerHTML = rows;
+        }
+
+        function addGrade() {
+            var sid = document.getElementById("g-sid").value;
+            var course = document.getElementById("g-course").value;
+            var score = Number(document.getElementById("g-score").value);
+            if (!sid || !course) return;
+
+            var grades = JSON.parse(localStorage.getItem("grades")) || [];
+            grades.push({ studentId: sid, course: course, score: score });
+            localStorage.setItem("grades", JSON.stringify(grades));
+            renderGradesTable();
+            alert("Grade saved! Students and Parents can now view it.");
+        }
+
+        function addAttendance() {
+            var sid = document.getElementById("a-sid").value;
+            var date = document.getElementById("a-date").value;
+            var status = document.getElementById("a-status").value;
+            if (!sid || !date) return;
+
+            var attendance = JSON.parse(localStorage.getItem("attendance")) || [];
+            attendance.push({ studentId: sid, date: date, status: status });
+            localStorage.setItem("attendance", JSON.stringify(attendance));
+            alert("Attendance saved!");
+        }
+
+        function addAnnouncement() {
+            var date = document.getElementById("ann-date").value;
+            var msg = document.getElementById("ann-msg").value;
+            if (!date || !msg) return;
+
+            var announcements = JSON.parse(localStorage.getItem("announcements")) || [];
+            announcements.push({ date: date, message: msg });
+            localStorage.setItem("announcements", JSON.stringify(announcements));
+            alert("Announcement published!");
+        }
+
+        renderGradesTable();
+    </script>
 </body>
 </html>

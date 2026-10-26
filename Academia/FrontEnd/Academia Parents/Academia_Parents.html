@@ -1,14 +1,140 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Academia -- Parent Dashboard</title>
-    <link rel="stylesheet" href="Par_Style.css">
+    <title>Academia - Parent Portal</title>
+    <link rel="stylesheet" href="../Academia.css">
+    <link rel="stylesheet" href="Academia.css">
 </head>
 <body>
+    <div class="navbar">
+        <div class="nav-brand">
+            <img src="../../Images/BrandSheet.png" onerror="this.onerror=null; this.src='../../../Images/BrandSheet.png';" alt="Academia Logo" class="nav-logo">
+            <h2>Academia | Parent Portal</h2>
+        </div>
+        <div>
+            <span id="parent-label" style="margin-right: 15px; font-weight: 600;"></span>
+            <a href="../Academia Authrization/Academia_Auth.html">Logout</a>
+        </div>
+    </div>
 
+    <div class="main-box">
+        <div class="top-cards">
+            <div class="card">
+                <h3>Child's GPA</h3>
+                <p id="child-gpa">0.00</p>
+            </div>
+            <div class="card">
+                <h3>Child's Average</h3>
+                <p id="child-avg">0%</p>
+            </div>
+            <div class="card">
+                <h3>Child's Attendance</h3>
+                <p id="child-att">0%</p>
+            </div>
+        </div>
 
+        <div class="panel">
+            <h3 id="child-grades-title">Child's Grades (Read-Only)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="parent-grades"></tbody>
+            </table>
+        </div>
 
+        <div class="panel">
+            <h3>Child's Attendance Record</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="parent-att"></tbody>
+            </table>
+        </div>
 
+        <div class="panel">
+            <h3>School Announcements</h3>
+            <div id="parent-ann"></div>
+        </div>
+    </div>
 
+    <div class="footer">EDUCATION TODAY. A BRIGHTER TOMORROW.</div>
+
+    <script src="../Academia.js"></script>
+    <script>
+        var defaultGrades = [
+            { studentId: "STU01", course: "Computer Science", score: 95 },
+            { studentId: "STU01", course: "Calculus", score: 88 },
+            { studentId: "STU01", course: "Physics", score: 92 }
+        ];
+
+        var defaultAttendance = [
+            { studentId: "STU01", date: "2026-10-21", status: "Present" },
+            { studentId: "STU01", date: "2026-10-22", status: "Present" },
+            { studentId: "STU01", date: "2026-10-23", status: "Absent" }
+        ];
+
+        var defaultAnnouncements = [
+            { date: "2026-10-25", message: "Welcome to Academia! Quarter 1 grades are posted." },
+            { date: "2026-10-26", message: "Parent-Teacher conferences start next week." }
+        ];
+
+        var user = JSON.parse(localStorage.getItem("currentUser")) || { username: "parent1", studentId: "STU01" };
+        var grades = JSON.parse(localStorage.getItem("grades")) || defaultGrades;
+        var attendance = JSON.parse(localStorage.getItem("attendance")) || defaultAttendance;
+        var announcements = JSON.parse(localStorage.getItem("announcements")) || defaultAnnouncements;
+
+        document.getElementById("parent-label").innerText = "Parent: " + user.username + " (Child ID: " + user.studentId + ")";
+        document.getElementById("child-grades-title").innerText = "Grades for Child (" + user.studentId + ")";
+
+        var totalScore = 0;
+        var gradeCount = 0;
+        var gHtml = "";
+
+        for (var i = 0; i < grades.length; i++) {
+            if (grades[i].studentId === user.studentId) {
+                gHtml += "<tr><td>" + grades[i].course + "</td><td>" + grades[i].score + "%</td></tr>";
+                totalScore += Number(grades[i].score);
+                gradeCount++;
+            }
+        }
+        document.getElementById("parent-grades").innerHTML = gHtml || "<tr><td colspan='2'>No grades found.</td></tr>";
+
+        if (gradeCount > 0) {
+            var avg = totalScore / gradeCount;
+            document.getElementById("child-avg").innerText = avg.toFixed(1) + "%";
+            document.getElementById("child-gpa").innerText = ((avg / 100) * 4.0).toFixed(2);
+        }
+
+        var presentCount = 0;
+        var totalDays = 0;
+        var aHtml = "";
+
+        for (var j = 0; j < attendance.length; j++) {
+            if (attendance[j].studentId === user.studentId) {
+                aHtml += "<tr><td>" + attendance[j].date + "</td><td>" + attendance[j].status + "</td></tr>";
+                totalDays++;
+                if (attendance[j].status === "Present") presentCount++;
+            }
+        }
+        document.getElementById("parent-att").innerHTML = aHtml || "<tr><td colspan='2'>No attendance found.</td></tr>";
+
+        if (totalDays > 0) {
+            document.getElementById("child-att").innerText = ((presentCount / totalDays) * 100).toFixed(0) + "%";
+        }
+
+        var annHtml = "";
+        for (var k = 0; k < announcements.length; k++) {
+            annHtml += "<div class='notice'><b>" + announcements[k].date + ":</b> " + announcements[k].message + "</div>";
+        }
+        document.getElementById("parent-ann").innerHTML = annHtml;
+    </script>
 </body>
 </html>

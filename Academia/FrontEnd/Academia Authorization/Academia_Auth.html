@@ -3,6 +3,7 @@
 <head>
     <title>Academia - Login</title>
     <link rel="stylesheet" href="../Academia.css">
+    <link rel="stylesheet" href="Academia.css">
 </head>
 <body>
     <div class="split-screen">
@@ -11,7 +12,7 @@
             <div class="yellow-line"></div>
             <h2>One System.<br>A Stronger School Community.</h2>
             <p>Students. Parents. Staff. All Connected.</p>
-            <img src="../../Images/BrandSheet.png" alt="Academia" class="auth-img">
+            <img src="../../Images/BrandSheet.png" onerror="this.onerror=null; this.src='../../../Images/BrandSheet.png';" alt="Academia BrandSheet" class="auth-img">
         </div>
 
         <div class="right-panel">
@@ -35,13 +36,23 @@
                 <p class="switch-text" onclick="toggleMode()" id="toggle-link">
                     Need an account? Sign Up
                 </p>
-                <a href="../Academia Landing/Academia_Landing.html" class="back-link">Back to Home</a>
+                <a href="../Academia Landing/Academia_Landing.html" class="back-link">Back to Landing Page</a>
             </div>
         </div>
     </div>
 
     <script src="../Academia.js"></script>
     <script>
+        var defaultUsers = [
+            { username: "student1", password: "123", role: "student", studentId: "STU01" },
+            { username: "parent1", password: "123", role: "parent", studentId: "STU01" },
+            { username: "staff1", password: "123", role: "staff", studentId: "NONE" }
+        ];
+
+        if (!localStorage.getItem("users")) {
+            localStorage.setItem("users", JSON.stringify(defaultUsers));
+        }
+
         var isSignup = false;
 
         function toggleMode() {
@@ -63,7 +74,7 @@
         function handleAuth() {
             var u = document.getElementById("username").value;
             var p = document.getElementById("password").value;
-            var users = JSON.parse(localStorage.getItem("users"));
+            var users = JSON.parse(localStorage.getItem("users")) || defaultUsers;
 
             if (u === "" || p === "") {
                 document.getElementById("error-msg").innerText = "Please enter username and password.";
