@@ -4,42 +4,50 @@ Cs50 c project
 sql database
 10.22.26
 */
-
-CREATE TABLE IF NOT EXISTS users (
-    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE,
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    username TEXT,
     password TEXT,
     role TEXT
 );
 
-CREATE TABLE IF NOT EXISTS students (
-    student_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE students (
+    id INTEGER PRIMARY KEY,
     user_id INTEGER,
+    first_name TEXT,
+    last_name TEXT,
     grade_level INTEGER,
     gpa REAL
 );
 
-CREATE TABLE IF NOT EXISTS grades (
-    grade_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    student_id INTEGER,
-    course_name TEXT,
-    score REAL
+CREATE TABLE parents (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    first_name TEXT,
+    last_name TEXT
 );
 
-CREATE TABLE IF NOT EXISTS attendance (
-    attendance_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE parent_student (
+    parent_id INTEGER,
+    student_id INTEGER
+);
+
+CREATE TABLE grades (
+    id INTEGER PRIMARY KEY,
+    student_id INTEGER,
+    course TEXT,
+    grade INTEGER
+);
+
+CREATE TABLE attendance (
+    id INTEGER PRIMARY KEY,
     student_id INTEGER,
     date TEXT,
     status TEXT
 );
 
-CREATE TABLE IF NOT EXISTS announcements (
-    announcement_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE announcements (
+    id INTEGER PRIMARY KEY,
     title TEXT,
-    content TEXT
-);
-
-CREATE TABLE IF NOT EXISTS parent_student (
-    parent_id INTEGER,
-    student_id INTEGER
+    message TEXT
 );
