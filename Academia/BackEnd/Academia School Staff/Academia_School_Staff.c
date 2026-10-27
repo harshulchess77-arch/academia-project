@@ -127,6 +127,7 @@ void update_staff_frontend_state(void)
         return;
     }
 
+    //create the file 
     FILE *out = fopen("Academia/FrontEnd/Academia School Staff/staff_state.js", "w");
 
     if (out == NULL)
