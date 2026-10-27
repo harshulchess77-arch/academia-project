@@ -27,8 +27,8 @@ void add_grade(char student_id[], char course[], int grade)
 
     snprintf(sql,
              sizeof(sql),
-             "INSERT INTO grades "
-             "(student_id, course, grade) "
+             "INSERT INTO grades"
+             "(student_id, course, grade)"
              "VALUES('%s','%s',%d);",
              student_id,
              course,
@@ -99,7 +99,6 @@ void add_announcement(char title[], char message[])
 
     printf("[Staff Logic] Announcement successfully published.\n");
 }
-
 
 
 // Creates the JavaScript state file used by the Staff frontend
