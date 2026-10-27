@@ -8,91 +8,25 @@
 
     <div class="navbar">
         <b>Academia - School Staff Portal</b>
-        <a href="../Academia Authrization/Academia_Auth.html">Logout</a>
+        <a href="../Academia Landing/Academia_Landing.html">Home</a>
     </div>
 
-    <div class="box">
-        <h3>Enter Student Grade</h3>
-        Student ID: <input type="text" id="g-id" value="STU01">
-        Course: <input type="text" id="g-course">
-        Score: <input type="number" id="g-score">
-        <button class="btn" onclick="addGrade()">Add Grade</button>
-
-        <table>
-            <tr>
-                <th>Student ID</th>
-                <th>Course</th>
-                <th>Score</th>
-            </tr>
-            <tbody id="grade-table">
-                <tr><td>STU01</td><td>Computer Science</td><td>95%</td></tr>
-                <tr><td>STU01</td><td>Calculus</td><td>88%</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="box">
-        <h3>Record Attendance</h3>
-        Student ID: <input type="text" id="a-id" value="STU01">
-        Date: <input type="text" id="a-date" placeholder="YYYY-MM-DD">
-        Status:
-        <select id="a-status">
-            <option value="Present">Present</option>
-            <option value="Absent">Absent</option>
-        </select>
-        <button class="btn" onclick="addAttendance()">Record</button>
-
-        <table>
-            <tr>
-                <th>Student ID</th>
-                <th>Date</th>
-                <th>Status</th>
-            </tr>
-            <tbody id="att-table">
-                <tr><td>STU01</td><td>2026-10-21</td><td>Present</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="box">
-        <h3>Publish Announcement</h3>
-        Date: <input type="text" id="ann-date" placeholder="YYYY-MM-DD">
-        Message: <input type="text" id="ann-text">
-        <button class="btn" onclick="addNotice()">Post</button>
-
-        <div id="ann-box">
-            <p><b>2026-10-25:</b> Welcome to Academia! Quarter 1 grades are posted.</p>
-        </div>
+    <div class="box" style="text-align: center; padding: 40px;">
+        <h2>School Staff Portal</h2>
+        <br>
+        <!-- Replace maintenance.png with your exact maintenance image filename -->
+        <img src="../../Images/UnderMaintenance.png" onerror="this.onerror=null; this.src='../../../Images/maintenance.png';" width="400" alt="Under Maintenance">
+        <br><br>
+        <p style="font-size: 16px; font-weight: bold; color: #0B3D91;">
+            This module is currently under build
+        </p>
+        <br>
+        <a href="../Academia Landing/Academia_Landing.html" class="btn">Back to Landing Page</a>
     </div>
 
     <div class="footer">
         EDUCATION TODAY. A BRIGHTER TOMORROW.
     </div>
-
-    <script>
-        function addGrade() {
-            var id = document.getElementById("g-id").value;
-            var course = document.getElementById("g-course").value;
-            var score = document.getElementById("g-score").value;
-            document.getElementById("grade-table").innerHTML +=
-                "<tr><td>" + id + "</td><td>" + course + "</td><td>" + score + "%</td></tr>";
-        }
-
-        function addAttendance() {
-            var id = document.getElementById("a-id").value;
-            var date = document.getElementById("a-date").value;
-            var status = document.getElementById("a-status").value;
-            document.getElementById("att-table").innerHTML +=
-                "<tr><td>" + id + "</td><td>" + date + "</td><td>" + status + "</td></tr>";
-        }
-
-        function addNotice() {
-            var date = document.getElementById("ann-date").value;
-            var text = document.getElementById("ann-text").value;
-            document.getElementById("ann-box").innerHTML +=
-                "<p><b>" + date + ":</b> " + text + "</p>";
-        }
-    </script>
 
 </body>
 </html>
