@@ -182,7 +182,7 @@ void update_staff_frontend_state(void)
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
             fprintf(out,
-                    "    { studentId: \"%s\", date: \"%s\", status: \"%s\" },\n",
+                    "{ studentId: \"%s\", date: \"%s\", status: \"%s\" },\n",
                     sqlite3_column_text(stmt, 0),
                     sqlite3_column_text(stmt, 1),
                     sqlite3_column_text(stmt, 2));
@@ -194,7 +194,7 @@ void update_staff_frontend_state(void)
     fprintf(out, "  ],\n");
 
     // Export announcements
-    fprintf(out, "  announcements: [\n");
+    fprintf(out, "announcements: [\n");
 
     const char *sql_ann =
         "SELECT title, message "
@@ -221,7 +221,10 @@ void update_staff_frontend_state(void)
     fprintf(out, "  ]\n");
     fprintf(out, "};\n");
 
+    //close the js file used by frontend
     fclose(out);
+
+    //close the sqlite database
     sqlite3_close(db);
 
     printf("[Staff Logic] Successfully updated frontend state.\n");
