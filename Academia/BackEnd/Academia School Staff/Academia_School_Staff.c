@@ -122,18 +122,16 @@ void update_staff_frontend_state(void)
 
     if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
-        printf("[Error] Cannot open database: %s\n",
-               sqlite3_errmsg(db));
+        printf("[Error] Cannot open database: %s\n", sqlite3_errmsg(db));
         return;
     }
 
-    //create the file 
+    //create the file
     FILE *out = fopen("Academia/FrontEnd/Academia School Staff/staff_state.js", "w");
 
     if (out == NULL)
     {
-        printf("[Error] Cannot create frontend state file.\n");
-        sqlite3_close(db);
+        printf("[Error] Cannot create frontend state file.\n", sqlite3_close(db)); 
         return;
     }
 
