@@ -5,7 +5,11 @@ SQL Database
 10.22.26
 */
 
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS users (
+=======
+CREATE TABLE users (
+>>>>>>> 9d33377fabf30fa9951f72e1bfc51ff44adbcbeb
     id INTEGER PRIMARY KEY,
     username TEXT,
     password TEXT,

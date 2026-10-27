@@ -6,23 +6,24 @@
 </head>
 <body>
 
-    <div class="left-half">
+    <div class="left-side">
         <h1>Academia</h1>
         <h2>One System.<br>A Stronger School Community.</h2>
         <p style="color: #60A5FA;">Students. Parents. Staff. All Connected.</p>
-        <img id="slide" src="../../Images/AuthPage1.png" width="380" alt="Slide Image">
+        <img id="slide-pic" src="../../Images/AuthPage1.png" width="360" alt="Academia Slide">
     </div>
 
-    <div class="right-half">
+    <div class="right-side">
         <div class="box" style="width: 300px;">
-            <h2>Login / Sign Up</h2>
+            <h2>Sign In / Sign Up</h2>
+
             <p>Username:</p>
-            <input type="text" id="user">
+            <input type="text" id="username">
 
             <p>Password:</p>
-            <input type="password" id="pass">
+            <input type="password" id="password">
 
-            <p>Select Role:</p>
+            <p>Role:</p>
             <select id="role">
                 <option value="student">Student</option>
                 <option value="parent">Parent</option>
@@ -30,40 +31,39 @@
             </select>
             <br><br>
 
-            <button class="btn" onclick="loginUser()">Submit</button>
-            <p id="msg" style="color: red;"></p>
+            <button class="btn" onclick="goPortal()">Login</button>
+            <p id="err" style="color: red;"></p>
             <br>
             <a href="../Academia Landing/Academia_Landing.html">Back to Landing Page</a>
         </div>
     </div>
 
     <script>
-        // Put your 4 image names from Academia/Images/ here:
         var pics = [
             "../../Images/AuthPage1.png",
             "../../Images/AuthPage2.png",
             "../../Images/AuthPage3.png",
             "../../Images/AuthPage4.png"
         ];
-        var num = 0;
+        var i = 0;
 
-        function nextPic() {
-            num = num + 1;
-            if (num == 4) {
-                num = 0;
+        function changePic() {
+            i = i + 1;
+            if (i == 4) {
+                i = 0;
             }
-            document.getElementById("slide").src = pics[num];
+            document.getElementById("slide-pic").src = pics[i];
         }
 
-        setInterval(nextPic, 5000);
+        setInterval(changePic, 5000);
 
-        function loginUser() {
-            var u = document.getElementById("user").value;
-            var p = document.getElementById("pass").value;
+        function goPortal() {
+            var u = document.getElementById("username").value;
+            var p = document.getElementById("password").value;
             var r = document.getElementById("role").value;
 
             if (u == "" || p == "") {
-                document.getElementById("msg").innerHTML = "Please enter username and password.";
+                document.getElementById("err").innerHTML = "Enter username and password.";
                 return;
             }
 
