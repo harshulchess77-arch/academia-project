@@ -12,12 +12,14 @@ School-Staff Functions
 // Adds a grade record to the database
 void add_grade(char student_id[], char course[], int grade)
 {
+    //point to the database file
     sqlite3 *db;
+
+    //create the string that can store up to 511 characters
     char sql[512];
 
-    if (sqlite3_open(
-        "Academia/BackEnd/Academia Database/academia.db",
-        &db) != SQLITE_OK)
+    //
+    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Database connection failed.\n");
         return;
@@ -45,9 +47,7 @@ void add_attendance(char student_id[], char date[], char status[])
     sqlite3 *db;
     char sql[512];
 
-    if (sqlite3_open(
-        "Academia/BackEnd/Academia Database/academia.db",
-        &db) != SQLITE_OK)
+    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Database connection failed.\n");
         return;
@@ -62,8 +62,10 @@ void add_attendance(char student_id[], char date[], char status[])
              date,
              status);
 
+    //run the sql lines
     sqlite3_exec(db, sql, NULL, NULL, NULL);
 
+    //close the database
     sqlite3_close(db);
 
     printf("[Staff Logic] Attendance successfully recorded.\n");
@@ -75,9 +77,7 @@ void add_announcement(char title[], char message[])
     sqlite3 *db;
     char sql[1000];
 
-    if (sqlite3_open(
-        "Academia/BackEnd/Academia Database/academia.db",
-        &db) != SQLITE_OK)
+    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Database connection failed.\n");
         return;
@@ -91,12 +91,16 @@ void add_announcement(char title[], char message[])
              title,
              message);
 
+    //run the sql lines
     sqlite3_exec(db, sql, NULL, NULL, NULL);
 
+    //close the database
     sqlite3_close(db);
 
     printf("[Staff Logic] Announcement successfully published.\n");
 }
+
+
 
 // Creates the JavaScript state file used by the Staff frontend
 void update_staff_frontend_state(void)
@@ -104,18 +108,14 @@ void update_staff_frontend_state(void)
     sqlite3 *db;
     sqlite3_stmt *stmt;
 
-    if (sqlite3_open(
-        "Academia/BackEnd/Academia Database/academia.db",
-        &db) != SQLITE_OK)
+    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Cannot open database: %s\n",
                sqlite3_errmsg(db));
         return;
     }
 
-    FILE *out = fopen(
-        "Academia/FrontEnd/Academia School Staff/staff_state.js",
-        "w");
+    FILE *out = fopen("Academia/FrontEnd/Academia School Staff/staff_state.js", "w");
 
     if (out == NULL)
     {
