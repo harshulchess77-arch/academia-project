@@ -9,6 +9,12 @@ School-Staff Functions
 #include <string.h>
 #include <sqlite3.h>
 
+/*
+This file contains the c functions of school staff that includes
+the attendence system, the grade system, and the connection between
+c and database (write) which push the records into the frontface.
+*/
+
 // Adds a grade record to the database
 void add_grade(char student_id[], char course[], int grade)
 {
@@ -18,13 +24,14 @@ void add_grade(char student_id[], char course[], int grade)
     //create the string that can store up to 511 characters
     char sql[512];
 
-    //
+    //open the sqlite file
     if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Database connection failed.\n");
         return;
     }
 
+    //insert the records given by the teacher into the database
     snprintf(sql,
              sizeof(sql),
              "INSERT INTO grades"
@@ -34,8 +41,10 @@ void add_grade(char student_id[], char course[], int grade)
              course,
              grade);
 
+    //execute the sql code
     sqlite3_exec(db, sql, NULL, NULL, NULL);
 
+    //close the sql
     sqlite3_close(db);
 
     printf("[Staff Logic] Grade successfully saved.\n");
@@ -47,12 +56,14 @@ void add_attendance(char student_id[], char date[], char status[])
     sqlite3 *db;
     char sql[512];
 
+    //open the sql file
     if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Database connection failed.\n");
         return;
     }
 
+    //insert the new records
     snprintf(sql,
              sizeof(sql),
              "INSERT INTO attendance "
@@ -77,12 +88,14 @@ void add_announcement(char title[], char message[])
     sqlite3 *db;
     char sql[1000];
 
+    //open the sql file
     if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Database connection failed.\n");
         return;
     }
 
+    //insert the new announcements records
     snprintf(sql,
              sizeof(sql),
              "INSERT INTO announcements "
