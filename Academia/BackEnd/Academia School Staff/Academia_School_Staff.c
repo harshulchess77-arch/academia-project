@@ -131,14 +131,14 @@ void update_staff_frontend_state(void)
 
     if (out == NULL)
     {
-        printf("[Error] Cannot create frontend state file.\n", sqlite3_close(db)); 
+        printf("[Error] Cannot create frontend state file.\n", sqlite3_close(db));
         return;
     }
 
     fprintf(out, "const staffState = {\n");
 
     // Export all grades
-    fprintf(out, "  grades: [\n");
+    fprintf(out, "grades: [\n");
 
     const char *sql_grades =
         "SELECT student_id, course, grade "
