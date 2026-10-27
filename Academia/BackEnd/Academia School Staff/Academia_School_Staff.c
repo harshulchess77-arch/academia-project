@@ -9,6 +9,12 @@ School-Staff Functions
 #include <string.h>
 #include <sqlite3.h>
 
+/*
+This file contains the c functions of school staff that includes
+the attendence system, the grade system, and the connection between
+c and database (write) which push the records into the frontface.
+*/
+
 // Adds a grade record to the database
 void add_grade(char student_id[], char course[], int grade)
 {
@@ -18,24 +24,27 @@ void add_grade(char student_id[], char course[], int grade)
     //create the string that can store up to 511 characters
     char sql[512];
 
-    //
+    //open the sqlite file
     if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Database connection failed.\n");
         return;
     }
 
+    //insert the records given by the teacher into the database
     snprintf(sql,
              sizeof(sql),
-             "INSERT INTO grades "
-             "(student_id, course, grade) "
+             "INSERT INTO grades"
+             "(student_id, course, grade)"
              "VALUES('%s','%s',%d);",
              student_id,
              course,
              grade);
 
+    //execute the sql code
     sqlite3_exec(db, sql, NULL, NULL, NULL);
 
+    //close the sql
     sqlite3_close(db);
 
     printf("[Staff Logic] Grade successfully saved.\n");
@@ -47,12 +56,14 @@ void add_attendance(char student_id[], char date[], char status[])
     sqlite3 *db;
     char sql[512];
 
+    //open the sql file
     if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Database connection failed.\n");
         return;
     }
 
+    //insert the new records
     snprintf(sql,
              sizeof(sql),
              "INSERT INTO attendance "
@@ -77,12 +88,14 @@ void add_announcement(char title[], char message[])
     sqlite3 *db;
     char sql[1000];
 
+    //open the sql file
     if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
         printf("[Error] Database connection failed.\n");
         return;
     }
 
+    //insert the new announcements records
     snprintf(sql,
              sizeof(sql),
              "INSERT INTO announcements "
@@ -101,7 +114,6 @@ void add_announcement(char title[], char message[])
 }
 
 
-
 // Creates the JavaScript state file used by the Staff frontend
 void update_staff_frontend_state(void)
 {
@@ -110,24 +122,23 @@ void update_staff_frontend_state(void)
 
     if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
-        printf("[Error] Cannot open database: %s\n",
-               sqlite3_errmsg(db));
+        printf("[Error] Cannot open database: %s\n", sqlite3_errmsg(db));
         return;
     }
 
+    //create the file
     FILE *out = fopen("Academia/FrontEnd/Academia School Staff/staff_state.js", "w");
 
     if (out == NULL)
     {
-        printf("[Error] Cannot create frontend state file.\n");
-        sqlite3_close(db);
+        printf("[Error] Cannot create frontend state file.\n", sqlite3_close(db));
         return;
     }
 
     fprintf(out, "const staffState = {\n");
 
     // Export all grades
-    fprintf(out, "  grades: [\n");
+    fprintf(out, "grades: [\n");
 
     const char *sql_grades =
         "SELECT student_id, course, grade "
@@ -171,7 +182,7 @@ void update_staff_frontend_state(void)
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
             fprintf(out,
-                    "    { studentId: \"%s\", date: \"%s\", status: \"%s\" },\n",
+                    "{ studentId: \"%s\", date: \"%s\", status: \"%s\" },\n",
                     sqlite3_column_text(stmt, 0),
                     sqlite3_column_text(stmt, 1),
                     sqlite3_column_text(stmt, 2));
@@ -183,7 +194,7 @@ void update_staff_frontend_state(void)
     fprintf(out, "  ],\n");
 
     // Export announcements
-    fprintf(out, "  announcements: [\n");
+    fprintf(out, "announcements: [\n");
 
     const char *sql_ann =
         "SELECT title, message "
@@ -210,7 +221,10 @@ void update_staff_frontend_state(void)
     fprintf(out, "  ]\n");
     fprintf(out, "};\n");
 
+    //close the js file used by frontend
     fclose(out);
+
+    //close the sqlite database
     sqlite3_close(db);
 
     printf("[Staff Logic] Successfully updated frontend state.\n");
