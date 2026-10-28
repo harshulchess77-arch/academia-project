@@ -15,28 +15,34 @@ database and creates a JavaScript file for the parent frontend.
 
 
 // Writes database text safely into a JavaScript string
+// javascript strings need to escape certain characters like backslashes and double quotes, and newlines should be represented as \\n to avoid syntax errors in the generated JavaScript file.
 void write_js_text(FILE *out, const unsigned char *text)
 {
     int i;
 
-    // Do not write anything if the database value is NULL
+    // returns if the text is NULL
     if (text == NULL)
     {
         return;
     }
 
     // Write each character while escaping special characters
+    // aviod java script syntax errors
     for (i = 0; text[i] != '\0'; i++)
     {
+        // if the character is a backslash or double quote, print a backslash before it
         if (text[i] == '\\' || text[i] == '"')
         {
             fputc('\\', out);
         }
 
+        // if the character is a newline, print \\n instead of \n
         if (text[i] == '\n')
         {
             fprintf(out, "\\n");
         }
+
+        // if the character is not \n then it is printed as is
         else
         {
             fputc(text[i], out);
@@ -48,28 +54,33 @@ void write_js_text(FILE *out, const unsigned char *text)
 // Creates the JavaScript state file used by the parent frontend
 void update_parent_frontend_state(int parent_user_id)
 {
+    // Database connection and statement objects
     sqlite3 *db;
     sqlite3_stmt *stmt;
     FILE *out;
 
     // Open the Academia database
-    if (sqlite3_open(
-            "Academia/BackEnd/Academia Database/academia.db",
-            &db) != SQLITE_OK)
+    // provide the path to the database file
+    // if the database cannot be opened, print an error message and return
+    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
+        // Print an error message if the database cannot be opened
         printf("[Error] Cannot open database: %s\n", sqlite3_errmsg(db));
         return;
     }
 
     // Create the JavaScript state file
-    out = fopen(
-        "Academia/FrontEnd/Academia Parents/parent_state.js",
-        "w"
-    );
+    // if there is a parent_state.js file already, it will be overwritten
+    out = fopen("Academia/FrontEnd/Academia Parents/parent_state.js", "w");
 
+    // check if the file was created successfully
+    // if not, print an error message and close the database connection
     if (out == NULL)
     {
+        // Print an error message if the file cannot be created
         printf("[Error] Cannot create parent state file.\n");
+
+        // Close the database connection before returning
         sqlite3_close(db);
         return;
     }
@@ -77,18 +88,16 @@ void update_parent_frontend_state(int parent_user_id)
     // Start the parentState JavaScript object
     fprintf(out, "const parentState = {\n");
 
-    /*
-    Export the parent account information
-    */
 
+    // taking the parent information from the database and writing it to the JavaScript file
+    // writing the parent information to the JavaScript file in a structured format
     fprintf(out, "  parent: {\n");
 
+    // SQL query to get the parent information from the database
     const char *sql_parent =
-        "SELECT users.id, users.username, "
-        "parents.id, parents.first_name, parents.last_name "
-        "FROM users "
-        "INNER JOIN parents ON users.id = parents.user_id "
-        "WHERE users.id = ? AND users.role = 'parent';";
+        "SELECT id, first_name, last_name "
+        "FROM user "
+        "WHERE id = ? AND role = 'parent';";
 
     // Prepare the parent query
     if (sqlite3_prepare_v2(
