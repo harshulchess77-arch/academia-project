@@ -6,7 +6,7 @@ Parent Functions
 */
 
 #include <stdio.h>
-#include <sqlite3.h>
+#include "../Academia Database/SQLite3 Source Code/sqlite3.h"
 
 /*
 This file reads parent and student information from the
