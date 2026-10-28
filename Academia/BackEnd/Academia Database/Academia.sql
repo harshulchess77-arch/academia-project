@@ -5,45 +5,57 @@ sql database
 10.22.26
 */
 
-CREATE TABLE users (
+CREATE TABLE user(
     id INTEGER PRIMARY KEY,
-    username TEXT,
-    password TEXT,
-    role TEXT
-);
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL,
 
-CREATE TABLE students (
-    id INTEGER PRIMARY KEY,
-    user_id INTEGER,
     first_name TEXT,
     last_name TEXT,
+
     grade_level INTEGER,
     gpa REAL
-);
+)
 
-CREATE TABLE parents (
+CREATE TABLE course(
     id INTEGER PRIMARY KEY,
-    user_id INTEGER,
-    first_name TEXT,
-    last_name TEXT
-);
+    course_name TEXT
+)
 
-CREATE TABLE grades (
+CREATE TABLE attendence(
     id INTEGER PRIMARY KEY,
     student_id INTEGER,
-    course TEXT,
-    grade INTEGER
-);
+    course_id INTEGER,
+    status BOOLEAN
+)
 
-CREATE TABLE attendance (
+CREATE TABLE announcement(
     id INTEGER PRIMARY KEY,
-    student_id INTEGER,
-    date TEXT,
-    status TEXT
-);
-
-CREATE TABLE announcements (
-    id INTEGER PRIMARY KEY,
+    course_id INTEGER,
     title TEXT,
     message TEXT
-);
+)
+
+CREATE TABLE assignment(
+    id INTEGER PRIMARY KEY,
+    course_id INTEGER,
+    title TEXT,
+    description TEXT
+)
+
+CREATE TABLE enrollment(
+    course_id INTEGER,
+    student_id INTEGER,
+    PRIMARY KEY(course_id, student_id)
+)
+
+CREATE TABLE grade(
+    id INTEGER PRIMARY KEY,
+    student_id INTEGER,
+    assignment_in INTEGER,
+    grade REAL
+)
+
+
+
