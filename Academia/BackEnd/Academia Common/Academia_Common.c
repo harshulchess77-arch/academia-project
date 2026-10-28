@@ -19,6 +19,8 @@ common functions
 #include "Academia_Database.h"
 #include "SQLite3/sqlite3.h"
 
+
+
 int main()
 {
     connectDatabase();
@@ -28,6 +30,10 @@ int main()
     {
         printf("Database opened!\n");
     }
+
+
+
+
 
     sqlite3_close(db);
 

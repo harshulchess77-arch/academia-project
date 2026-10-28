@@ -43,7 +43,7 @@ void checkUserLogin(const char *username, const char *password)
     }
 
     // 2. Query the users table from Academia_2.sql to verify credentials
-    sprintf(sql, "SELECT role FROM users WHERE username = '%s' AND password = '%s';", username, password);
+    sprintf(sql, "SELECT role FROM user WHERE username = '%s' AND password = '%s';", username, password);
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
