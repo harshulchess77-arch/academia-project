@@ -67,7 +67,7 @@ void add_attendance(char student_id[], char date[], char status[])
     snprintf(sql,
              sizeof(sql),
              "INSERT INTO attendance "
-             "(student_id, date, status) "
+             "(student_id, date, status)"
              "VALUES('%s','%s','%s');",
              student_id,
              date,
@@ -129,7 +129,7 @@ void update_staff_frontend_state(void)
     //create the file
     FILE *out = fopen("Academia/FrontEnd/Academia School Staff/staff_state.js", "w");
 
-    if (out == NULL)
+    if(out == NULL)
     {
         printf("[Error] Cannot create frontend state file.\n", sqlite3_close(db));
         return;
