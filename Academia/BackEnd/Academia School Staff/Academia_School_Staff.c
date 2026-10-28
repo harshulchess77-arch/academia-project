@@ -67,7 +67,7 @@ void add_attendance(char student_id[], char date[], char status[])
     snprintf(sql,
              sizeof(sql),
              "INSERT INTO attendance "
-             "(student_id, date, status) "
+             "(student_id, date, status)"
              "VALUES('%s','%s','%s');",
              student_id,
              date,
@@ -122,24 +122,23 @@ void update_staff_frontend_state(void)
 
     if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
     {
-        printf("[Error] Cannot open database: %s\n",
-               sqlite3_errmsg(db));
+        printf("[Error] Cannot open database: %s\n", sqlite3_errmsg(db));
         return;
     }
 
+    //create the file
     FILE *out = fopen("Academia/FrontEnd/Academia School Staff/staff_state.js", "w");
 
-    if (out == NULL)
+    if(out == NULL)
     {
-        printf("[Error] Cannot create frontend state file.\n");
-        sqlite3_close(db);
+        printf("[Error] Cannot create frontend state file.\n", sqlite3_close(db));
         return;
     }
 
     fprintf(out, "const staffState = {\n");
 
     // Export all grades
-    fprintf(out, "  grades: [\n");
+    fprintf(out, "grades: [\n");
 
     const char *sql_grades =
         "SELECT student_id, course, grade "
@@ -183,7 +182,7 @@ void update_staff_frontend_state(void)
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
             fprintf(out,
-                    "    { studentId: \"%s\", date: \"%s\", status: \"%s\" },\n",
+                    "{ studentId: \"%s\", date: \"%s\", status: \"%s\" },\n",
                     sqlite3_column_text(stmt, 0),
                     sqlite3_column_text(stmt, 1),
                     sqlite3_column_text(stmt, 2));
@@ -195,7 +194,7 @@ void update_staff_frontend_state(void)
     fprintf(out, "  ],\n");
 
     // Export announcements
-    fprintf(out, "  announcements: [\n");
+    fprintf(out, "announcements: [\n");
 
     const char *sql_ann =
         "SELECT title, message "
@@ -222,7 +221,10 @@ void update_staff_frontend_state(void)
     fprintf(out, "  ]\n");
     fprintf(out, "};\n");
 
+    //close the js file used by frontend
     fclose(out);
+
+    //close the sqlite database
     sqlite3_close(db);
 
     printf("[Staff Logic] Successfully updated frontend state.\n");

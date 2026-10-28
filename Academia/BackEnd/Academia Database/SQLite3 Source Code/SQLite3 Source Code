@@ -1,0 +1,11 @@
+This is the SQLite3 SOurce code provied by SQLite3 itself and is added here to use as refrences
+and sort of libraries type and for more understanding please refer to the files
+1. sqlite3.c
+2. sqlite3.h
+And for our code please go to this part of repositotry
+academia-project and change directory to Academia Database where you will find these things you need to read files 2 to 4
+To understand our code logic for Database and everything:
+1. SQLite3 SOurce COde as folder
+2. Academia.sql
+3. Database.c
+4. Database.h

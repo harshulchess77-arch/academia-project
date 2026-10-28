@@ -6,6 +6,7 @@ SQL Database
 */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS users (
 =======
 CREATE TABLE users (
@@ -17,33 +18,49 @@ CREATE TABLE users (
 );
 
 CREATE TABLE IF NOT EXISTS students (
-    id INTEGER PRIMARY KEY,
-    user_id INTEGER,
-    first_name TEXT,
-    last_name TEXT,
-    grade_level INTEGER,
-    gpa REAL
-);
+=======
+/*make sure to do the check for the ids*/
 
+CREATE TABLE user(
+>>>>>>> eb0d9dc6fbf57d4e1546fb2663603334b1e7aa64
+    id INTEGER PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL,
+
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS parents (
     id INTEGER PRIMARY KEY,
     user_id INTEGER,
+=======
+>>>>>>> eb0d9dc6fbf57d4e1546fb2663603334b1e7aa64
     first_name TEXT,
     last_name TEXT
 );
 
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS parent_student (
     parent_id INTEGER,
     student_id INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS grades (
+=======
+
+CREATE TABLE course(
     id INTEGER PRIMARY KEY,
-    student_id INTEGER,
-    course TEXT,
-    grade INTEGER
+    course_name TEXT
 );
 
+CREATE TABLE attendance(
+>>>>>>> eb0d9dc6fbf57d4e1546fb2663603334b1e7aa64
+    id INTEGER PRIMARY KEY,
+    student_id INTEGER,
+    course_id INTEGER,
+    status BOOLEAN
+);
+
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS attendance (
     id INTEGER PRIMARY KEY,
     student_id INTEGER,
@@ -52,11 +69,16 @@ CREATE TABLE IF NOT EXISTS attendance (
 );
 
 CREATE TABLE IF NOT EXISTS announcements (
+=======
+CREATE TABLE announcement(
+>>>>>>> eb0d9dc6fbf57d4e1546fb2663603334b1e7aa64
     id INTEGER PRIMARY KEY,
+    course_id INTEGER,
     title TEXT,
-    message TEXT
+    message TEXT    
 );
 
+<<<<<<< HEAD
 /*
 Test data
 INSERT OR IGNORE prevents duplicate primary key errors.
@@ -143,3 +165,27 @@ VALUES (
     'Quarter 1 Grades',
     'Quarter 1 grades are posted.'
 );
+=======
+CREATE TABLE assignment(
+    id INTEGER PRIMARY KEY,
+    course_id INTEGER,
+    title TEXT,
+    description TEXT    
+);
+
+CREATE TABLE enrollment(
+    course_id INTEGER,
+    student_id INTEGER,
+    PRIMARY KEY(course_id, student_id)
+);
+
+CREATE TABLE grade(
+    id INTEGER PRIMARY KEY,
+    student_id INTEGER,
+    assignment_id INTEGER,
+    grade REAL    
+);
+
+
+
+>>>>>>> eb0d9dc6fbf57d4e1546fb2663603334b1e7aa64
