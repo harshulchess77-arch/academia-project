@@ -7,6 +7,8 @@ SQL Database
 
 CREATE TABLE user(
     id INTEGER PRIMARY KEY,
+    email TEXT,
+    password TEXT,
     first_name TEXT,
     last_name TEXT,
     role TEXT
@@ -19,12 +21,13 @@ CREATE TABLE student(
 
 CREATE TABLE parent(
     id INTEGER PRIMARY KEY,
-   
+    phone TEXT
+    
 );
 
 CREATE TABLE staff(
     id INTEGER PRIMARY KEY,
-
+    phone TEXT
 );
 
 

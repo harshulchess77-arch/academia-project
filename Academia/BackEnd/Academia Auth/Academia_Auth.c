@@ -5,6 +5,15 @@ sql database login check
 10.22.26
 */
 
+/*
+This function is used for login
+authentication with the specified role
+in the school system. It first connect to 
+the database and then detect the user type 
+format and compare to the records in database
+to see if it's valid.
+*/
+
 // Main Method
 //We have added the basic and required libraries which are required for our project
 #include <stdio.h>
