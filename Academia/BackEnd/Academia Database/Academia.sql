@@ -28,11 +28,6 @@ CREATE TABLE parents (
     last_name TEXT
 );
 
-CREATE TABLE parent_student (
-    parent_id INTEGER,
-    student_id INTEGER
-);
-
 CREATE TABLE grades (
     id INTEGER PRIMARY KEY,
     student_id INTEGER,
