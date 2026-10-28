@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    // Title and StyleSheet
     <title>Academia - Login</title>
     <link rel="stylesheet" href="../Academia.css">
 </head>
@@ -14,7 +15,7 @@
         <img id="slide-pic" src="../../Images/AuthPage1.png" width="360" alt="Academia Slide">
     </div>
 
-    // Rigth side of the Auth Screen and Creates the SignIn/SignUp menu.
+    // Rigth side of the Auth Screen and Creates the SignIn/SignUp menu. Role Options.
     <div class="right-side">
         <div class="box" style="width: 300px;">
             <h2>Sign In / Sign Up</h2>
@@ -50,6 +51,7 @@
         ];
         var i = 0;
 
+        // Changes picture to the next one in the list
         function changePic() {
             i = i + 1;
             if (i == 4) {
@@ -58,13 +60,14 @@
             document.getElementById("slide-pic").src = pics[i];
         }
 
+        // 5 second timer
         setInterval(changePic, 5000);
 
         function goPortal() {
             var u = document.getElementById("username").value;
             var p = document.getElementById("password").value;
             var r = document.getElementById("role").value;
-
+            
             if (u == "" || p == "") {
                 document.getElementById("err").innerHTML = "Enter username and password.";
                 return;
