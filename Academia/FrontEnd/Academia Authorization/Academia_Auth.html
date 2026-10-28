@@ -53,10 +53,10 @@
             "../../Images/AuthPage3.png",
             "../../Images/AuthPage4.png"
         ];
-        // Variable to interpr
+        // Variable to interpret the id of the image shown right now
         var i = 0;
 
-        // Changes picture to the next one in the list
+        // Changes picture to the next one on the list
         function changePic() {
             i = i + 1;
             if (i == 4) {
@@ -65,9 +65,10 @@
             document.getElementById("slide-pic").src = pics[i];
         }
 
-        // 5 second timer
+        // Calss fucnction changePic every 5 sec
         setInterval(changePic, 5000);
 
+        // 
         function goPortal() {
             var u = document.getElementById("username").value;
             var p = document.getElementById("password").value;
