@@ -26,34 +26,13 @@ void checkUserLogin(const char *username, const char *password, const char *role
     sqlite3_stmt *stmt;
     char sql[256];
 
-// Open connection to the database and check if it's connected
+    // Open connection to the database and check if it's connected
     if (sqlite3_open("academia.db", &db) != SQLITE_OK)
     {
         printf("Connection Failed\n");
         return;
     }
 
-    // logic to find which account is logging in
-    if(strcmp(role, "student") == 0)
-    {
-        //student account
-        printf("Format Auto-Detected: Student Account\n");
-    }
-    else if(strcmp(role, "parent") == 0)
-    {
-        //parent account
-        printf("Format Auto-Detected: Parent Account\n");
-    }
-    else if(strcmp(role, "staff") == 0)
-    {
-        //school staff account
-        printf("Format Auto-Detected: Staff Account\n");
-    }
-    else
-    {
-        printf("Unknown Account Format.");
-    }
-    
 
     //sends a query to database using this logic to check if user is there
     //do the username and password check in the sql database
@@ -75,6 +54,32 @@ void checkUserLogin(const char *username, const char *password, const char *role
             printf("Invalid Username or Password\n");
         }
     }
+
+
+
+    // logic to find which account is logging in
+    if(strcmp(role, "student") == 0)
+    {
+        //student account
+        printf("Format Auto-Detected: Student Account\n");
+    }
+    else if(strcmp(role, "parent") == 0)
+    {
+        //parent account
+        printf("Format Auto-Detected: Parent Account\n");
+    }
+    else if(strcmp(role, "staff") == 0)
+    {
+        //school staff account
+        printf("Format Auto-Detected: Staff Account\n");
+    }
+    else
+    {
+        printf("Unknown Account Format.");
+    }
+
+
+    
 
     sqlite3_finalize(stmt); //to clean up sql
     sqlite3_close(db); //close the database after running method
