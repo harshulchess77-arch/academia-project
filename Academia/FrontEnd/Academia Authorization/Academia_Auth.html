@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!--Creates Title and connects StyleSheet-->
+    <!-- Creates Title and connects StyleSheet-->
     <title>Academia - Login</title>
     <link rel="stylesheet" href="../Academia.css">
 </head>
 <body>
 
-    <!--left side of the Auth Screen. Creates title and slide show of images-->
+    <!-- left side of the Auth Screen. Creates title and slide show of images-->
     <div class="left-side">
         <h1>Academia</h1>
         <h2>One System.<br>A Stronger School Community.</h2>
@@ -15,20 +15,20 @@
         <img id="slide-pic" src="../../Images/AuthPage1.png" width="360" alt="Academia Slide">
     </div>
 
-    <!--Rigth side of the Auth Screen and Creates the SignIn/SignUp menu.-->
+    <!-- Rigth side of the Auth Screen and Creates the SignIn/SignUp menu.-->
     <div class="right-side">
         <div class="box" style="width: 300px;">
             <h2>Sign In / Sign Up</h2>
 
-            // Creates typing box for Username
+            <!-- create typing box for username-->
             <p>Username:</p>
             <input type="text" id="username">
 
-            // Creates typing box for Password
+            <!-- create typing box for password-->
             <p>Password:</p>
             <input type="password" id="password">
 
-            // Creates select option box with 3 options to choose.
+            <!-- Creates select option box with 3 options to choose-->
             <p>Role:</p>
             <select id="role">
                 <option value="student">Student</option>
@@ -37,7 +37,7 @@
             </select>
             <br><br>
 
-            // Sign in button that uses goPortal function and load Landing Screen.
+            <!-- Sign in button that uses goPortal function and load Landing Screen-->
             <button class="btn" onclick="goPortal()">Login</button>
             <p id="err" style="color: red;"></p>
             <br>
@@ -68,17 +68,18 @@
         // Calss fucnction changePic every 5 sec
         setInterval(changePic, 5000);
 
-        // 
+        // Creates function that saves data user put during sign in operation.
         function goPortal() {
             var u = document.getElementById("username").value;
             var p = document.getElementById("password").value;
             var r = document.getElementById("role").value;
 
+            // Checkes if inputs provided by User are empty and tells user to Enter username and password.
             if (u == "" || p == "") {
                 document.getElementById("err").innerHTML = "Enter username and password.";
                 return;
             }
-
+            // Depending on the role provided by the user load next screen Student/Parent/School Staff.
             if (r == "student") {
                 window.location.href = "../Academia Student/Academia_Student.html";
             } else if (r == "parent") {
