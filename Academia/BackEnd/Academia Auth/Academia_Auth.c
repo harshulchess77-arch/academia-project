@@ -79,7 +79,6 @@ void checkUserLogin(const char *username, const char *password, const char *role
     }
     
 
-    
 
     sqlite3_finalize(stmt); //to clean up sql
     sqlite3_close(db); //close the database after running method
