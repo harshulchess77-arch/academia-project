@@ -34,6 +34,8 @@ CREATE TABLE staff(
 
 
 
+
+
 CREATE TABLE course(
     id INTEGER PRIMARY KEY,
     staff_id INTEGER
@@ -44,7 +46,7 @@ CREATE TABLE assignment(
     course_id INTEGER
 );
 
-CREATE TABLE attendence(
+CREATE TABLE attendance(
     id INTEGER PRIMARY KEY,
     course_id INTEGER,
     student_id INTEGER,
