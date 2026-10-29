@@ -36,3 +36,41 @@ if (!localStorage.getItem("announcements")) {
 
 
 
+
+
+//sends the username pw role to the backend
+async function goPortal()
+{
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+    let role = document.getElementById("role").value;
+
+    let response = await fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password,
+            role: role
+        })
+    });
+    let result = await response.text();
+
+    if(result == "student")
+    {
+        window.location.href = "../Academia Student/Academia_Student.html";
+    }        
+    else if(result == "parent")
+    {
+        window.location.href = "";
+    }
+    else if(result == "staff")
+    {
+        window.location.href = "";
+    }
+}
+
+
+
