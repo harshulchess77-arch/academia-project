@@ -42,11 +42,12 @@ void checkUserLogin(const char *username, const char *password, const char *role
     //we using if else statement loop to get this condition true
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
+        const char *dbRole = NULL;
 
         //run the query and move to the first result
         if (sqlite3_step(stmt) == SQLITE_ROW)
         {
-            const char *dbRole = (const char *)sqlite3_column_text(stmt, 0);
+            dbRole = (const char *)sqlite3_column_text(stmt, 0);
             printf("Database Verified Role: %s\n", dbRole);
         }
         else
@@ -60,24 +61,23 @@ void checkUserLogin(const char *username, const char *password, const char *role
     // logic to find which account is logging in
     if(strcmp(role, dbRole) == 0)
     {
-        //student account
-        printf("Student Account\n");
+        if(role == "Student")
+        {
+            //student account
+            printf("Student Account\n");
+        }
+        else if(role == "Parent")
+        {
+            //parent account
+            printf("Parent Account\n");
+        }
+        else if(role == "Staff")
+        {
+            //staff account
+            printf("Staff Account\n");
+        }
     }
-    else if(strcmp(role, dbRole) == 0)
-    {
-        //parent account
-        printf("Parent Account\n");
-    }
-    else if(strcmp(role, dbRole) == 0)
-    {
-        //school staff account
-        printf("Staff Account\n");
-    }
-    else
-    {
-        printf("Unknown Account Format.");
-    }
-
+    
 
     
 
