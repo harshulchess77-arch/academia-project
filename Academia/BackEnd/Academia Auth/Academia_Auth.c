@@ -61,17 +61,17 @@ void checkUserLogin(const char *username, const char *password, const char *role
     if(strcmp(role, dbRole) == 0)
     {
         //student account
-        printf("Format Auto-Detected: Student Account\n");
+        printf("Student Account\n");
     }
     else if(strcmp(role, dbRole) == 0)
     {
         //parent account
-        printf("Format Auto-Detected: Parent Account\n");
+        printf("Parent Account\n");
     }
     else if(strcmp(role, dbRole) == 0)
     {
         //school staff account
-        printf("Format Auto-Detected: Staff Account\n");
+        printf("Staff Account\n");
     }
     else
     {

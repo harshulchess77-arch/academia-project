@@ -99,3 +99,8 @@ CREATE TABLE grade(
     FOREIGN KEY(course_id) REFERENCES course(id)
 );
 
+
+INSERT INTO user
+(username, password, first_name, last_name, role)
+VALUES
+('Stu1','1234','A','B','student');
