@@ -9,40 +9,37 @@ Parent Functions
 #include "../Academia Database/SQLite3 Source Code/sqlite3.h"
 
 /*
-This file reads parent and student information from the
-database and creates a JavaScript file for the parent frontend.
+This file reads parent and student information from the database.
+It creates parents_states.js for the parent portal frontend.
 */
 
 
-// Writes database text safely into a JavaScript string
-// javascript strings need to escape certain characters like backslashes and double quotes, and newlines should be represented as \\n to avoid syntax errors in the generated JavaScript file.
+// Writes database text safely inside a JavaScript string.
+// Special characters are escaped to avoid JavaScript syntax errors.
 void write_js_text(FILE *out, const unsigned char *text)
 {
     int i;
 
-    // returns if the text is NULL
+    // Stops if the database value is NULL.
     if (text == NULL)
     {
         return;
     }
 
-    // Write each character while escaping special characters
-    // aviod java script syntax errors
+    // Checks and writes every character in the string.
     for (i = 0; text[i] != '\0'; i++)
     {
-        // if the character is a backslash or double quote, print a backslash before it
+        // Escapes backslashes and double quotation marks.
         if (text[i] == '\\' || text[i] == '"')
         {
             fputc('\\', out);
         }
 
-        // if the character is a newline, print \\n instead of \n
+        // Converts a real line break into a JavaScript newline.
         if (text[i] == '\n')
         {
             fprintf(out, "\\n");
         }
-
-        // if the character is not \n then it is printed as is
         else
         {
             fputc(text[i], out);
@@ -51,55 +48,83 @@ void write_js_text(FILE *out, const unsigned char *text)
 }
 
 
-// Creates the JavaScript state file used by the parent frontend
+// Creates the JavaScript state file used by the parent portal.
+// The provided user ID determines which parent's data is exported.
 void update_parent_frontend_state(int parent_user_id)
 {
-    // Database connection and statement objects
+    // Stores the database connection, SQL statement, and output file.
     sqlite3 *db;
-    sqlite3_stmt *stmt;
+    sqlite3_stmt *stmt = NULL;
     FILE *out;
 
-    // Open the Academia database
-    // provide the path to the database file
-    // if the database cannot be opened, print an error message and return
-    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK)
+    // Tracks whether the parent exists and whether a query fails.
+    int parent_found = 0;
+    int query_error = 0;
+
+
+    // Opens the Academia SQLite database.
+    // The function stops if the connection cannot be created.
+    if (sqlite3_open(
+            "Academia/BackEnd/Academia Database/academia.db",
+            &db) != SQLITE_OK)
     {
-        // Print an error message if the database cannot be opened
-        printf("[Error] Cannot open database: %s\n", sqlite3_errmsg(db));
-        return;
-    }
+        printf(
+            "[Error] Cannot open database: %s\n",
+            sqlite3_errmsg(db)
+        );
 
-    // Create the JavaScript state file
-    // if there is a parent_state.js file already, it will be overwritten
-    out = fopen("Academia/FrontEnd/Academia Parents/parent_state.js", "w");
-
-    // check if the file was created successfully
-    // if not, print an error message and close the database connection
-    if (out == NULL)
-    {
-        // Print an error message if the file cannot be created
-        printf("[Error] Cannot create parent state file.\n");
-
-        // Close the database connection before returning
         sqlite3_close(db);
         return;
     }
 
-    // Start the parentState JavaScript object
+
+    // Opens parents_states.js and removes its previous contents.
+    // The file will contain the latest data for the selected parent.
+    out = fopen(
+        "Academia/BackEnd/Academia Parents/parents_states.js",
+        "w"
+    );
+
+    // Stops if the JavaScript file cannot be created.
+    // The database is closed before the function returns.
+    if (out == NULL)
+    {
+        printf("[Error] Cannot create parents_states.js.\n");
+
+        sqlite3_close(db);
+        return;
+    }
+
+
+    // Starts the parentState JavaScript object.
     fprintf(out, "const parentState = {\n");
 
 
-    // taking the parent information from the database and writing it to the JavaScript file
-    // writing the parent information to the JavaScript file in a structured format
+    /*
+    Exports the selected parent's account information.
+    The user and parent tables are connected using matching IDs.
+    */
+
+    // Starts the parent object.
     fprintf(out, "  parent: {\n");
 
-    // SQL query to get the parent information from the database
+    // Selects the parent's account and contact information.
     const char *sql_parent =
-        "SELECT id, first_name, last_name "
+        "SELECT "
+        "user.id, "
+        "user.username, "
+        "user.first_name, "
+        "user.last_name, "
+        "parent.phone "
         "FROM user "
-        "WHERE id = ? AND role = 'parent';";
+        "INNER JOIN parent "
+        "ON user.id = parent.id "
+        "WHERE user.id = ? "
+        "AND user.role = 'parent';";
 
-    // Prepare the parent query
+
+    // Prepares the parent query so SQLite can execute it.
+    // The parent ID is added to the query after preparation.
     if (sqlite3_prepare_v2(
             db,
             sql_parent,
@@ -107,70 +132,114 @@ void update_parent_frontend_state(int parent_user_id)
             &stmt,
             NULL) == SQLITE_OK)
     {
-        // Replace the question mark with the parent user ID
-        sqlite3_bind_int(stmt, 1, parent_user_id);
+        // Inserts the parent user ID into the question mark.
+        sqlite3_bind_int(
+            stmt,
+            1,
+            parent_user_id
+        );
 
+        // Executes the query and checks for a matching parent.
+        // The returned information is written to the JavaScript file.
         if (sqlite3_step(stmt) == SQLITE_ROW)
         {
+            parent_found = 1;
+
+            // Writes the parent's user ID.
             fprintf(
                 out,
                 "    userId: %d,\n",
                 sqlite3_column_int(stmt, 0)
             );
 
+            // Writes the parent's username.
             fprintf(out, "    username: \"");
-            write_js_text(out, sqlite3_column_text(stmt, 1));
-            fprintf(out, "\",\n");
-
-            fprintf(
+            write_js_text(
                 out,
-                "    parentId: %d,\n",
-                sqlite3_column_int(stmt, 2)
+                sqlite3_column_text(stmt, 1)
             );
-
-            fprintf(out, "    firstName: \"");
-            write_js_text(out, sqlite3_column_text(stmt, 3));
             fprintf(out, "\",\n");
 
+            // Writes the parent's first name.
+            fprintf(out, "    firstName: \"");
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 2)
+            );
+            fprintf(out, "\",\n");
+
+            // Writes the parent's last name.
             fprintf(out, "    lastName: \"");
-            write_js_text(out, sqlite3_column_text(stmt, 4));
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 3)
+            );
+            fprintf(out, "\",\n");
+
+            // Writes the parent's phone number.
+            fprintf(out, "    phone: \"");
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 4)
+            );
             fprintf(out, "\"\n");
         }
         else
         {
+            // Reports that the given ID does not belong to a parent.
+            // The generated state will contain an error result.
             printf("[Error] Parent account not found.\n");
         }
     }
     else
     {
-        printf("[Error] Parent query failed: %s\n", sqlite3_errmsg(db));
+        // Records that the parent query could not be prepared.
+        // The SQLite error message is printed for debugging.
+        query_error = 1;
+
+        printf(
+            "[Error] Parent query failed: %s\n",
+            sqlite3_errmsg(db)
+        );
     }
 
-    // Release the parent query
-    sqlite3_finalize(stmt);
+    // Releases the parent query so the statement can be reused.
+    if (stmt != NULL)
+    {
+        sqlite3_finalize(stmt);
+        stmt = NULL;
+    }
 
+    // Closes the parent object.
     fprintf(out, "  },\n");
 
+
     /*
-    Export students connected to the parent
+    Exports all students connected to the selected parent.
+    Each returned student is added to the students array.
     */
 
+    // Starts the students array.
     fprintf(out, "  students: [\n");
 
+    // Selects each student's account and academic information.
     const char *sql_students =
-        "SELECT students.id, users.username, "
-        "students.first_name, students.last_name, "
-        "students.grade_level, students.gpa "
-        "FROM parents "
-        "INNER JOIN parent_student "
-        "ON parents.id = parent_student.parent_id "
-        "INNER JOIN students "
-        "ON students.id = parent_student.student_id "
-        "INNER JOIN users "
-        "ON users.id = students.user_id "
-        "WHERE parents.user_id = ?;";
+        "SELECT "
+        "student.id, "
+        "user.username, "
+        "user.first_name, "
+        "user.last_name, "
+        "student.grade_level, "
+        "student.gpa "
+        "FROM student "
+        "INNER JOIN user "
+        "ON student.id = user.id "
+        "WHERE student.parent_id = ? "
+        "AND user.role = 'student';";
 
-    // Prepare the student query
+
+    // Prepares the student query and connects it to the parent ID.
+    // The query may return multiple students for one parent.
     if (sqlite3_prepare_v2(
             db,
             sql_students,
@@ -178,25 +247,45 @@ void update_parent_frontend_state(int parent_user_id)
             &stmt,
             NULL) == SQLITE_OK)
     {
-        sqlite3_bind_int(stmt, 1, parent_user_id);
+        // Inserts the parent ID into the question mark.
+        sqlite3_bind_int(
+            stmt,
+            1,
+            parent_user_id
+        );
 
-        // Export every student connected to the parent
+        // Processes every student returned by the database.
+        // Each row becomes one JavaScript student object.
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
+            // Starts the student object and writes the ID.
             fprintf(
                 out,
                 "    { studentId: %d, username: \"",
                 sqlite3_column_int(stmt, 0)
             );
 
-            write_js_text(out, sqlite3_column_text(stmt, 1));
+            // Writes the student's username.
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 1)
+            );
 
+            // Writes the student's first name.
             fprintf(out, "\", firstName: \"");
-            write_js_text(out, sqlite3_column_text(stmt, 2));
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 2)
+            );
 
+            // Writes the student's last name.
             fprintf(out, "\", lastName: \"");
-            write_js_text(out, sqlite3_column_text(stmt, 3));
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 3)
+            );
 
+            // Writes the student's grade level and GPA.
             fprintf(
                 out,
                 "\", gradeLevel: %d, gpa: %.2f },\n",
@@ -207,29 +296,51 @@ void update_parent_frontend_state(int parent_user_id)
     }
     else
     {
-        printf("[Error] Student query failed: %s\n", sqlite3_errmsg(db));
+        // Records that the student query could not be prepared.
+        // The SQLite error message is printed for debugging.
+        query_error = 1;
+
+        printf(
+            "[Error] Student query failed: %s\n",
+            sqlite3_errmsg(db)
+        );
     }
 
-    sqlite3_finalize(stmt);
+    // Releases the student query so the statement can be reused.
+    if (stmt != NULL)
+    {
+        sqlite3_finalize(stmt);
+        stmt = NULL;
+    }
 
+    // Closes the students array.
     fprintf(out, "  ],\n");
 
+
     /*
-    Export grades for the parent's students
+    Exports grades belonging to the parent's students.
+    The course table provides the course name for each grade.
     */
 
+    // Starts the grades array.
     fprintf(out, "  grades: [\n");
 
+    // Selects each student's course name and numerical score.
     const char *sql_grades =
-        "SELECT grades.student_id, grades.course, grades.grade "
-        "FROM grades "
-        "INNER JOIN parent_student "
-        "ON grades.student_id = parent_student.student_id "
-        "INNER JOIN parents "
-        "ON parents.id = parent_student.parent_id "
-        "WHERE parents.user_id = ?;";
+        "SELECT "
+        "grade.student_id, "
+        "course.course_name, "
+        "grade.score "
+        "FROM grade "
+        "INNER JOIN student "
+        "ON grade.student_id = student.id "
+        "INNER JOIN course "
+        "ON grade.course_id = course.id "
+        "WHERE student.parent_id = ?;";
 
-    // Prepare the grade query
+
+    // Prepares the grade query and limits it to this parent.
+    // Every returned row represents one student's course grade.
     if (sqlite3_prepare_v2(
             db,
             sql_grades,
@@ -237,51 +348,85 @@ void update_parent_frontend_state(int parent_user_id)
             &stmt,
             NULL) == SQLITE_OK)
     {
-        sqlite3_bind_int(stmt, 1, parent_user_id);
+        // Inserts the parent ID into the question mark.
+        sqlite3_bind_int(
+            stmt,
+            1,
+            parent_user_id
+        );
 
+        // Processes every grade returned by the database.
+        // Each row becomes one JavaScript grade object.
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
+            // Starts the grade object and writes the student ID.
             fprintf(
                 out,
                 "    { studentId: %d, course: \"",
                 sqlite3_column_int(stmt, 0)
             );
 
-            write_js_text(out, sqlite3_column_text(stmt, 1));
+            // Writes the course name.
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 1)
+            );
 
+            // Writes the numerical score.
             fprintf(
                 out,
-                "\", grade: %.2f },\n",
+                "\", score: %.2f },\n",
                 sqlite3_column_double(stmt, 2)
             );
         }
     }
     else
     {
-        printf("[Error] Grade query failed: %s\n", sqlite3_errmsg(db));
+        // Records that the grade query could not be prepared.
+        // The SQLite error message is printed for debugging.
+        query_error = 1;
+
+        printf(
+            "[Error] Grade query failed: %s\n",
+            sqlite3_errmsg(db)
+        );
     }
 
-    sqlite3_finalize(stmt);
+    // Releases the grade query so the statement can be reused.
+    if (stmt != NULL)
+    {
+        sqlite3_finalize(stmt);
+        stmt = NULL;
+    }
 
+    // Closes the grades array.
     fprintf(out, "  ],\n");
 
+
     /*
-    Export attendance for the parent's students
+    Exports attendance records for the parent's students.
+    The Boolean value is converted into Present or Absent.
     */
 
+    // Starts the attendance array.
     fprintf(out, "  attendance: [\n");
 
+    // Selects the student ID, course name, and attendance value.
     const char *sql_attendance =
-        "SELECT attendance.student_id, "
-        "attendance.date, attendance.status "
+        "SELECT "
+        "attendance.student_id, "
+        "course.course_name, "
+        "attendance.present "
         "FROM attendance "
-        "INNER JOIN parent_student "
-        "ON attendance.student_id = parent_student.student_id "
-        "INNER JOIN parents "
-        "ON parents.id = parent_student.parent_id "
-        "WHERE parents.user_id = ?;";
+        "INNER JOIN student "
+        "ON attendance.student_id = student.id "
+        "INNER JOIN course "
+        "ON attendance.course_id = course.id "
+        "WHERE student.parent_id = ?;";
 
-    // Prepare the attendance query
+
+    // Prepares the attendance query for the selected parent.
+    // Every returned row represents one attendance record.
     if (sqlite3_prepare_v2(
             db,
             sql_attendance,
@@ -289,48 +434,86 @@ void update_parent_frontend_state(int parent_user_id)
             &stmt,
             NULL) == SQLITE_OK)
     {
-        sqlite3_bind_int(stmt, 1, parent_user_id);
+        // Inserts the parent ID into the question mark.
+        sqlite3_bind_int(
+            stmt,
+            1,
+            parent_user_id
+        );
 
+        // Processes each attendance record from the database.
+        // The Boolean value is converted into readable text.
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
+            int present;
+
+            // Reads the Boolean attendance value.
+            present = sqlite3_column_int(stmt, 2);
+
+            // Starts the attendance object and writes the student ID.
             fprintf(
                 out,
-                "    { studentId: %d, date: \"",
+                "    { studentId: %d, course: \"",
                 sqlite3_column_int(stmt, 0)
             );
 
-            write_js_text(out, sqlite3_column_text(stmt, 1));
+            // Writes the course name.
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 1)
+            );
 
-            fprintf(out, "\", status: \"");
-            write_js_text(out, sqlite3_column_text(stmt, 2));
-
-            fprintf(out, "\" },\n");
+            // Writes Present when true and Absent when false.
+            fprintf(
+                out,
+                "\", status: \"%s\" },\n",
+                present ? "Present" : "Absent"
+            );
         }
     }
     else
     {
+        // Records that the attendance query could not be prepared.
+        // The SQLite error message is printed for debugging.
+        query_error = 1;
+
         printf(
             "[Error] Attendance query failed: %s\n",
             sqlite3_errmsg(db)
         );
     }
 
-    sqlite3_finalize(stmt);
+    // Releases the attendance query so the statement can be reused.
+    if (stmt != NULL)
+    {
+        sqlite3_finalize(stmt);
+        stmt = NULL;
+    }
 
+    // Closes the attendance array.
     fprintf(out, "  ],\n");
 
+
     /*
-    Export school announcements
+    Exports every school announcement.
+    Announcements are ordered from the newest ID to the oldest.
     */
 
+    // Starts the announcements array.
     fprintf(out, "  announcements: [\n");
 
+    // Selects the title, message, and date of every announcement.
     const char *sql_announcements =
-        "SELECT title, message "
-        "FROM announcements "
+        "SELECT "
+        "title, "
+        "message, "
+        "announcement_date "
+        "FROM announcement "
         "ORDER BY id DESC;";
 
-    // Prepare the announcement query
+
+    // Prepares the announcement query for execution.
+    // This query does not require a bound parent ID.
     if (sqlite3_prepare_v2(
             db,
             sql_announcements,
@@ -338,45 +521,104 @@ void update_parent_frontend_state(int parent_user_id)
             &stmt,
             NULL) == SQLITE_OK)
     {
+        // Processes every announcement returned by the database.
+        // Each row becomes one JavaScript announcement object.
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
+            // Starts the announcement object and writes its title.
             fprintf(out, "    { title: \"");
-            write_js_text(out, sqlite3_column_text(stmt, 0));
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 0)
+            );
 
+            // Writes the announcement message.
             fprintf(out, "\", message: \"");
-            write_js_text(out, sqlite3_column_text(stmt, 1));
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 1)
+            );
+
+            // Writes the announcement date.
+            fprintf(out, "\", date: \"");
+            write_js_text(
+                out,
+                sqlite3_column_text(stmt, 2)
+            );
 
             fprintf(out, "\" },\n");
         }
     }
     else
     {
+        // Records that the announcement query could not be prepared.
+        // The SQLite error message is printed for debugging.
+        query_error = 1;
+
         printf(
             "[Error] Announcement query failed: %s\n",
             sqlite3_errmsg(db)
         );
     }
 
-    sqlite3_finalize(stmt);
+    // Releases the final prepared statement.
+    if (stmt != NULL)
+    {
+        sqlite3_finalize(stmt);
+        stmt = NULL;
+    }
 
-    // Close the JavaScript object
-    fprintf(out, "  ]\n");
+    // Closes the announcements array.
+    fprintf(out, "  ],\n");
+
+
+    /*
+    Writes the final result used by the parent HTML.
+    The frontend displays either the parent data or an error message.
+    */
+
+    // Reports an error if the parent account was not found.
+    // This prevents the frontend from displaying an empty account.
+    if (!parent_found)
+    {
+        fprintf(out, "  success: false,\n");
+        fprintf(
+            out,
+            "  error: \"Parent account not found.\"\n"
+        );
+    }
+
+    // Reports an error if one or more data queries failed.
+    // The parent may exist even if some portal data cannot be loaded.
+    else if (query_error)
+    {
+        fprintf(out, "  success: false,\n");
+        fprintf(
+            out,
+            "  error: \"Some parent data could not be loaded.\"\n"
+        );
+    }
+
+    // Reports success when all required queries are completed.
+    // An empty error string indicates that no error occurred.
+    else
+    {
+        fprintf(out, "  success: true,\n");
+        fprintf(out, "  error: \"\"\n");
+    }
+
+
+    // Closes the parentState JavaScript object.
     fprintf(out, "};\n");
 
-    // Close the JavaScript file
+    // Saves and closes the generated JavaScript file.
     fclose(out);
 
-    // Close the database
+    // Closes the SQLite database connection.
     sqlite3_close(db);
 
-    printf("[Parent Logic] Successfully updated frontend state.\n");
-}
-
-
-int main(void)
-{
-    // Create the frontend state for the parent with users.id 1
-    update_parent_frontend_state(1);
-
-    return 0;
+    // Confirms that the state file was updated.
+    printf(
+        "[Parent Logic] Successfully updated parents_states.js.\n"
+    );
 }

@@ -1,32 +1,326 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <!-- Sets the page language, title, and character format. -->
+    <meta charset="UTF-8">
     <title>Academia - Parent Portal</title>
+
+    <!-- Connects the shared Academia stylesheet. -->
     <link rel="stylesheet" href="../Academia.css">
 </head>
+
 <body>
 
+    <!-- Creates the Parent Portal navigation bar. -->
+    <!-- The logout link returns the user to the authentication page. -->
     <div class="navbar">
-        <b>Academia - Parent Portal</b>
-        <a href="../Academia Landing/Academia_Landing.html">Home</a>
+        <b>Academia Parent Portal</b>
+
+        <a href="../Academia Auth/Academia_Auth.html">
+            Log Out
+        </a>
     </div>
 
-    <div class="box" style="text-align: center; padding: 40px;">
-        <h2>Parent Portal</h2>
-        <br>
-        <!-- Replace maintenance.png with your exact maintenance image filename -->
-        <img src="../../Images/UnderMaintenance.png" onerror="this.onerror=null; this.src='../../../Images/maintenance.png';" width="400" alt="Under Maintenance">
-        <br><br>
-        <p style="font-size: 16px; font-weight: bold; color: #0B3D91;">
-            This module is currently under build
+
+    <!-- Displays errors from parents_states.js. -->
+    <p id="error" style="color: red; text-align: center;"></p>
+
+
+    <!-- Displays the logged-in parent's account information. -->
+    <!-- The values are inserted after parentState is loaded. -->
+    <div class="blue-box">
+        <h2 id="welcome">Welcome</h2>
+
+        <p>
+            Username:
+            <span id="parentUsername"></span>
         </p>
-        <br>
-        <a href="../Academia Landing/Academia_Landing.html" class="btn">Back to Landing Page</a>
+
+        <p>
+            Phone:
+            <span id="parentPhone"></span>
+        </p>
     </div>
 
-    <div class="footer">
-        EDUCATION TODAY. A BRIGHTER TOMORROW.
+
+    <!-- Displays information about the parent's connected student. -->
+    <!-- This version displays the first connected student only. -->
+    <div class="box">
+        <h2>Student Information</h2>
+
+        <p>
+            Name:
+            <span id="studentName"></span>
+        </p>
+
+        <p>
+            Grade Level:
+            <span id="gradeLevel"></span>
+        </p>
+
+        <p>
+            GPA:
+            <span id="studentGpa"></span>
+        </p>
     </div>
+
+
+    <!-- Displays the selected student's grades. -->
+    <!-- JavaScript creates one table row for each course grade. -->
+    <div class="box">
+        <h2>Grades</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+
+            <tbody id="gradeList"></tbody>
+        </table>
+    </div>
+
+
+    <!-- Displays the selected student's attendance records. -->
+    <!-- Each record includes a course name and attendance status. -->
+    <div class="box">
+        <h2>Attendance</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Status</th>
+                </tr>
+       ndanceList"></tbody>
+        </table>
+    </div>
+
+
+    <!-- Displays all announcements loaded from the database. -->
+    <!-- New announcement elements are added through JavaScript. -->
+    <div class="box">
+        <h2>Announcements</h2>
+
+        <div id="announcementList"></div>
+    </div>
+
+
+    <!-- Displays the Parent Portal footer. -->
+    <div class="footer">
+        Academia Parent Portal
+    </div>
+
+
+    <!-- Loads the parent data file created by the C program. -->
+    <!-- This file must load before the page uses parentState. -->
+    ../../BackEnd/Academia Parents/parents_states.jsscript>
+
+
+    <script>
+        // Runs after the HTML page and parent data are loaded.
+        // It checks for errors before displaying any account information.
+        window.onload = function()
+        {
+            // Stops if parents_states.js was not loaded correctly.
+            if (typeof parentState == "undefined")
+            {
+                document.getElementById("error").innerHTML =
+                    "Parent data could not be loaded.";
+
+                return;
+            }
+
+            // Displays an error returned by the C program.
+            if (parentState.success == false)
+            {
+                document.getElementById("error").innerHTML =
+                    parentState.error;
+
+                return;
+            }
+
+            // Displays the parent's name, username, and phone number.
+            document.getElementById("welcome").innerHTML =
+                "Welcome, " +
+                parentState.parent.firstName +
+                " " +
+                parentState.parent.lastName;
+
+            document.getElementById("parentUsername").innerHTML =
+                parentState.parent.username;
+
+            document.getElementById("parentPhone").innerHTML =
+                parentState.parent.phone;
+
+
+            // Checks whether the parent has at least one connected student.
+            // The first student is displayed along with grades and attendance.
+            if (parentState.students.length > 0)
+            {
+                var student = parentState.students[0];
+
+                // Displays the student's personal and academic information.
+                document.getElementById("studentName").innerHTML =
+                    student.firstName +
+                    " " +
+                    student.lastName;
+
+                document.getElementById("gradeLevel").innerHTML =
+                    student.gradeLevel;
+
+                document.getElementById("studentGpa").innerHTML =
+                    student.gpa;
+
+                // Loads records belonging to the displayed student.
+                showGrades(student.studentId);
+                showAttendance(student.studentId);
+            }
+            else
+            {
+                // Displays empty-state messages when no student is connected.
+                document.getElementById("studentName").innerHTML =
+                    "No connected student";
+
+                document.getElementById("gradeLevel").innerHTML =
+                    "Not available";
+
+                document.getElementById("studentGpa").innerHTML =
+                    "Not available";
+
+                document.getElementById("gradeList").innerHTML =
+                    "<tr>" +
+                    "<td colspan='2'>No grades available.</td>" +
+                    "</tr>";
+
+                document.getElementById("attendanceList").innerHTML =
+                    "<tr>" +
+                    "<td colspan='2'>No attendance available.</td>" +
+                    "</tr>";
+            }
+
+            // Displays all announcements after the account data is loaded.
+            showAnnouncements();
+        };
+
+
+        // Displays every grade belonging to the selected student.
+        // Each matching grade is added as a new table row.
+        function showGrades(studentId)
+        {
+            var gradeList =
+                document.getElementById("gradeList");
+
+            gradeList.innerHTML = "";
+
+            // Checks all grades and selects records with a matching student ID.
+            for (var i = 0; i < parentState.grades.length; i++)
+            {
+                var grade = parentState.grades[i];
+
+                // Adds the course and score when the student ID matches.
+                if (grade.studentId == studentId)
+                {
+                    gradeList.innerHTML +=
+                        "<tr>" +
+                        "<td>" + grade.course + "</td>" +
+                        "<td>" + grade.score + "</td>" +
+                        "</tr>";
+                }
+            }
+
+            // Displays a message if the student has no grade records.
+            if (gradeList.innerHTML == "")
+            {
+                gradeList.innerHTML =
+                    "<tr>" +
+                    "<td colspan='2'>No grades available.</td>" +
+                    "</tr>";
+            }
+        }
+
+
+        // Displays attendance records belonging to the selected student.
+        // Each matching record is added as a new table row.
+        function showAttendance(studentId)
+        {
+            var attendanceList =
+                document.getElementById("attendanceList");
+
+            attendanceList.innerHTML = "";
+
+            // Checks all attendance records for a matching student ID.
+            for (
+                var i = 0;
+                i < parentState.attendance.length;
+                i++
+            )
+            {
+                var record = parentState.attendance[i];
+
+                // Adds the course and attendance status to the table.
+                if (record.studentId == studentId)
+                {
+                    attendanceList.innerHTML +=
+                        "<tr>" +
+                        "<td>" + record.course + "</td>" +
+                        "<td>" + record.status + "</td>" +
+                        "</tr>";
+                }
+            }
+
+            // Displays a message if no attendance records were found.
+            if (attendanceList.innerHTML == "")
+            {
+                attendanceList.innerHTML =
+                    "<tr>" +
+                    "<td colspan='2'>" +
+                    "No attendance available." +
+                    "</td>" +
+                    "</tr>";
+            }
+        }
+
+
+        // Displays every announcement returned by the C program.
+        // Each announcement includes a title, date, and message.
+        function showAnnouncements()
+        {
+            var announcementList =
+                document.getElementById("announcementList");
+
+            announcementList.innerHTML = "";
+
+            // Processes each announcement stored in parentState.
+            for (
+                var i = 0;
+                i < parentState.announcements.length;
+                i++
+            )
+            {
+                var announcement =
+                    parentState.announcements[i];
+
+                // Adds the current announcement to the page.
+                announcementList.innerHTML +=
+                    "<h3>" + announcement.title + "</h3>" +
+                    "<p>" + announcement.date + "</p>" +
+                    "<p>" + announcement.message + "</p>" +
+                    "<hr>";
+            }
+
+            // Displays a message if there are no announcements.
+            if (announcementList.innerHTML == "")
+            {
+                announcementList.innerHTML =
+                    "<p>No announcements available.</p>";
+            }
+        }
+    </script>
 
 </body>
+
 </html>
