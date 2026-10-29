@@ -64,11 +64,15 @@ async function goPortal()
     }        
     else if(result == "parent")
     {
-        window.location.href = "";
+        window.location.href = "../Academia Parents/Academia_Parents.html";
     }
     else if(result == "staff")
     {
-        window.location.href = "";
+        window.location.href = "../Academia Staff/Academia_Staff.html";
+    }
+    else
+    {
+        document.getElementById("err").innerHTML = "Invalid Login";
     }
 }
 
