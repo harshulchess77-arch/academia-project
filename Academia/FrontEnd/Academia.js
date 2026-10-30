@@ -41,6 +41,7 @@ if (!localStorage.getItem("announcements")) {
 //sends the username pw role to the backend
 async function goPortal()
 {
+    //pull the username pw and role from the frontend
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
     let role = document.getElementById("role").value;
@@ -56,6 +57,8 @@ async function goPortal()
             role: role
         })
     });
+    
+    //result sent from the c after checking for authentication
     let result = await response.text();
 
     if(result == "student")

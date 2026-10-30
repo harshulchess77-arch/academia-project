@@ -47,6 +47,7 @@ void checkUserLogin(const char *username, const char *password, const char *role
         //run the query and move to the first result
         if (sqlite3_step(stmt) == SQLITE_ROW)
         {
+            //give dbRole the value stored in the database
             dbRole = (const char *)sqlite3_column_text(stmt, 0);
             printf("Database Verified Role: %s\n", dbRole);
         }
