@@ -103,4 +103,4 @@ CREATE TABLE grade(
 INSERT INTO user
 (username, password, first_name, last_name, role)
 VALUES
-('Stu1','1234','A','B','Student');
+('Stu1','1234','A','B','student');

@@ -6,7 +6,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-#define PORT 8080
+#define PORT 3000
 #define BUFFER_SIZE 8192
 
 void getJsonValue(const char* json,
@@ -96,15 +96,15 @@ const char* authenticateUser(
         if(dbRole != NULL &&
            strcmp(dbRole, role) == 0)
         {
-            if(strcmp(role, "Student") == 0)
+            if(strcmp(role, "student") == 0)
             {
                 strcpy(result, "student");
             }
-            else if(strcmp(role, "Parent") == 0)
+            else if(strcmp(role, "parent") == 0)
             {
                 strcpy(result, "parent");
             }
-            else if(strcmp(role, "Staff") == 0)
+            else if(strcmp(role, "staff") == 0)
             {
                 strcpy(result, "staff");
             }
@@ -154,7 +154,7 @@ int main()
             sizeof(server))
             == SOCKET_ERROR)
     {
-        printf("Bind failed\n");
+        printf("Bind failed. Error code: %d\n", WSAGetLastError());
         return 1;
     }
 

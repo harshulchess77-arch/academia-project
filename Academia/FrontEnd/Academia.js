@@ -51,7 +51,7 @@ async function goPortal()
         document.getElementById("role").value;
 
     let response =
-        await fetch("http://localhost:8080/login", {
+        await fetch("http://localhost:3000/login", {
                 method: "POST",
 
                 headers:
@@ -70,17 +70,17 @@ async function goPortal()
     let result =
         await response.text();
 
-    if(result === "Student")
+    if(result === "student")
     {
         window.location.href =
         "../Academia Student/Academia_Student.html";
     }
-    else if(result === "Parent")
+    else if(result === "parent")
     {
         window.location.href =
         "../Academia Parents/Academia_Parents.html";
     }
-    else if(result === "Staff")
+    else if(result === "staff")
     {
         window.location.href =
         "../Academia Staff/Academia_Staff.html";

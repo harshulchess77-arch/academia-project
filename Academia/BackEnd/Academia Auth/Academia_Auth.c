@@ -62,20 +62,20 @@ void checkUserLogin(const char *username, const char *password, const char *role
     // logic to find which account is logging in
     if(strcmp(role, dbRole) == 0)
     {
-        if(strcmp(role, "Student") == 0)
+        if(strcmp(role, "student") == 0)
         {
             //student account
-            printf("Student Account\n");
+            strcpy(result, "student");
         }
-        else if(strcmp(role, "Parent") == 0)
+        else if(strcmp(role, "parent") == 0)
         {
             //parent account
-            printf("Parent Account\n");
+            strcpy(result, "parent");
         }
-        else if(strcmp(role, "Staff") == 0)
+        else if(strcmp(role, "staff") == 0)
         {
             //staff account
-            printf("Staff Account\n");
+            strcpy(result, "staff");
         }
     }
     
