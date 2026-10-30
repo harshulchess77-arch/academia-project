@@ -161,7 +161,7 @@ int main()
     listen(serverSocket, 5);
 
     printf("Academia Server Running\n");
-    printf("http://localhost:8080\n\n");
+    printf("http://localhost:3000\n\n");
 
     while(1)
     {
