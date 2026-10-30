@@ -70,17 +70,17 @@ async function goPortal()
     let result =
         await response.text();
 
-    if(result == "student")
+    if(strcmp(result, "student") == 0)
     {
         window.location.href =
         "../Academia Student/Academia_Student.html";
     }
-    else if(result == "parent")
+    else if(strcmp(result, "parent") == 0)
     {
         window.location.href =
         "../Academia Parents/Academia_Parents.html";
     }
-    else if(result == "staff")
+    else if(strcmp(result, "staff") == 0)
     {
         window.location.href =
         "../Academia Staff/Academia_Staff.html";
