@@ -37,7 +37,7 @@ if (!localStorage.getItem("announcements")) {
 
 
 
-
+/*
 //sends the username pw role to the backend
 async function goPortal()
 {
@@ -92,5 +92,5 @@ async function goPortal()
     }
 }
 
-
+*/
 
