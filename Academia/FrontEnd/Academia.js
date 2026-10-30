@@ -41,41 +41,56 @@ if (!localStorage.getItem("announcements")) {
 //sends the username pw role to the backend
 async function goPortal()
 {
-    //pull the username pw and role from the frontend
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
-    let role = document.getElementById("role").value;
+    let username =
+        document.getElementById("username").value;
 
-    let response = await fetch("/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            username: username,
-            password: password,
-            role: role
-        })
-    });
-    
-    //result sent from the c after checking for authentication
-    let result = await response.text();
+    let password =
+        document.getElementById("password").value;
 
-    if(result == "student")
+    let role =
+        document.getElementById("role").value;
+
+    let response =
+        await fetch(
+            "http://localhost:8080/login",
+            {
+                method: "POST",
+
+                headers:
+                {
+                    "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+                    username,
+                    password,
+                    role
+                })
+            });
+
+    let result =
+        await response.text();
+
+    if(result === "student")
     {
-        window.location.href = "../Academia Student/Academia_Student.html";
-    }        
-    else if(result == "parent")
-    {
-        window.location.href = "../Academia Parents/Academia_Parents.html";
+        window.location.href =
+        "../Academia Student/Academia_Student.html";
     }
-    else if(result == "staff")
+    else if(result === "parent")
     {
-        window.location.href = "../Academia Staff/Academia_Staff.html";
+        window.location.href =
+        "../Academia Parents/Academia_Parents.html";
+    }
+    else if(result === "staff")
+    {
+        window.location.href =
+        "../Academia Staff/Academia_Staff.html";
     }
     else
     {
-        document.getElementById("err").innerHTML = "Invalid Login";
+        document.getElementById("err").innerHTML =
+        "Invalid Login";
     }
 }
 
