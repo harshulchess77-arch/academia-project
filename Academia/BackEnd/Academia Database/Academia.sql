@@ -16,20 +16,20 @@ CREATE TABLE user(
 
 CREATE TABLE student(
     id INTEGER PRIMARY KEY,
-    parent_id INTEGER,
     grade_level INTEGER,
     gpa REAL,
 
-    FOREIGN KEY(id) REFERENCES user(id),
-    FOREIGN KEY(parent_id) REFERENCES parent(id)
+    FOREIGN KEY(id) REFERENCES user(id)
 
 );
 
 CREATE TABLE parent(
     id INTEGER PRIMARY KEY,
+    student_id INTEGER,
     phone TEXT,
 
-    FOREIGN KEY(id) REFERENCES user(id)
+    FOREIGN KEY(id) REFERENCES user(id),
+    FOREIGN KEY(student_id) REFERENCES student(id)
 
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE staff(
 CREATE TABLE course(
     id INTEGER PRIMARY KEY,
     staff_id INTEGER,
-    course_name TEXT not null,
+    course_name TEXT not null
 
     FOREIGN KEY(staff_id) REFERENCES staff(id)
 );
@@ -104,3 +104,58 @@ INSERT INTO user
 (username, password, first_name, last_name, role)
 VALUES
 ('Stu1','1234','A','B','student');
+
+INSERT INTO user
+(usrename, password, first_name, last_name, role)
+VALUES
+('Par1','5678','C','D','parent');
+
+INSERT INTO user
+(username, password, first_name, last_name,role)
+VALUES
+('Sta1','7891','E','F','staff');
+
+INSERT INTO course
+(staff_id, course_name)
+VALUES
+(1, 'Math');
+
+INSERT INTO course
+(staff_id, course_name)
+VALUES
+(1, 'Science');
+
+INSERT INTO course
+(staff_id, course_name)
+VALUES
+(1, 'Spanish');
+
+INSERT INTO enrollment
+(student_id, course_id, status)
+VALUES
+(1, 1, 1);
+
+INSERT INTO enrollment 
+(student_id, course_id, status)
+VALUES
+(1, 2, 0);
+
+INSERT INTO
+(student_id, course_id, status)
+VALUES
+(1, 3, 1);
+
+INSERT INTO grade
+(student_id, course_id, score)
+VALUES
+(1, 1, 90);
+
+INSERT INTO grade
+(student_id, course_id, score)
+VALUES
+(1, 2, 80);
+
+INSERT INTO grade
+(student_id, course_id, score)
+VALUES
+(1, 3, 70);
