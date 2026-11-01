@@ -36,7 +36,7 @@ void checkUserLogin(const char *username, const char *password, const char *role
 
     //sends a query to database using this logic to check if user is there
     //do the username and password check in the sql database
-    sprintf(sql, "SELECT role FROM user WHERE username = '%s' AND password = '%s';", username, password);
+    sprintf(sql, "SELECT id, role FROM user WHERE username = '%s' AND password = '%s';", username, password);
 
     // We are using sqlite3_prepare_v2 which will take inputs from database and write into the statements
     //we using if else statement loop to get this condition true
