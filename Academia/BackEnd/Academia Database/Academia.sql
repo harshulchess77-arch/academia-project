@@ -5,6 +5,9 @@ SQL Database
 10.22.26
 */
 
+
+PRAGMA foreign key = ON;
+
 CREATE TABLE user(
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE not null,
