@@ -53,7 +53,7 @@ CREATE TABLE course(
     FOREIGN KEY(staff_id) REFERENCES staff(id)
 );
 
-CREATE TABLE assignment(
+    CREATE TABLE assignment(
     id INTEGER PRIMARY KEY,
     course_id INTEGER,
     assignment_name TEXT not null,
@@ -138,7 +138,7 @@ INSERT INTO enrollment
 VALUES
 (1, 1, 1);
 
-INSERT INTO enrollment 
+INSERT INTO enrollment
 (student_id, course_id, status)
 VALUES
 (1, 2, 0);
