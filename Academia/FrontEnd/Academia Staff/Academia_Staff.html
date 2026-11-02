@@ -46,14 +46,20 @@
                 <option>Sarah Connor</option>
             </select>
 
+            <br><br>
+
             Course:
             <select id="course" required>
                 <option>Advanced Algebra</option>
                 <option>Chemistry Lab</option>
             </select>
 
+            <br><br>
+
             Grade:
             <input type="number" id="grade" min="0" max="100" value="95" required>
+
+            <br><br>
 
             <button class="btn" type="submit">Add Grade</button>
         </form>
@@ -65,11 +71,23 @@
                 <th>Student</th>
                 <th>Course</th>
                 <th>Grade</th>
+                <th>Action</th>
             </tr>
 
             <tbody id="gradeList">
-                <tr><td>Alex Johnson</td><td>Advanced Algebra</td><td>92%</td></tr>
-                <tr><td>Sarah Connor</td><td>Chemistry Lab</td><td>85%</td></tr>
+                <tr>
+                    <td>Alex Johnson</td>
+                    <td>Advanced Algebra</td>
+                    <td>92%</td>
+                    <td><button onclick="deleteRow(this)">Delete</button></td>
+                </tr>
+
+                <tr>
+                    <td>Sarah Connor</td>
+                    <td>Chemistry Lab</td>
+                    <td>85%</td>
+                    <td><button onclick="deleteRow(this)">Delete</button></td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -83,10 +101,14 @@
                 <option>Alex Johnson</option>
             </select>
 
+            <br><br>
+
             Course:
             <select id="attendanceCourse" required>
                 <option>Advanced Algebra</option>
             </select>
+
+            <br><br>
 
             Attendance:
             <select id="attendanceStatus">
@@ -94,6 +116,8 @@
                 <option>Absent</option>
                 <option>Tardy</option>
             </select>
+
+            <br><br>
 
             <button class="btn" type="submit">Record Attendance</button>
         </form>
@@ -105,10 +129,16 @@
                 <th>Student</th>
                 <th>Course</th>
                 <th>Status</th>
+                <th>Action</th>
             </tr>
 
             <tbody id="attendanceList">
-                <tr><td>Alex Johnson</td><td>Advanced Algebra</td><td>Present</td></tr>
+                <tr>
+                    <td>Alex Johnson</td>
+                    <td>Advanced Algebra</td>
+                    <td>Present</td>
+                    <td><button onclick="deleteRow(this)">Delete</button></td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -122,25 +152,48 @@
                 <option>All School</option>
             </select>
 
+            <br><br>
+
             Title:
             <input type="text" id="announcementTitle" value="Science Fair" required>
 
-            Message:
-            <input type="text" id="announcementMessage" value="Annual science fair sign-ups are now open." required>
+            <br><br>
 
-            <button class="btn" type="submit">Post Announcement</button>
+            Message:
+            <input type="text" id="announcementMessage"
+                value="Annual science fair sign-ups are now open." required>
+
+    s="btn" type="submit">Post Announcement</button>
         </form>
 
         <h3>Published Announcements</h3>
 
         <div id="announcementList">
-            <p><strong>Science Fair</strong>: Annual science fair sign-ups are now open.</p>
+
+            <p>
+                <strong>Science Fair</strong>:
+                Annual science fair sign-ups are now open.
+                <button onclick="deleteAnnouncement(this)">Delete</button>
+            </p>
+
         </div>
     </div>
 
     <div class="footer">
         Academia School System
     </div>
+
+    <script>
+        function deleteRow(button)
+        {
+            button.parentElement.parentElement.remove();
+        }
+
+        function deleteAnnouncement(button)
+        {
+            button.parentElement.remove();
+        }
+    </script>
 
 </body>
 
