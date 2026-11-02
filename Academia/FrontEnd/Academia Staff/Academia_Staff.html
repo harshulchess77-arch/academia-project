@@ -8,7 +8,7 @@
 
 <body>
 
-    <script scr="FrontEnd\Records.js" defer></script>
+    <script src="../FrontEnd/Records.js" defer></script>
     <script src="../FrontEnd/Academia.js" defer></script>
     <script src="Staff.js" defer></script>
 
@@ -27,11 +27,11 @@
     <div class="box">
         <h2>Staff Information</h2>
 
-        <p><strong>Name:</strong> <span id="staffName"></span></p>
-        <p><strong>Staff ID:</strong> <span id="staffId"></span></p>
-        <p><strong>Position:</strong> <span id="staffPosition"></span></p>
-        <p><strong>Department:</strong> <span id="staffDepartment"></span></p>
-        <p><strong>Email:</strong> <span id="staffEmail"></span></p>
+        <p><strong>Name:</strong> <span id="staffName">Dr. Robert Vance</span></p>
+        <p><strong>Staff ID:</strong> <span id="staffId">EMP-4092</span></p>
+        <p><strong>Position:</strong> <span id="staffPosition">Senior Instructor</span></p>
+        <p><strong>Department:</strong> <span id="staffDepartment">Mathematics & Science</span></p>
+        <p><strong>Email:</strong> <span id="staffEmail">r.vance@academia.edu</span></p>
     </div>
 
     <div class="box">
@@ -39,13 +39,19 @@
 
         <form id="gradeForm">
             Student Name:
-            <select id="studentName" required></select>
+            <select id="studentName" required>
+                <option>Alex Johnson</option>
+                <option>Sarah Connor</option>
+            </select>
 
             Course:
-            <select id="course" required></select>
+            <select id="course" required>
+                <option>Advanced Algebra</option>
+                <option>Chemistry Lab</option>
+            </select>
 
             Grade:
-            <input type="number" id="grade" min="0" max="100" required>
+            <input type="number" id="grade" min="0" max="100" value="95" required>
 
             <button class="btn" type="submit">Add Grade</button>
         </form>
@@ -59,7 +65,10 @@
                 <th>Grade</th>
             </tr>
 
-            <tbody id="gradeList"></tbody>
+            <tbody id="gradeList">
+                <tr><td>Alex Johnson</td><td>Advanced Algebra</td><td>92%</td></tr>
+                <tr><td>Sarah Connor</td><td>Chemistry Lab</td><td>85%</td></tr>
+            </tbody>
         </table>
     </div>
 
@@ -68,10 +77,14 @@
 
         <form id="attendanceForm">
             Student Name:
-            <select id="attendanceName" required></select>
+            <select id="attendanceName" required>
+                <option>Alex Johnson</option>
+            </select>
 
             Course:
-            <select id="attendanceCourse" required></select>
+            <select id="attendanceCourse" required>
+                <option>Advanced Algebra</option>
+            </select>
 
             Attendance:
             <select id="attendanceStatus">
@@ -92,7 +105,9 @@
                 <th>Status</th>
             </tr>
 
-            <tbody id="attendanceList"></tbody>
+            <tbody id="attendanceList">
+                <tr><td>Alex Johnson</td><td>Advanced Algebra</td><td>Present</td></tr>
+            </tbody>
         </table>
     </div>
 
@@ -101,20 +116,24 @@
 
         <form id="announcementForm">
             Course:
-            <select id="announcementCourse" required></select>
+            <select id="announcementCourse" required>
+                <option>All School</option>
+            </select>
 
             Title:
-            <input type="text" id="announcementTitle" required>
+            <input type="text" id="announcementTitle" value="Science Fair" required>
 
             Message:
-            <input type="text" id="announcementMessage" required>
+            <input type="text" id="announcementMessage" value="Annual science fair sign-ups are now open." required>
 
             <button class="btn" type="submit">Post Announcement</button>
         </form>
 
         <h3>Published Announcements</h3>
 
-        <div id="announcementList"></div>
+        <div id="announcementList">
+            <p><strong>Science Fair</strong>: Annual science fair sign-ups are now open.</p>
+        </div>
     </div>
 
     <div class="footer">

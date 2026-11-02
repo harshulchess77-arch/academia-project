@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,8 +8,8 @@
 </head>
 
 <body>
-    <script src="../FrontEnd\Records.js"></script>
-    <script src="../FrontEnd\Academia.js"></script>
+    <script src="../FrontEnd/Records.js"></script>
+    <script src="../FrontEnd/Academia.js"></script>
     <script src="Parent.js"></script>
 
     <div class="navbar">
@@ -27,21 +26,21 @@
 
         <p>
             Username:
-            <span id="parentUsername"></span>
+            <span id="parentUsername">Eleanor Vance</span>
         </p>
 
         <p>
             Phone:
-            <span id="parentPhone"></span>
+            <span id="parentPhone">555-0192</span>
         </p>
     </div>
 
     <div class="box">
         <h2>Student Information</h2>
 
-        <p>Name: <span id="studentName"></span></p>
-        <p>Grade Level: <span id="gradeLevel"></span></p>
-        <p>GPA: <span id="studentGpa"></span></p>
+        <p>Name: <span id="studentName">Alex Johnson</span></p>
+        <p>Grade Level: <span id="gradeLevel">11th Grade</span></p>
+        <p>GPA: <span id="studentGpa">3.75</span></p>
     </div>
 
     <div class="box">
@@ -55,7 +54,11 @@
                 </tr>
             </thead>
 
-            <tbody id="gradeList"></tbody>
+            <tbody id="gradeList">
+                <tr><td>Advanced Algebra</td><td>92%</td></tr>
+                <tr><td>World History</td><td>88%</td></tr>
+                <tr><td>Chemistry Lab</td><td>79%</td></tr>
+            </tbody>
         </table>
     </div>
 
@@ -70,21 +73,24 @@
                 </tr>
             </thead>
 
-            <tbody id="attendanceList"></tbody>
+            <tbody id="attendanceList">
+                <tr><td>Advanced Algebra</td><td>Present</td></tr>
+                <tr><td>World History</td><td>Present</td></tr>
+                <tr><td>Chemistry Lab</td><td>Tardy</td></tr>
+            </tbody>
         </table>
     </div>
 
     <div class="box">
         <h2>Announcements</h2>
-        <div id="announcementList"></div>
+        <div id="announcementList">
+            <p><strong>Midterm Exams</strong>: Midterm examinations will begin next Monday. Please check your schedule.</p>
+        </div>
     </div>
 
     <div class="footer">
         Academia Parent Portal
     </div>
-
-    <script src="Records.js"></script>
-    <script src="Parent.js"></script>
 
 </body>
 </html>
