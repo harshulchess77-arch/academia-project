@@ -1,8 +1,14 @@
 
 window.onload = function () {
 
-    const parent = parents.find(
-        p => p.username === (sessionStorage.getItem("username") || "Par1")
+    // Get logged-in username
+    const username = sessionStorage.getItem("username") || "parent1";
+
+    // Get users from localStorage
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const parent = users.find(
+        p => p.username === username && p.role === "parent"
     );
 
     if (!parent) {
@@ -11,6 +17,7 @@ window.onload = function () {
         return;
     }
 
+    // Display parent information
     document.getElementById("welcome").textContent =
         "Welcome, " + parent.firstName + " " + parent.lastName;
 
@@ -18,19 +25,20 @@ window.onload = function () {
         parent.username;
 
     document.getElementById("parentPhone").textContent =
-        parent.phone;
+        parent.phone || "Not available";
 
-    const student = students.find(
-        s => s.studentId === parent.studentId
+    // Find connected student
+    const student = users.find(
+        s => s.studentId === parent.studentId && s.role === "student"
     );
 
     if (!student) {
         document.getElementById("studentName").textContent =
             "No connected student";
-
         return;
     }
 
+    // Display student information
     document.getElementById("studentName").textContent =
         student.firstName + " " + student.lastName;
 
@@ -45,14 +53,20 @@ window.onload = function () {
     showAnnouncements();
 };
 
+
 function showGrades(studentId) {
 
     const list = document.getElementById("gradeList");
+
+    const records = JSON.parse(localStorage.getItem("grades")) || [];
+
     list.innerHTML = "";
 
-    const records = grades.filter(g => g.studentId == studentId);
+    const studentGrades = records.filter(
+        g => g.studentId === studentId
+    );
 
-    records.forEach(g => {
+    studentGrades.forEach(g => {
         list.innerHTML += `
             <tr>
                 <td>${g.course}</td>
@@ -61,43 +75,59 @@ function showGrades(studentId) {
         `;
     });
 
-    if (records.length == 0) {
-        list.innerHTML = "<tr><td colspan='2'>No grades available.</td></tr>";
+    if (studentGrades.length === 0) {
+        list.innerHTML =
+            "<tr><td colspan='2'>No grades available.</td></tr>";
     }
 }
+
 
 function showAttendance(studentId) {
 
     const list = document.getElementById("attendanceList");
+
+    const records = JSON.parse(localStorage.getItem("attendance")) || [];
+
     list.innerHTML = "";
 
-    const records = attendance.filter(a => a.studentId == studentId);
+    const studentAttendance = records.filter(
+        a => a.studentId === studentId
+    );
 
-    records.forEach(a => {
+    studentAttendance.forEach(a => {
         list.innerHTML += `
             <tr>
-                <td>${a.course}</td>
+                <td>${a.date}</td>
                 <td>${a.status}</td>
             </tr>
         `;
     });
 
-    if (records.length == 0) {
-        list.innerHTML = "<tr><td colspan='2'>No attendance available.</td></tr>";
+    if (studentAttendance.length === 0) {
+        list.innerHTML =
+            "<tr><td colspan='2'>No attendance available.</td></tr>";
     }
 }
+
 
 function showAnnouncements() {
 
     const list = document.getElementById("announcementList");
+
+    const records =
+        JSON.parse(localStorage.getItem("announcements")) || [];
+
     list.innerHTML = "";
 
-    announcements.forEach(a => {
+    records.forEach(a => {
         list.innerHTML += `
-            <h3>${a.title}</h3>
-            <p>${a.date}</p>
+            <h3>${a.date}</h3>
             <p>${a.message}</p>
             <hr>
         `;
     });
+
+    if (records.length === 0) {
+        list.innerHTML = "No announcements available.";
+    }
 }

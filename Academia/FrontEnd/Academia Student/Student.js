@@ -99,10 +99,22 @@ function showAssignments() {
 
     const list = document.getElementById("assignmentList");
 
-    list.innerHTML =
-        "<tr><td colspan='3'>No assignments available.</td></tr>";
-}
+    const records = JSON.parse(
+        localStorage.getItem("assignments")
+    ) || [];
 
+    list.innerHTML = "";
+
+    records.forEach(a => {
+        list.innerHTML += `
+            <tr>
+                <td>${a.course}</td>
+                <td>${a.assignmentName}</td>
+                <td>${a.dueDate}</td>
+            </tr>
+        `;
+    });
+}
 
 function showAnnouncements() {
 
