@@ -1,186 +1,103 @@
-/*
-Lawrence Mao
-CS50 C Project
-Parent Dashboard Logic
-*/
 
-window.onload = function ()
-{
-    if (typeof parentState === "undefined")
-    {
-        document.getElementById("error").innerHTML =
+window.onload = function () {
+
+    const parent = parents.find(
+        p => p.username === (sessionStorage.getItem("username") || "Par1")
+    );
+
+    if (!parent) {
+        document.getElementById("error").textContent =
             "Parent data could not be loaded.";
+        return;
+    }
+
+    document.getElementById("welcome").textContent =
+        "Welcome, " + parent.firstName + " " + parent.lastName;
+
+    document.getElementById("parentUsername").textContent =
+        parent.username;
+
+    document.getElementById("parentPhone").textContent =
+        parent.phone;
+
+    const student = students.find(
+        s => s.studentId === parent.studentId
+    );
+
+    if (!student) {
+        document.getElementById("studentName").textContent =
+            "No connected student";
 
         return;
     }
 
-    if (parentState.success === false)
-    {
-        document.getElementById("error").innerHTML =
-            parentState.error;
+    document.getElementById("studentName").textContent =
+        student.firstName + " " + student.lastName;
 
-        return;
-    }
+    document.getElementById("gradeLevel").textContent =
+        student.gradeLevel;
 
-    loadParentInfo();
+    document.getElementById("studentGpa").textContent =
+        student.gpa;
 
-    if (parentState.students.length > 0)
-    {
-        const student = parentState.students[0];
-
-        loadStudentInfo(student);
-
-        showGrades(student.studentId);
-        showAttendance(student.studentId);
-    }
-    else
-    {
-        showNoStudentState();
-    }
-
+    showGrades(student.studentId);
+    showAttendance(student.studentId);
     showAnnouncements();
 };
 
-function loadParentInfo()
-{
-    document.getElementById("welcome").innerHTML =
-        "Welcome, " +
-        parentState.parent.firstName +
-        " " +
-        parentState.parent.lastName;
+function showGrades(studentId) {
 
-    document.getElementById("parentUsername").innerHTML =
-        parentState.parent.username;
+    const list = document.getElementById("gradeList");
+    list.innerHTML = "";
 
-    document.getElementById("parentPhone").innerHTML =
-        parentState.parent.phone;
-}
+    const records = grades.filter(g => g.studentId == studentId);
 
-function loadStudentInfo(student)
-{
-    document.getElementById("studentName").innerHTML =
-        student.firstName +
-        " " +
-        student.lastName;
-
-    document.getElementById("gradeLevel").innerHTML =
-        student.gradeLevel;
-
-    document.getElementById("studentGpa").innerHTML =
-        student.gpa.toFixed(2);
-}
-
-function showNoStudentState()
-{
-    document.getElementById("studentName").innerHTML =
-        "No connected student";
-
-    document.getElementById("gradeLevel").innerHTML =
-        "Not available";
-
-    document.getElementById("studentGpa").innerHTML =
-        "Not available";
-
-    document.getElementById("gradeList").innerHTML =
-        "<tr><td colspan='2'>No grades available.</td></tr>";
-
-    document.getElementById("attendanceList").innerHTML =
-        "<tr><td colspan='2'>No attendance available.</td></tr>";
-}
-
-function showGrades(studentId)
-{
-    const gradeList =
-        document.getElementById("gradeList");
-
-    gradeList.innerHTML = "";
-
-    let found = false;
-
-    parentState.grades.forEach(grade =>
-    {
-        if (grade.studentId === studentId)
-        {
-            found = true;
-
-            gradeList.innerHTML +=
-                `<tr>
-                    <td>${grade.course}</td>
-                    <td>${grade.score}</td>
-                </tr>`;
-        }
+    records.forEach(g => {
+        list.innerHTML += `
+            <tr>
+                <td>${g.course}</td>
+                <td>${g.score}</td>
+            </tr>
+        `;
     });
 
-    if (!found)
-    {
-        gradeList.innerHTML =
-            "<tr><td colspan='2'>No grades available.</td></tr>";
+    if (records.length == 0) {
+        list.innerHTML = "<tr><td colspan='2'>No grades available.</td></tr>";
     }
 }
 
-function showAttendance(studentId)
-{
-    const attendanceList =
-        document.getElementById("attendanceList");
+function showAttendance(studentId) {
 
-    attendanceList.innerHTML = "";
+    const list = document.getElementById("attendanceList");
+    list.innerHTML = "";
 
-    let found = false;
+    const records = attendance.filter(a => a.studentId == studentId);
 
-    parentState.attendance.forEach(record =>
-    {
-        if (record.studentId === studentId)
-        {
-            found = true;
-
-            attendanceList.innerHTML +=
-                `<tr>
-                    <td>${record.course}</td>
-                    <td>${record.status}</td>
-                </tr>`;
-        }
+    records.forEach(a => {
+        list.innerHTML += `
+            <tr>
+                <td>${a.course}</td>
+                <td>${a.status}</td>
+            </tr>
+        `;
     });
 
-    if (!found)
-    {
-        attendanceList.innerHTML =
-            "<tr><td colspan='2'>No attendance available.</td></tr>";
+    if (records.length == 0) {
+        list.innerHTML = "<tr><td colspan='2'>No attendance available.</td></tr>";
     }
 }
 
-function showAnnouncements()
-{
-    const announcementList =
-        document.getElementById("announcementList");
+function showAnnouncements() {
 
-    announcementList.innerHTML = "";
+    const list = document.getElementById("announcementList");
+    list.innerHTML = "";
 
-    if (parentState.announcements.length === 0)
-    {
-        announcementList.innerHTML =
-            "<p>No announcements available.</p>";
-
-        return;
-    }
-
-    parentState.announcements.forEach(announcement =>
-    {
-        announcementList.innerHTML +=
-            `
-            <div class="announcement">
-                <h3>${announcement.title}</h3>
-
-                <p>
-                    <strong>Date:</strong>
-                    ${announcement.date}
-                </p>
-
-                <p>
-                    ${announcement.message}
-                </p>
-
-                <hr>
-            </div>
-            `;
+    announcements.forEach(a => {
+        list.innerHTML += `
+            <h3>${a.title}</h3>
+            <p>${a.date}</p>
+            <p>${a.message}</p>
+            <hr>
+        `;
     });
 }

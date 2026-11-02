@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,36 +7,79 @@
 </head>
 
 <body>
-    <script scr="Student.js"></script>
+
+    <script src="FrontEnd\Records.js" defer></script>
+    <script src="FrontEnd\Academia.js" defer></script>
+    <script src="Student.js" defer></script>
 
     <div class="navbar">
         <b>Academia Student Portal</b>
-
-        <a href="../Academia Authorization/Academia_Auth.html"> Log Out </a>
+        <a href="../Academia Authorization/Academia_Auth.html">Log Out</a>
     </div>
 
+    <p id="error" style="color: red; text-align: center;"></p>
+
     <div class="blue-box">
-        <h2>Welcome John Smith!</h2>
+        <h2 id="welcome">Welcome</h2>
         <p>View your grades, attendance, and announcements.</p>
     </div>
 
     <div class="box">
         <h2>Student Information</h2>
-
-        <p><strong>Name:</strong> John Smith</p>
-        <p><strong>Student ID:</strong> 1001</p>
-        <p><strong>Grade Level:</strong> 12</p>
-        <p><strong>GPA:</strong> 3.8</p>
+        <p><strong>Name:</strong> <span id="studentName"></span></p>
+        <p><strong>Student ID:</strong> <span id="studentId"></span></p>
+        <p><strong>Grade Level:</strong> <span id="gradeLevel"></span></p>
+        <p><strong>GPA:</strong> <span id="studentGpa"></span></p>
     </div>
 
     <div class="box">
         <h2>Grades</h2>
-
         <table>
-            <tr>
-                <th>Course</th>
-                <th>Grade</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody id="gradeList"></tbody>
+        </table>
+    </div>
 
-            <tr>
+    <div class="box">
+        <h2>Attendance</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceList"></tbody>
+        </table>
+    </div>
+
+    <div class="box">
+        <h2>Assignments</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Assignment</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody id="assignmentList"></tbody>
+        </table>
+    </div>
+
+    <div class="box">
+        <h2>Announcements</h2>
+        <div id="announcementList"></div>
+    </div>
+
+    <div class="footer">
+        Academia School System
+    </div>
+
+</body>
 </html>

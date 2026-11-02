@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Academia Staff Portal</title>
     <link rel="stylesheet" href="../Academia.css">
@@ -7,41 +8,41 @@
 
 <body>
 
-    <script src="StaffDashboard.js" defer></script>
+    <script scr="FrontEnd\Records.js" defer></script>
+    <script src="../FrontEnd/Academia.js" defer></script>
+    <script src="Staff.js" defer></script>
 
-    <!-- Navigation Bar -->
     <div class="navbar">
         <b>Academia Staff Portal</b>
-        <a href="../Academia Authorization/Academia_Auth.html">Log Out</a>
+        <a href="../Academia Authorization/Academia_Auth.html">
+            Log Out
+        </a>
     </div>
 
-    <!-- Welcome Section -->
     <div class="blue-box">
-        <h2>Welcome, Mr. Smith!</h2>
+        <h2 id="welcome">Welcome, Mr. Smith!</h2>
         <p>Manage student grades, attendance, and announcements.</p>
     </div>
 
-    <!-- Staff Information -->
     <div class="box">
         <h2>Staff Information</h2>
 
-        <p><strong>Name:</strong> John Smith</p>
-        <p><strong>Staff ID:</strong> 2001</p>
-        <p><strong>Position:</strong> Mathematics Teacher</p>
-        <p><strong>Department:</strong> Mathematics</p>
-        <p><strong>Email:</strong> john.smith@school.edu</p>
+        <p><strong>Name:</strong> <span id="staffName"></span></p>
+        <p><strong>Staff ID:</strong> <span id="staffId"></span></p>
+        <p><strong>Position:</strong> <span id="staffPosition"></span></p>
+        <p><strong>Department:</strong> <span id="staffDepartment"></span></p>
+        <p><strong>Email:</strong> <span id="staffEmail"></span></p>
     </div>
 
-    <!-- Student Grades -->
     <div class="box">
         <h2>Enter Student Grades</h2>
 
         <form id="gradeForm">
             Student Name:
-            <input type="text" id="studentName" required>
+            <select id="studentName" required></select>
 
             Course:
-            <input type="text" id="course" required>
+            <select id="course" required></select>
 
             Grade:
             <input type="number" id="grade" min="0" max="100" required>
@@ -62,13 +63,15 @@
         </table>
     </div>
 
-    <!-- Student Attendance -->
     <div class="box">
         <h2>Student Attendance</h2>
 
         <form id="attendanceForm">
             Student Name:
-            <input type="text" id="attendanceName" required>
+            <select id="attendanceName" required></select>
+
+            Course:
+            <select id="attendanceCourse" required></select>
 
             Attendance:
             <select id="attendanceStatus">
@@ -85,6 +88,7 @@
         <table>
             <tr>
                 <th>Student</th>
+                <th>Course</th>
                 <th>Status</th>
             </tr>
 
@@ -92,11 +96,13 @@
         </table>
     </div>
 
-    <!-- Announcements -->
     <div class="box">
         <h2>School Announcements</h2>
 
         <form id="announcementForm">
+            Course:
+            <select id="announcementCourse" required></select>
+
             Title:
             <input type="text" id="announcementTitle" required>
 
@@ -111,10 +117,10 @@
         <div id="announcementList"></div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         Academia School System
     </div>
 
 </body>
+
 </html>

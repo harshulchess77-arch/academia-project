@@ -1,213 +1,193 @@
 
-// staff.js
+window.onload = function () {
 
-const API = "/api";
+    const currentStaff = staff.find(
+        s => s.username === (sessionStorage.getItem("username") || "Sta1")
+    );
 
-// Get staff ID from the URL or localStorage
-const params = new URLSearchParams(window.location.search);
-const STAFF_ID = params.get("staff_id") || localStorage.getItem("staff_id");
-
-// Check staff ID
-if (!STAFF_ID) {
-    alert("Staff ID not found. Please log in again.");
-}
-
-// Send requests to the server
-async function apiRequest(endpoint, method = "GET", data = null) {
-    const options = {
-        method,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    };
-
-    if (data) {
-        options.body = JSON.stringify(data);
-    }
-
-    const response = await fetch(API + endpoint, options);
-
-    if (!response.ok) {
-        throw new Error("Request failed: " + response.status);
-    }
-
-    return await response.json();
-}
-
-// Display data in an HTML element
-function displayList(elementId, items, formatter) {
-    const element = document.getElementById(elementId);
-
-    if (!element) return;
-
-    element.innerHTML = "";
-
-    if (!items || items.length === 0) {
-        element.textContent = "No data available.";
+    if (!currentStaff) {
+        alert("Staff data could not be loaded.");
         return;
     }
 
-    items.forEach(item => {
-        const div = document.createElement("div");
-        div.innerHTML = formatter(item);
-        element.appendChild(div);
+    document.getElementById("welcome").textContent =
+        "Welcome, " + currentStaff.firstName + " " + currentStaff.lastName + "!";
+
+    document.getElementById("staffName").textContent =
+        currentStaff.firstName + " " + currentStaff.lastName;
+
+    document.getElementById("staffId").textContent = currentStaff.id;
+    document.getElementById("staffPosition").textContent = currentStaff.position;
+    document.getElementById("staffDepartment").textContent = currentStaff.department;
+    document.getElementById("staffEmail").textContent = currentStaff.email;
+
+    loadStudents();
+    loadCourses();
+
+    showGrades();
+    showAttendance();
+    showAnnouncements();
+};
+
+function loadStudents() {
+
+    const studentOptions = students.map(s => `
+        <option value="${s.studentId}">
+            ${s.firstName} ${s.lastName}
+        </option>
+    `).join("");
+
+    document.getElementById("studentName").innerHTML = studentOptions;
+    document.getElementById("attendanceName").innerHTML = studentOptions;
+}
+
+function loadCourses() {
+
+    const courseOptions = courses.map(c => `
+        <option value="${c.courseId}">
+            ${c.course}
+        </option>
+    `).join("");
+
+    document.getElementById("course").innerHTML = courseOptions;
+    document.getElementById("attendanceCourse").innerHTML = courseOptions;
+    document.getElementById("announcementCourse").innerHTML = courseOptions;
+}
+
+function showGrades() {
+
+    const list = document.getElementById("gradeList");
+    list.innerHTML = "";
+
+    grades.forEach(g => {
+
+        const student = students.find(s => s.studentId == g.studentId);
+
+        list.innerHTML += `
+            <tr>
+                <td>${student.firstName} ${student.lastName}</td>
+                <td>${g.course}</td>
+                <td>${g.score}</td>
+            </tr>
+        `;
     });
 }
 
-// Load staff dashboard
-async function loadStaffDashboard() {
-    try {
-        const data = await apiRequest(
-            `/staff/dashboard?staff_id=${encodeURIComponent(STAFF_ID)}`
-        );
+function showAttendance() {
 
-        // Staff profile
-        const nameElement = document.getElementById("staffName");
+    const list = document.getElementById("attendanceList");
+    list.innerHTML = "";
 
-        if (nameElement && data.staff) {
-            nameElement.textContent =
-                `${data.staff.first_name || ""} ${data.staff.last_name || ""}`;
-        }
+    attendance.forEach(a => {
 
-        // Courses
-        displayList("coursesList", data.courses, course => `
-            <p>${course.course_name}</p>
-        `);
+        const student = students.find(s => s.studentId == a.studentId);
 
-        // Students
-        displayList("studentsList", data.students, student => `
-            <p>
-                ${student.first_name || ""} ${student.last_name || ""}
-                — Grade ${student.grade_level || "N/A"}
-            </p>
-        `);
-
-        // Assignments
-        displayList("assignmentsList", data.assignments, assignment => `
-            <p>
-                ${assignment.assignment_name}
-                — Due: ${assignment.due_date}
-            </p>
-        `);
-
-        // Grades
-        displayList("gradesList", data.grades, grade => `
-            <p>
-                Student ID: ${grade.student_id}
-                — Course ID: ${grade.course_id}
-                — Score: ${grade.score}
-            </p>
-        `);
-
-        // Attendance
-        displayList("attendanceList", data.attendance, record => `
-            <p>
-                Student ID: ${record.student_id}
-                — ${record.present ? "Present" : "Absent"}
-            </p>
-        `);
-
-        // Announcements
-        displayList("announcementsList", data.announcements, announcement => `
-            <p>
-                <strong>${announcement.title}</strong><br>
-                ${announcement.message}
-            </p>
-        `);
-
-    } catch (error) {
-        console.error("Dashboard error:", error);
-        alert("Could not load the staff dashboard.");
-    }
+        list.innerHTML += `
+            <tr>
+                <td>${student.firstName} ${student.lastName}</td>
+                <td>${a.course}</td>
+                <td>${a.status}</td>
+            </tr>
+        `;
+    });
 }
 
-// Submit a grade
-document.getElementById("gradeForm")?.addEventListener("submit", async event => {
+function showAnnouncements() {
+
+    const list = document.getElementById("announcementList");
+    list.innerHTML = "";
+
+    announcements.forEach(a => {
+
+        list.innerHTML += `
+            <h3>${a.title}</h3>
+            <p>${a.date}</p>
+            <p>${a.message}</p>
+            <hr>
+        `;
+    });
+}
+
+// Add or update a grade
+document.getElementById("gradeForm").addEventListener("submit", function(event) {
+
     event.preventDefault();
 
-    try {
-        await apiRequest("/grades", "POST", {
-            staff_id: Number(STAFF_ID),
-            student_id: Number(document.getElementById("studentId").value),
-            course_id: Number(document.getElementById("courseId").value),
-            score: Number(document.getElementById("score").value)
+    const studentId = document.getElementById("studentName").value;
+    const courseId = document.getElementById("course").value;
+    const score = Number(document.getElementById("grade").value);
+
+    const course = courses.find(c => c.courseId == courseId);
+
+    const existingGrade = grades.find(
+        g => g.studentId == studentId && g.courseId == courseId
+    );
+
+    if (existingGrade) {
+        existingGrade.score = score;
+    } else {
+        grades.push({
+            studentId: studentId,
+            courseId: courseId,
+            course: course.course,
+            score: score
         });
-
-        alert("Grade added successfully.");
-        event.target.reset();
-        loadStaffDashboard();
-
-    } catch (error) {
-        console.error(error);
-        alert("Failed to add grade.");
     }
+
+    showGrades();
+
+    this.reset();
 });
 
-// Submit attendance
-document.getElementById("attendanceForm")?.addEventListener("submit", async event => {
+// Record attendance
+document.getElementById("attendanceForm").addEventListener("submit", function(event) {
+
     event.preventDefault();
 
-    try {
-        await apiRequest("/attendance", "POST", {
-            staff_id: Number(STAFF_ID),
-            student_id: Number(document.getElementById("attendanceStudentId").value),
-            course_id: Number(document.getElementById("attendanceCourseId").value),
-            present: Number(document.getElementById("attendanceStatus").value)
+    const studentId = document.getElementById("attendanceName").value;
+    const courseId = document.getElementById("attendanceCourse").value;
+    const status = document.getElementById("attendanceStatus").value;
+
+    const course = courses.find(c => c.courseId == courseId);
+
+    const existingRecord = attendance.find(
+        a => a.studentId == studentId && a.courseId == courseId
+    );
+
+    if (existingRecord) {
+        existingRecord.status = status;
+    } else {
+        attendance.push({
+            studentId: studentId,
+            courseId: courseId,
+            course: course.course,
+            status: status
         });
-
-        alert("Attendance recorded.");
-        event.target.reset();
-        loadStaffDashboard();
-
-    } catch (error) {
-        console.error(error);
-        alert("Failed to record attendance.");
     }
+
+    showAttendance();
+
+    this.reset();
 });
 
-// Submit announcement
-document.getElementById("announcementForm")?.addEventListener("submit", async event => {
+// Post announcement
+document.getElementById("announcementForm").addEventListener("submit", function(event) {
+
     event.preventDefault();
 
-    try {
-        await apiRequest("/announcements", "POST", {
-            staff_id: Number(STAFF_ID),
-            course_id: Number(document.getElementById("announcementCourseId").value),
-            title: document.getElementById("announcementTitle").value,
-            message: document.getElementById("announcementMessage").value
-        });
+    const courseId = document.getElementById("announcementCourse").value;
+    const title = document.getElementById("announcementTitle").value;
+    const message = document.getElementById("announcementMessage").value;
 
-        alert("Announcement published.");
-        event.target.reset();
-        loadStaffDashboard();
+    announcements.unshift({
+        id: "A" + Date.now(),
+        courseId: courseId,
+        title: title,
+        message: message,
+        date: new Date().toISOString().slice(0, 10)
+    });
 
-    } catch (error) {
-        console.error(error);
-        alert("Failed to publish announcement.");
-    }
+    showAnnouncements();
+
+    this.reset();
 });
-
-// Submit assignment
-document.getElementById("assignmentForm")?.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    try {
-        await apiRequest("/assignments", "POST", {
-            staff_id: Number(STAFF_ID),
-            course_id: Number(document.getElementById("assignmentCourseId").value),
-            assignment_name: document.getElementById("assignmentName").value,
-            due_date: document.getElementById("assignmentDueDate").value
-        });
-
-        alert("Assignment created.");
-        event.target.reset();
-        loadStaffDashboard();
-
-    } catch (error) {
-        console.error(error);
-        alert("Failed to create assignment.");
-    }
-});
-
-// Load dashboard when page opens
-document.addEventListener("DOMContentLoaded", loadStaffDashboard);

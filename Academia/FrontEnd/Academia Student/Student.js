@@ -1,102 +1,125 @@
 
-document.addEventListener("DOMContentLoaded", function () {
-    const user = JSON.parse(localStorage.getItem("currentUser"));
+window.onload = function () {
 
-    if (!user || user.role !== "student") {
-        window.location.href =
-            "../Academia Authorization/Academia_Auth.html";
+    // Get the logged-in username
+    const username = sessionStorage.getItem("username") || "student1";
+
+    // Get student records from localStorage
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const student = users.find(
+        s => s.username === username && s.role === "student"
+    );
+
+    if (!student) {
+        document.getElementById("error").textContent =
+            "Student data could not be loaded.";
         return;
     }
 
-    const data = getAcademiaData();
-    const student = data.student;
+    // Display student information
+    document.getElementById("welcome").textContent =
+        "Welcome, " + student.firstName + " " + student.lastName + "!";
 
-    document.querySelector(".blue-box h2").textContent =
-        `Welcome ${student.firstName} ${student.lastName}!`;
+    document.getElementById("studentName").textContent =
+        student.firstName + " " + student.lastName;
 
-    const info = document.querySelectorAll(".box")[0];
+    document.getElementById("studentId").textContent = student.studentId;
+    document.getElementById("gradeLevel").textContent = student.gradeLevel;
+    document.getElementById("studentGpa").textContent = student.gpa;
 
-    info.innerHTML = `
-        <h2>Student Information</h2>
-        <p><strong>Name:</strong> ${student.firstName} ${student.lastName}</p>
-        <p><strong>Student ID:</strong> ${student.id}</p>
-        <p><strong>Grade Level:</strong> ${student.gradeLevel}</p>
-        <p><strong>GPA:</strong> ${student.gpa.toFixed(2)}</p>
-    `;
+    // Display grades
+    showGrades(student.studentId);
 
-    const gradeTable = document.getElementById("gradesTable");
-    gradeTable.innerHTML = "";
+    // Display attendance
+    showAttendance(student.studentId);
 
-    data.grades
-        .filter(grade => grade.studentId === student.id)
-        .forEach(grade => {
-            const row = document.createElement("tr");
+    // Display assignments
+    showAssignments();
 
-            const courseCell = document.createElement("td");
-            courseCell.textContent = grade.course;
+    // Display announcements
+    showAnnouncements();
+};
 
-            const scoreCell = document.createElement("td");
-            scoreCell.textContent = grade.score;
 
-            row.append(courseCell, scoreCell);
-            gradeTable.appendChild(row);
-        });
+function showGrades(studentId) {
 
-    // Attendance
-    const attendanceBox = document.createElement("div");
-    attendanceBox.className = "box";
-    attendanceBox.innerHTML = `
-        <h2>Attendance</h2>
-        <table>
-            <thead>
-                <tr><th>Course</th><th>Status</th></tr>
-            </thead>
-            <tbody id="studentAttendance"></tbody>
-        </table>
-    `;
+    const list = document.getElementById("gradeList");
+    const records = JSON.parse(localStorage.getItem("grades")) || [];
 
-    document.body.insertBefore(
-        attendanceBox,
-        document.querySelector(".footer")
+    list.innerHTML = "";
+
+    const studentGrades = records.filter(
+        g => g.studentId === studentId
     );
 
-    const attendanceTable =
-        document.getElementById("studentAttendance");
-
-    data.attendance
-        .filter(record => record.studentId === student.id)
-        .forEach(record => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${record.course}</td>
-                <td>${record.status}</td>
-            `;
-            attendanceTable.appendChild(row);
-        });
-
-    // Announcements
-    const announcementBox = document.createElement("div");
-    announcementBox.className = "box";
-    announcementBox.innerHTML = "<h2>Announcements</h2>";
-
-    data.announcements.forEach(item => {
-        const announcement = document.createElement("div");
-
-        const title = document.createElement("h3");
-        title.textContent = item.title;
-
-        const date = document.createElement("p");
-        date.textContent = item.date;
-
-        const message = document.createElement("p");
-        message.textContent = item.message;
-
-        announcement.append(title, date, message);
-        announcementBox.appendChild(announcement);
+    studentGrades.forEach(g => {
+        list.innerHTML += `
+            <tr>
+                <td>${g.course}</td>
+                <td>${g.score}</td>
+            </tr>
+        `;
     });
 
-    document.body.insertBefore(
-        announcementBox,
-        document.querySelector(".footer")
+    if (studentGrades.length === 0) {
+        list.innerHTML =
+            "<tr><td colspan='2'>No grades available.</td></tr>";
+    }
+}
+
+
+function showAttendance(studentId) {
+
+    const list = document.getElementById("attendanceList");
+    const records = JSON.parse(localStorage.getItem("attendance")) || [];
+
+    list.innerHTML = "";
+
+    const studentAttendance = records.filter(
+        a => a.studentId === studentId
     );
-});
+
+    studentAttendance.forEach(a => {
+        list.innerHTML += `
+            <tr>
+                <td>${a.date}</td>
+                <td>${a.status}</td>
+            </tr>
+        `;
+    });
+
+    if (studentAttendance.length === 0) {
+        list.innerHTML =
+            "<tr><td colspan='2'>No attendance available.</td></tr>";
+    }
+}
+
+
+function showAssignments() {
+
+    const list = document.getElementById("assignmentList");
+
+    list.innerHTML =
+        "<tr><td colspan='3'>No assignments available.</td></tr>";
+}
+
+
+function showAnnouncements() {
+
+    const list = document.getElementById("announcementList");
+    const records = JSON.parse(localStorage.getItem("announcements")) || [];
+
+    list.innerHTML = "";
+
+    records.forEach(a => {
+        list.innerHTML += `
+            <h3>${a.date}</h3>
+            <p>${a.message}</p>
+            <hr>
+        `;
+    });
+
+    if (records.length === 0) {
+        list.innerHTML = "No announcements available.";
+    }
+}
