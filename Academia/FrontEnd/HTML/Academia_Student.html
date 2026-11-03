@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Sets the browser tab title for the Student Portal -->
+    <title>Academia Student Portal</title>
+
+    <!-- Connects the external CSS stylesheet to control page appearance -->
+    <link rel="stylesheet" href="../Academia.css">
+
+    <!-- Connects the JavaScript files -->
+    <script src="student_states.js" defer></script>
+    <script src="Student.js" defer></script>
+</head>
+
+<body>
+
+    <!-- Navigation Bar:
+         Displays the portal name and provides access to the logout page -->
+    <div class="navbar">
+
+        <!-- Identifies the current interface as the Student Portal -->
+        <b>Academia Student Portal</b>
+
+        <!-- Redirects the student to the authorization page -->
+        <a href="../Academia Authorization/Academia_Auth.html">Log Out</a>
+    </div>
+
+    <!-- Error Display -->
+    <p id="error" style="color: red; text-align: center;"></p>
+
+    <!-- Welcome Section -->
+    <div class="blue-box">
+
+        <!-- Dynamically displays the student's name -->
+        <h2 id="welcome">Welcome</h2>
+
+        <p>View your grades, attendance, and announcements.</p>
+    </div>
+
+    <!-- Student Information Section -->
+    <div class="box">
+
+        <h2>Student Information</h2>
+
+        <!-- Student information is loaded from the database -->
+        <p><strong>Name:</strong> <span id="studentName"></span></p>
+
+        <p><strong>Student ID:</strong> <span id="studentId"></span></p>
+
+        <p><strong>Grade Level:</strong> <span id="gradeLevel"></span></p>
+
+        <p><strong>GPA:</strong> <span id="studentGpa"></span></p>
+    </div>
+
+    <!-- Grades Section -->
+    <div class="box">
+
+        <h2>Grades</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+
+            <!-- Grades are loaded from student_states.js -->
+            <tbody id="gradeList">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Attendance Section -->
+    <div class="box">
+
+        <h2>Attendance</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <!-- Attendance records are loaded from student_states.js -->
+            <tbody id="attendanceList">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Assignments Section -->
+    <div class="box">
+
+        <h2>Assignments</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Assignment</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+
+            <!-- Assignments are loaded from student_states.js -->
+            <tbody id="assignmentList">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Announcements Section -->
+    <div class="box">
+
+        <h2>Announcements</h2>
+
+        <!-- Announcements are loaded from student_states.js -->
+        <div id="announcementList">
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+        Academia School System
+    </div>
+
+</body>
+</html>

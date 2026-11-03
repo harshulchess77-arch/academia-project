@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Academia Staff Portal</title>
+
+    <link rel="stylesheet" href="../Academia.css">
+    <script src="Staff.js" defer></script>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <b>Academia Staff Portal</b>
+        <a href="../Academia Authorization/Academia_Auth.html">Log Out</a>
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="blue-box">
+        <h2 id="welcome">Welcome, Staff!</h2>
+        <p>Manage student grades, attendance, and course announcements.</p>
+    </div>
+
+    <!-- Staff Information -->
+    <div class="box">
+        <h2>Staff Information</h2>
+
+        <p>
+            <strong>Name:</strong>
+            <span id="staffName">Loading...</span>
+        </p>
+
+        <p>
+            <strong>Staff ID:</strong>
+            <span id="staffId">Loading...</span>
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
+            <span id="staffPhone">Loading...</span>
+        </p>
+    </div>
+
+    <!-- Student Grades -->
+    <div class="box">
+        <h2>Enter Student Grades</h2>
+
+        <form id="gradeForm">
+
+            Student Name:
+            <select id="studentName" required></select>
+
+            <br><br>
+
+            Course:
+            <select id="course" required></select>
+
+            <br><br>
+
+            Grade:
+            <input
+                type="number"
+                id="grade"
+                min="0"
+                max="100"
+                step="0.01"
+                required
+            >
+
+            <br><br>
+
+            <button class="btn" type="submit">
+                Save Grade
+            </button>
+
+        </form>
+
+        <h3>Grade Records</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Course</th>
+                    <th>Grade</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="gradeList"></tbody>
+        </table>
+    </div>
+
+    <!-- Student Attendance -->
+    <div class="box">
+        <h2>Student Attendance</h2>
+
+        <form id="attendanceForm">
+
+            Student Name:
+            <select id="attendanceName" required></select>
+
+            <br><br>
+
+            Course:
+            <select id="attendanceCourse" required></select>
+
+            <br><br>
+
+            Attendance:
+            <select id="attendanceStatus" required>
+                <option value="1">Present</option>
+                <option value="0">Absent</option>
+            </select>
+
+            <br><br>
+
+            <button class="btn" type="submit">
+                Record Attendance
+            </button>
+
+        </form>
+
+        <h3>Attendance Records</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="attendanceList"></tbody>
+        </table>
+    </div>
+
+    <!-- Course Announcements -->
+    <div class="box">
+        <h2>Course Announcements</h2>
+
+        <form id="announcementForm">
+
+            Course:
+            <select id="announcementCourse" required></select>
+
+            <br><br>
+
+            Title:
+            <input
+                type="text"
+                id="announcementTitle"
+                maxlength="120"
+                required
+            >
+
+            <br><br>
+
+            Message:
+            <input
+                type="text"
+                id="announcementMessage"
+                maxlength="1000"
+                required
+            >
+
+            <br><br>
+
+            <button class="btn" type="submit">
+                Post Announcement
+            </button>
+
+        </form>
+
+        <h3>Published Announcements</h3>
+
+        <div id="announcementList"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Academia School System
+    </div>
+
+</body>
+</html>

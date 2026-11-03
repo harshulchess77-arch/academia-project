@@ -1,41 +1,114 @@
 /*
 Lawrence Mao
-Suengho Kim
+Seungho Kim
 Harshul Gupta
 Dmitrii Buianov
 
-Cs50 c project
-common functions
+CS50 C Project
+Common Backend Functions
 10.22.26
 */
 
 #include <stdio.h>
-#include <cs50.h>
-#include <sqlite3.h>
 
-#include "Academia_Parents.c"
-#include "Academia_Student.c"
-#include "Academia_school_Staff.c"
-#include "Academia_Database.h"
-#include "SQLite3/sqlite3.h"
+#include "../Academia Database/SQLite3 Source Code/sqlite3.h"
+#include "Academia_Common.h"
 
 
+/*
+The program is expected to run from the project root folder,
+which directly contains the Academia folder.
+*/
+#define DATABASE_PATH \
+    "Academia/BackEnd/Academia Database/academia.db"
 
-int main()
+
+/*
+Opens the Academia database and returns its connection.
+
+The caller is responsible for closing the returned connection
+with sqlite3_close when it is no longer needed.
+
+Returns NULL when the database cannot be opened.
+*/
+sqlite3 *open_academia_database(void)
 {
-    connectDatabase();
-    sqlite3 *db;
+    sqlite3 *db = NULL;
 
-    if(sqlite3_open("academia.db", &db) == SQLITE_OK)
+    if (sqlite3_open(DATABASE_PATH, &db) != SQLITE_OK)
     {
-        printf("Database opened!\n");
+        printf(
+            "[Database Error] Cannot open database: %s\n",
+            sqlite3_errmsg(db)
+        );
+
+        sqlite3_close(db);
+
+        return NULL;
     }
 
+    return db;
+}
 
 
+/*
+Finalizes a prepared SQLite statement and resets its pointer.
+
+Resetting the pointer prevents the program from accidentally
+attempting to reuse a statement after it has been finalized.
+*/
+void finalize_statement(sqlite3_stmt **stmt)
+{
+    if (stmt != NULL && *stmt != NULL)
+    {
+        sqlite3_finalize(*stmt);
+        *stmt = NULL;
+    }
+}
 
 
-    sqlite3_close(db);
+/*
+Writes SQLite text safely inside a JavaScript string.
 
-    return 0;
+The quotation marks surrounding the JavaScript string must be
+written by the calling function.
+*/
+void write_js_text(
+    FILE *out,
+    const unsigned char *text
+)
+{
+    int i;
+
+    if (out == NULL || text == NULL)
+    {
+        return;
+    }
+
+    for (i = 0; text[i] != '\0'; i++)
+    {
+        switch (text[i])
+        {
+            case '\\':
+            case '"':
+                fputc('\\', out);
+                fputc(text[i], out);
+                break;
+
+            case '\n':
+                fputs("\\n", out);
+                break;
+
+            case '\r':
+                fputs("\\r", out);
+                break;
+
+            case '\t':
+                fputs("\\t", out);
+                break;
+
+            default:
+                fputc(text[i], out);
+        }
+    }
 }
