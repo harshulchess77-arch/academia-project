@@ -1,21 +1,21 @@
 /*
-Harshul Gupta
+Lawrence Mao
 CS50 C Project
-Student Module
-10.20.26
+School-Staff Functions
+10.22.26
 */
 
 #include <stdio.h>
 #include "../Academia Database/SQLite3 Source Code/sqlite3.h"
 
 /*
-Reads student information from the Academia database.
-The data is written to student_states.js for the frontend.
+Reads staff information from the Academia database.
+The data is written to staff_states.js for the frontend.
 */
 
 
 // Writes database text safely inside a JavaScript string.
-static void write_student_js_text(
+static void write_staff_js_text(
     FILE *out,
     const unsigned char *text
 )
@@ -47,20 +47,20 @@ static void write_student_js_text(
 }
 
 
-// Creates the JavaScript state file used by the student portal.
-// The user ID determines which student's data is exported.
-void update_student_frontend_state(int student_user_id)
+// Creates the JavaScript state file used by the Staff Portal.
+// The staff user ID determines which staff data is exported.
+void update_staff_frontend_state(int staff_user_id)
 {
     sqlite3 *db;
     sqlite3_stmt *stmt = NULL;
     FILE *out;
 
-    int student_found = 0;
+    int staff_found = 0;
     int query_error = 0;
 
 
     // Opens the Academia database.
-    // The function stops if the connection fails.
+    // The function stops if the database connection fails.
     if (sqlite3_open(
             "Academia/BackEnd/Academia Database/academia.db",
             &db
@@ -76,53 +76,52 @@ void update_student_frontend_state(int student_user_id)
     }
 
 
-    // Creates the Student Portal state file.
-    // Previous contents are replaced with current database data.
+    // Creates the Staff Portal state file.
+    // Previous contents are replaced with current data.
     out = fopen(
-        "Academia/BackEnd/Academia Student/student_states.js",
+        "Academia/BackEnd/Academia Staff/staff_states.js",
         "w"
     );
 
     if (out == NULL)
     {
-        printf("[Error] Cannot create student_states.js.\n");
+        printf("[Error] Cannot create staff_states.js.\n");
 
         sqlite3_close(db);
         return;
     }
 
 
-    // Starts the studentState JavaScript object.
-    fprintf(out, "const studentState = {\n");
+    // Starts the staffState JavaScript object.
+    fprintf(out, "const staffState = {\n");
 
 
     /*
-    Retrieves the student's account and academic information.
-    The user and student tables are connected through matching IDs.
+    Retrieves the selected staff member's account information.
+    The user and staff tables are connected through matching IDs.
     */
 
-    fprintf(out, "  student: {\n");
+    fprintf(out, "  staff: {\n");
 
-    const char *sql_student =
+    const char *sql_staff =
         "SELECT "
         "user.id, "
         "user.username, "
         "user.first_name, "
         "user.last_name, "
-        "student.grade_level, "
-        "student.gpa "
+        "staff.phone "
         "FROM user "
-        "INNER JOIN student "
-        "ON user.id = student.id "
+        "INNER JOIN staff "
+        "ON user.id = staff.id "
         "WHERE user.id = ? "
-        "AND user.role = 'student';";
+        "AND user.role = 'staff';";
 
 
-    // Prepares the student query and binds the user ID.
-    // A returned row confirms that the student account exists.
+    // Prepares the staff query and binds the user ID.
+    // A returned row confirms that the staff account exists.
     if (sqlite3_prepare_v2(
             db,
-            sql_student,
+            sql_staff,
             -1,
             &stmt,
             NULL
@@ -131,12 +130,12 @@ void update_student_frontend_state(int student_user_id)
         sqlite3_bind_int(
             stmt,
             1,
-            student_user_id
+            staff_user_id
         );
 
         if (sqlite3_step(stmt) == SQLITE_ROW)
         {
-            student_found = 1;
+            staff_found = 1;
 
             fprintf(
                 out,
@@ -145,41 +144,36 @@ void update_student_frontend_state(int student_user_id)
             );
 
             fprintf(out, "    username: \"");
-            write_student_js_text(
+            write_staff_js_text(
                 out,
                 sqlite3_column_text(stmt, 1)
             );
             fprintf(out, "\",\n");
 
             fprintf(out, "    firstName: \"");
-            write_student_js_text(
+            write_staff_js_text(
                 out,
                 sqlite3_column_text(stmt, 2)
             );
             fprintf(out, "\",\n");
 
             fprintf(out, "    lastName: \"");
-            write_student_js_text(
+            write_staff_js_text(
                 out,
                 sqlite3_column_text(stmt, 3)
             );
             fprintf(out, "\",\n");
 
-            fprintf(
+            fprintf(out, "    phone: \"");
+            write_staff_js_text(
                 out,
-                "    gradeLevel: %d,\n",
-                sqlite3_column_int(stmt, 4)
+                sqlite3_column_text(stmt, 4)
             );
-
-            fprintf(
-                out,
-                "    gpa: %.2f\n",
-                sqlite3_column_double(stmt, 5)
-            );
+            fprintf(out, "\"\n");
         }
         else
         {
-            printf("[Error] Student account not found.\n");
+            printf("[Error] Staff account not found.\n");
         }
     }
     else
@@ -187,7 +181,7 @@ void update_student_frontend_state(int student_user_id)
         query_error = 1;
 
         printf(
-            "[Error] Student query failed: %s\n",
+            "[Error] Staff query failed: %s\n",
             sqlite3_errmsg(db)
         );
     }
@@ -202,25 +196,22 @@ void update_student_frontend_state(int student_user_id)
 
 
     /*
-    Retrieves courses in which the student is enrolled.
-    The enrollment and course tables provide the course information.
+    Retrieves all courses assigned to the staff member.
+    Each course is written as an object in the courses array.
     */
 
     fprintf(out, "  courses: [\n");
 
     const char *sql_courses =
         "SELECT "
-        "course.id, "
-        "course.course_name, "
-        "enrollment.status "
-        "FROM enrollment "
-        "INNER JOIN course "
-        "ON enrollment.course_id = course.id "
-        "WHERE enrollment.student_id = ?;";
+        "id, "
+        "course_name "
+        "FROM course "
+        "WHERE staff_id = ?;";
 
 
-    // Prepares the course query and binds the student ID.
-    // Each returned row is written as one course object.
+    // Prepares the course query and binds the staff ID.
+    // The query may return multiple assigned courses.
     if (sqlite3_prepare_v2(
             db,
             sql_courses,
@@ -232,7 +223,7 @@ void update_student_frontend_state(int student_user_id)
         sqlite3_bind_int(
             stmt,
             1,
-            student_user_id
+            staff_user_id
         );
 
         while (sqlite3_step(stmt) == SQLITE_ROW)
@@ -243,18 +234,12 @@ void update_student_frontend_state(int student_user_id)
                 sqlite3_column_int(stmt, 0)
             );
 
-            write_student_js_text(
+            write_staff_js_text(
                 out,
                 sqlite3_column_text(stmt, 1)
             );
 
-            fprintf(
-                out,
-                "\", active: %s },\n",
-                sqlite3_column_int(stmt, 2)
-                    ? "true"
-                    : "false"
-            );
+            fprintf(out, "\" },\n");
         }
     }
     else
@@ -277,24 +262,32 @@ void update_student_frontend_state(int student_user_id)
 
 
     /*
-    Retrieves the student's grades and related course names.
-    Each returned grade becomes one object in the grades array.
+    Retrieves student grades for courses taught by this staff member.
+    Each result includes the student, course, and numerical score.
     */
 
     fprintf(out, "  grades: [\n");
 
     const char *sql_grades =
         "SELECT "
+        "grade.id, "
+        "grade.student_id, "
+        "user.first_name, "
+        "user.last_name, "
         "course.course_name, "
         "grade.score "
         "FROM grade "
+        "INNER JOIN student "
+        "ON grade.student_id = student.id "
+        "INNER JOIN user "
+        "ON student.id = user.id "
         "INNER JOIN course "
         "ON grade.course_id = course.id "
-        "WHERE grade.student_id = ?;";
+        "WHERE course.staff_id = ?;";
 
 
-    // Prepares the grade query and binds the student ID.
-    // The query returns every course grade for this student.
+    // Prepares the grade query and binds the staff ID.
+    // Every returned grade belongs to one of the staff member's courses.
     if (sqlite3_prepare_v2(
             db,
             sql_grades,
@@ -306,22 +299,41 @@ void update_student_frontend_state(int student_user_id)
         sqlite3_bind_int(
             stmt,
             1,
-            student_user_id
+            staff_user_id
         );
 
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
-            fprintf(out, "    { course: \"");
-
-            write_student_js_text(
+            fprintf(
                 out,
-                sqlite3_column_text(stmt, 0)
+                "    { gradeId: %d, studentId: %d, student: \"",
+                sqlite3_column_int(stmt, 0),
+                sqlite3_column_int(stmt, 1)
+            );
+
+            write_staff_js_text(
+                out,
+                sqlite3_column_text(stmt, 2)
+            );
+
+            fprintf(out, " ");
+
+            write_staff_js_text(
+                out,
+                sqlite3_column_text(stmt, 3)
+            );
+
+            fprintf(out, "\", course: \"");
+
+            write_staff_js_text(
+                out,
+                sqlite3_column_text(stmt, 4)
             );
 
             fprintf(
                 out,
                 "\", score: %.2f },\n",
-                sqlite3_column_double(stmt, 1)
+                sqlite3_column_double(stmt, 5)
             );
         }
     }
@@ -345,7 +357,7 @@ void update_student_frontend_state(int student_user_id)
 
 
     /*
-    Retrieves attendance records for the selected student.
+    Retrieves attendance for courses taught by the staff member.
     Boolean values are converted into Present or Absent.
     */
 
@@ -353,16 +365,24 @@ void update_student_frontend_state(int student_user_id)
 
     const char *sql_attendance =
         "SELECT "
+        "attendance.id, "
+        "attendance.student_id, "
+        "user.first_name, "
+        "user.last_name, "
         "course.course_name, "
         "attendance.present "
         "FROM attendance "
+        "INNER JOIN student "
+        "ON attendance.student_id = student.id "
+        "INNER JOIN user "
+        "ON student.id = user.id "
         "INNER JOIN course "
         "ON attendance.course_id = course.id "
-        "WHERE attendance.student_id = ?;";
+        "WHERE course.staff_id = ?;";
 
 
-    // Prepares the attendance query and binds the student ID.
-    // Each result contains a course and attendance status.
+    // Prepares the attendance query and binds the staff ID.
+    // Each returned row belongs to one of the staff member's courses.
     if (sqlite3_prepare_v2(
             db,
             sql_attendance,
@@ -374,22 +394,41 @@ void update_student_frontend_state(int student_user_id)
         sqlite3_bind_int(
             stmt,
             1,
-            student_user_id
+            staff_user_id
         );
 
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
-            fprintf(out, "    { course: \"");
-
-            write_student_js_text(
+            fprintf(
                 out,
-                sqlite3_column_text(stmt, 0)
+                "    { attendanceId: %d, studentId: %d, student: \"",
+                sqlite3_column_int(stmt, 0),
+                sqlite3_column_int(stmt, 1)
+            );
+
+            write_staff_js_text(
+                out,
+                sqlite3_column_text(stmt, 2)
+            );
+
+            fprintf(out, " ");
+
+            write_staff_js_text(
+                out,
+                sqlite3_column_text(stmt, 3)
+            );
+
+            fprintf(out, "\", course: \"");
+
+            write_staff_js_text(
+                out,
+                sqlite3_column_text(stmt, 4)
             );
 
             fprintf(
                 out,
                 "\", status: \"%s\" },\n",
-                sqlite3_column_int(stmt, 1)
+                sqlite3_column_int(stmt, 5)
                     ? "Present"
                     : "Absent"
             );
@@ -415,14 +454,16 @@ void update_student_frontend_state(int student_user_id)
 
 
     /*
-    Retrieves all school announcements from the database.
-    Newer announcements are displayed first.
+    Retrieves every announcement from the database.
+    Newer announcements are placed first.
     */
 
     fprintf(out, "  announcements: [\n");
 
     const char *sql_announcements =
         "SELECT "
+        "id, "
+        "course_id, "
         "title, "
         "message, "
         "announcement_date "
@@ -442,25 +483,30 @@ void update_student_frontend_state(int student_user_id)
     {
         while (sqlite3_step(stmt) == SQLITE_ROW)
         {
-            fprintf(out, "    { title: \"");
-
-            write_student_js_text(
+            fprintf(
                 out,
-                sqlite3_column_text(stmt, 0)
+                "    { announcementId: %d, courseId: %d, title: \"",
+                sqlite3_column_int(stmt, 0),
+                sqlite3_column_int(stmt, 1)
+            );
+
+            write_staff_js_text(
+                out,
+                sqlite3_column_text(stmt, 2)
             );
 
             fprintf(out, "\", message: \"");
 
-            write_student_js_text(
+            write_staff_js_text(
                 out,
-                sqlite3_column_text(stmt, 1)
+                sqlite3_column_text(stmt, 3)
             );
 
             fprintf(out, "\", date: \"");
 
-            write_student_js_text(
+            write_staff_js_text(
                 out,
-                sqlite3_column_text(stmt, 2)
+                sqlite3_column_text(stmt, 4)
             );
 
             fprintf(out, "\" },\n");
@@ -485,13 +531,13 @@ void update_student_frontend_state(int student_user_id)
     fprintf(out, "  ],\n");
 
 
-    // Writes the final result for the Student Portal.
-    if (!student_found)
+    // Writes the final result for the Staff Portal.
+    if (!staff_found)
     {
         fprintf(out, "  success: false,\n");
         fprintf(
             out,
-            "  error: \"Student account not found.\"\n"
+            "  error: \"Staff account not found.\"\n"
         );
     }
     else if (query_error)
@@ -499,7 +545,7 @@ void update_student_frontend_state(int student_user_id)
         fprintf(out, "  success: false,\n");
         fprintf(
             out,
-            "  error: \"Some student data could not be loaded.\"\n"
+            "  error: \"Some staff data could not be loaded.\"\n"
         );
     }
     else
@@ -514,6 +560,6 @@ void update_student_frontend_state(int student_user_id)
     sqlite3_close(db);
 
     printf(
-        "[Student Logic] Successfully updated student_states.js.\n"
+        "[Staff Logic] Successfully updated staff_states.js.\n"
     );
 }
