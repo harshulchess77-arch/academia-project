@@ -2,71 +2,139 @@
 <html>
 
 <head>
+    <!-- Sets the browser tab title for the Staff Portal -->
     <title>Academia Staff Portal</title>
+
+    <!-- Connects the external CSS stylesheet to control page styling and layout -->
     <link rel="stylesheet" href="../Academia.css">
 </head>
 
 <body>
 
     <!--
+    JavaScript Connections:
+    The following scripts are currently commented out.
+    They can be enabled to connect the staff portal to the shared data
+    and application functions.
+
+    Records.js: Stores shared student and school records.
+    Academia.js: Contains general application functions.
+    Staff.js: Contains staff-specific functions for managing school data.
+
+    The defer attribute allows the HTML document to load before
+    the external JavaScript files are executed.
+    -->
+
+    <!--
     <script src="../FrontEnd/Records.js" defer></script>
     <script src="../FrontEnd/Academia.js" defer></script>
     <script src="Staff.js" defer></script>
--->
+    -->
 
+    <!-- Navigation Bar: Displays the portal name and logout navigation -->
     <div class="navbar">
+
+        <!-- Identifies the current interface as the Staff Portal -->
         <b>Academia Staff Portal</b>
+
+        <!-- Logout Link: Redirects the staff member to the authorization page -->
         <a href="../Academia Authorization/Academia_Auth.html">
             Log Out
         </a>
     </div>
 
+    <!-- Welcome Section:
+         Introduces the staff member and summarizes the portal's purpose -->
     <div class="blue-box">
+
+        <!-- Welcome Heading: Displays a personalized greeting -->
         <h2 id="welcome">Welcome, Mr. Smith!</h2>
+
+        <!-- Brief description of the staff portal's main responsibilities -->
         <p>Manage student grades, attendance, and announcements.</p>
     </div>
 
+    <!-- Staff Information Section:
+         Displays identifying information and professional details -->
     <div class="box">
+
+        <!-- Section Heading: Introduces the staff profile -->
         <h2>Staff Information</h2>
 
+        <!-- Staff Name: Displays the employee's name -->
         <p><strong>Name:</strong> <span id="staffName">Dr. Robert Vance</span></p>
+
+        <!-- Staff ID: Displays the employee identification number -->
         <p><strong>Staff ID:</strong> <span id="staffId">EMP-4092</span></p>
+
+        <!-- Staff Position: Displays the employee's professional role -->
         <p><strong>Position:</strong> <span id="staffPosition">Senior Instructor</span></p>
+
+        <!-- Staff Department: Displays the department associated with the employee -->
         <p><strong>Department:</strong> <span id="staffDepartment">Mathematics & Science</span></p>
+
+        <!-- Staff Email: Displays the employee's contact email address -->
         <p><strong>Email:</strong> <span id="staffEmail">r.vance@academia.edu</span></p>
     </div>
 
+    <!-- Grade Management Section:
+         Allows staff members to enter, manage, and view student grades -->
     <div class="box">
+
+        <!-- Section Heading: Introduces the grade entry functionality -->
         <h2>Enter Student Grades</h2>
 
+        <!-- Grade Form:
+             Collects student information, course information, and grade values.
+             The required attribute prevents submission when required fields are empty. -->
         <form id="gradeForm">
+
+            <!-- Student Selection:
+                 Provides a dropdown menu to select the student receiving the grade -->
             Student Name:
             <select id="studentName" required>
                 <option>Alex Johnson</option>
                 <option>Sarah Connor</option>
             </select>
 
+            <!-- Adds spacing between form fields -->
             <br><br>
 
+            <!-- Course Selection:
+                 Allows the staff member to select the course associated with the grade -->
             Course:
             <select id="course" required>
                 <option>Advanced Algebra</option>
                 <option>Chemistry Lab</option>
             </select>
 
+            <!-- Adds spacing between form fields -->
             <br><br>
 
+            <!-- Grade Input:
+                 Accepts a numerical grade between 0 and 100.
+                 The default value is 95.
+                 The number input type restricts the input to numerical values. -->
             Grade:
             <input type="number" id="grade" min="0" max="100" value="95" required>
 
+            <!-- Adds spacing before the form submission button -->
             <br><br>
 
+            <!-- Grade Submission Button:
+                 Submits the entered student grade through the grade form -->
             <button class="btn" type="submit">Add Grade</button>
         </form>
 
+        <!-- Grade Records Heading:
+             Introduces the table containing existing student grades -->
         <h3>Grade Records</h3>
 
+        <!-- Grade Records Table:
+             Organizes student names, courses, grades, and available actions -->
         <table>
+
+            <!-- Table Header: Defines the columns of the grade records -->
             <tr>
                 <th>Student</th>
                 <th>Course</th>
@@ -74,42 +142,68 @@
                 <th>Action</th>
             </tr>
 
+            <!-- Grade List:
+                 Contains the existing grade records.
+                 The gradeList ID allows JavaScript to dynamically modify the table. -->
             <tbody id="gradeList">
+
+                <!-- First Example Grade Record -->
                 <tr>
                     <td>Alex Johnson</td>
                     <td>Advanced Algebra</td>
                     <td>92%</td>
+
+                    <!-- Delete Button:
+                         Calls deleteRow(this) to remove the selected grade record -->
                     <td><button onclick="deleteRow(this)">Delete</button></td>
                 </tr>
 
+                <!-- Second Example Grade Record -->
                 <tr>
                     <td>Sarah Connor</td>
                     <td>Chemistry Lab</td>
                     <td>85%</td>
+
+                    <!-- Delete Button: Removes the corresponding row -->
                     <td><button onclick="deleteRow(this)">Delete</button></td>
                 </tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Attendance Management Section:
+         Allows staff members to record and manage student attendance -->
     <div class="box">
+
+        <!-- Section Heading: Introduces the attendance management system -->
         <h2>Student Attendance</h2>
 
+        <!-- Attendance Form:
+             Collects the student, course, and attendance status -->
         <form id="attendanceForm">
+
+            <!-- Student Selection:
+                 Selects the student whose attendance will be recorded -->
             Student Name:
             <select id="attendanceName" required>
                 <option>Alex Johnson</option>
             </select>
 
+            <!-- Adds spacing between form fields -->
             <br><br>
 
+            <!-- Course Selection:
+                 Identifies the course associated with the attendance record -->
             Course:
             <select id="attendanceCourse" required>
                 <option>Advanced Algebra</option>
             </select>
 
+            <!-- Adds spacing between form fields -->
             <br><br>
 
+            <!-- Attendance Status:
+                 Provides three possible attendance classifications -->
             Attendance:
             <select id="attendanceStatus">
                 <option>Present</option>
@@ -117,14 +211,23 @@
                 <option>Tardy</option>
             </select>
 
+            <!-- Adds spacing before the submission button -->
             <br><br>
 
+            <!-- Attendance Submission Button:
+                 Submits the selected attendance information -->
             <button class="btn" type="submit">Record Attendance</button>
         </form>
 
+        <!-- Attendance Records Heading:
+             Introduces the table of recorded attendance information -->
         <h3>Attendance Records</h3>
 
+        <!-- Attendance Records Table:
+             Organizes student names, courses, attendance statuses, and actions -->
         <table>
+
+            <!-- Table Header: Defines the attendance table columns -->
             <tr>
                 <th>Student</th>
                 <th>Course</th>
@@ -132,67 +235,117 @@
                 <th>Action</th>
             </tr>
 
+            <!-- Attendance List:
+                 Stores the attendance records.
+                 The attendanceList ID allows JavaScript to update the table. -->
             <tbody id="attendanceList">
+
+                <!-- Example Attendance Record -->
                 <tr>
                     <td>Alex Johnson</td>
                     <td>Advanced Algebra</td>
                     <td>Present</td>
+
+                    <!-- Delete Button: Removes the selected attendance record -->
                     <td><button onclick="deleteRow(this)">Delete</button></td>
                 </tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Announcement Management Section:
+         Allows staff members to create and manage school announcements -->
     <div class="box">
+
+        <!-- Section Heading: Introduces the announcement management functionality -->
         <h2>School Announcements</h2>
 
+        <!-- Announcement Form:
+             Collects the announcement's target audience, title, and message -->
         <form id="announcementForm">
+
+            <!-- Announcement Audience:
+                 Allows the staff member to select the intended audience.
+                 All School indicates a school-wide announcement. -->
             Course:
             <select id="announcementCourse" required>
                 <option>All School</option>
             </select>
 
+            <!-- Adds spacing between form fields -->
             <br><br>
 
+            <!-- Announcement Title:
+                 Accepts the title of the announcement -->
             Title:
             <input type="text" id="announcementTitle" value="Science Fair" required>
 
+            <!-- Adds spacing between form fields -->
             <br><br>
 
+            <!-- Announcement Message:
+                 Accepts the main content of the announcement -->
             Message:
             <input type="text" id="announcementMessage"
                 value="Annual science fair sign-ups are now open." required>
 
+            <!-- Announcement Submission Button:
+                 Submits the announcement form to publish a new notice -->
     <button class="btn" type="submit">Post Announcement</button>
         </form>
 
+        <!-- Published Announcements Heading:
+             Introduces the list of currently published announcements -->
         <h3>Published Announcements</h3>
 
+        <!-- Announcement List:
+             Contains the published school notices.
+             The announcementList ID allows JavaScript to add or update announcements. -->
         <div id="announcementList">
 
+            <!-- Example Published Announcement:
+                 Displays the announcement title, message, and delete option -->
             <p>
                 <strong>Science Fair</strong>:
                 Annual science fair sign-ups are now open.
+
+                <!-- Delete Announcement Button:
+                     Calls deleteAnnouncement(this) to remove the selected notice -->
                 <button onclick="deleteAnnouncement(this)">Delete</button>
             </p>
 
         </div>
     </div>
 
+    <!-- Footer Section:
+         Displays the system name at the bottom of the Staff Portal -->
     <div class="footer">
         Academia School System
     </div>
 
+    <!-- JavaScript Functionality:
+         Contains simple functions for removing grade, attendance,
+         and announcement records directly from the webpage -->
+
     <script>
+
+        // deleteRow Function:
+        // Accepts the clicked delete button as its parameter.
+        // Finds the table row containing the button and removes it.
+        // The function can be used for both grade and attendance records.
         function deleteRow(button)
         {
             button.parentElement.parentElement.remove();
         }
 
+        // deleteAnnouncement Function:
+        // Accepts the clicked announcement delete button.
+        // Finds the paragraph containing the announcement and removes it.
         function deleteAnnouncement(button)
         {
             button.parentElement.remove();
         }
+
     </script>
 
 </body>

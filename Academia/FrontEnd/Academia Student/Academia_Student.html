@@ -1,74 +1,175 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Sets the browser tab title for the Student Portal -->
     <title>Academia Student Portal</title>
+
+    <!-- Connects the external CSS stylesheet to control page appearance -->
     <link rel="stylesheet" href="../Academia.css">
 </head>
 
 <body>
 
     <!--
+    JavaScript Connections:
+    The following scripts are currently commented out.
+    They can be enabled to connect the Student Portal to shared records
+    and application functions.
+
+    Records.js: Contains shared student and school data.
+    Academia.js: Contains general application functions.
+    Student.js: Contains student-specific functionality.
+    
+    The defer attribute allows the HTML document to load before
+    the external JavaScript files are executed.
+    -->
+
+    <!--
     <script src="../FrontEnd/Records.js" defer></script>
     <script src="../FrontEnd/Academia.js" defer></script>
     <script src="Student.js" defer></script>
--->
+    -->
+
+    <!-- Navigation Bar:
+         Displays the portal name and provides access to the logout page -->
     <div class="navbar">
+
+        <!-- Identifies the current interface as the Student Portal -->
         <b>Academia Student Portal</b>
+
+        <!-- Logout Link:
+             Redirects the student to the authorization page -->
         <a href="../Academia Authorization/Academia_Auth.html">Log Out</a>
     </div>
 
+    <!-- Error Display:
+         Provides a location for JavaScript to display error messages.
+         The paragraph is initially empty and uses red text for visibility. -->
     <p id="error" style="color: red; text-align: center;"></p>
 
+    <!-- Welcome Section:
+         Introduces the student to the portal and its main functions -->
     <div class="blue-box">
+
+        <!-- Welcome Heading:
+             Displays a greeting that can be dynamically updated by JavaScript -->
         <h2 id="welcome">Welcome</h2>
+
+        <!-- Brief description of the Student Portal's primary functions -->
         <p>View your grades, attendance, and announcements.</p>
     </div>
 
+    <!-- Student Information Section:
+         Displays the student's identifying and academic information -->
     <div class="box">
+
+        <!-- Section Heading: Introduces the student's profile information -->
         <h2>Student Information</h2>
+
+        <!-- Student Name:
+             Displays the student's full name -->
         <p><strong>Name:</strong> <span id="studentName">Alex Johnson</span></p>
+
+        <!-- Student ID:
+             Displays the unique identification number assigned to the student -->
         <p><strong>Student ID:</strong> <span id="studentId">STU-8821</span></p>
+
+        <!-- Grade Level:
+             Displays the student's current school grade -->
         <p><strong>Grade Level:</strong> <span id="gradeLevel">11th Grade</span></p>
+
+        <!-- GPA:
+             Displays the student's grade point average -->
         <p><strong>GPA:</strong> <span id="studentGpa">3.75</span></p>
     </div>
 
+    <!-- Grades Section:
+         Allows students to view their academic performance -->
     <div class="box">
+
+        <!-- Section Heading: Identifies the academic grades table -->
         <h2>Grades</h2>
+
+        <!-- Grades Table:
+             Organizes course names and their corresponding numerical scores -->
         <table>
+
+            <!-- Table Header:
+                 Defines the columns for course names and scores -->
             <thead>
                 <tr>
                     <th>Course</th>
                     <th>Score</th>
                 </tr>
             </thead>
+
+            <!-- Grade List:
+                 Contains the student's existing course grades.
+                 The gradeList ID allows JavaScript to dynamically update the table. -->
             <tbody id="gradeList">
+
+                <!-- Example Grade Record: Advanced Algebra -->
                 <tr><td>Advanced Algebra</td><td>92%</td></tr>
+
+                <!-- Example Grade Record: World History -->
                 <tr><td>World History</td><td>88%</td></tr>
+
+                <!-- Example Grade Record: Chemistry Lab -->
                 <tr><td>Chemistry Lab</td><td>79%</td></tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Attendance Section:
+         Allows students to view their attendance status in different courses -->
     <div class="box">
+
+        <!-- Section Heading: Identifies the attendance records -->
         <h2>Attendance</h2>
+
+        <!-- Attendance Table:
+             Organizes course names and their corresponding attendance statuses -->
         <table>
+
+            <!-- Table Header:
+                 Defines the course and attendance status columns -->
             <thead>
                 <tr>
                     <th>Course</th>
                     <th>Status</th>
                 </tr>
             </thead>
+
+            <!-- Attendance List:
+                 Contains example attendance records.
+                 The attendanceList ID allows JavaScript to update the table. -->
             <tbody id="attendanceList">
+
+                <!-- Example Attendance Record: Advanced Algebra -->
                 <tr><td>Advanced Algebra</td><td>Present</td></tr>
+
+                <!-- Example Attendance Record: World History -->
                 <tr><td>World History</td><td>Present</td></tr>
+
+                <!-- Example Attendance Record: Chemistry Lab -->
                 <tr><td>Chemistry Lab</td><td>Tardy</td></tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Assignments Section:
+         Displays upcoming assignments and their due dates -->
     <div class="box">
+
+        <!-- Section Heading: Introduces the assignment information -->
         <h2>Assignments</h2>
+
+        <!-- Assignments Table:
+             Organizes assignments by course, assignment name, and due date -->
         <table>
+
+            <!-- Table Header:
+                 Defines the columns for assignment information -->
             <thead>
                 <tr>
                     <th>Course</th>
@@ -76,20 +177,41 @@
                     <th>Due Date</th>
                 </tr>
             </thead>
+
+            <!-- Assignment List:
+                 Contains the student's upcoming assignments.
+                 The assignmentList ID allows JavaScript to dynamically update the table. -->
             <tbody id="assignmentList">
+
+                <!-- Example Assignment: Advanced Algebra Problem Set -->
                 <tr><td>Advanced Algebra</td><td>Problem Set 4</td><td>Nov 5, 2026</td></tr>
+
+                <!-- Example Assignment: World History Essay -->
                 <tr><td>World History</td><td>Essay Draft</td><td>Nov 8, 2026</td></tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Announcements Section:
+         Displays important school-wide notices and information -->
     <div class="box">
+
+        <!-- Section Heading: Introduces the announcements -->
         <h2>Announcements</h2>
+
+        <!-- Announcement List:
+             Contains published school announcements.
+             The announcementList ID allows JavaScript to add or update notices. -->
         <div id="announcementList">
+
+            <!-- Example Announcement:
+                 Displays the announcement title and its corresponding message -->
             <p><strong>Science Fair</strong>: Annual science fair sign-ups are now open.</p>
         </div>
     </div>
 
+    <!-- Footer Section:
+         Displays the school system name at the bottom of the Student Portal -->
     <div class="footer">
         Academia School System
     </div>
