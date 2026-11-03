@@ -1,4 +1,10 @@
 /*
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia
+November 1, 2026
+*/
+/*
 Dmitri Buiamov
 Cs50 c project
 sql database

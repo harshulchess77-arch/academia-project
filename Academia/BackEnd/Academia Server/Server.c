@@ -2,6 +2,12 @@
 Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
 CS50 C Project
 Academia
+November 1, 2026
+*/
+/*
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia
 Server Setup
 November 1, 2026
 */

@@ -1,3 +1,9 @@
+/*
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia
+November 1, 2026
+*/
 #include "academia_export.h"
 
 void update_parent_frontend_state(int id)

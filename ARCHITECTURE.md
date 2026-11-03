@@ -1,46 +1,96 @@
+<!--
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia
+November 1, 2026
+-->
 # Architecture Overview
 
-This document provides a detailed guidance to Academia's repository layout. Academia is being developed as a modular school management system, with C modules for application logic and data access, SQLite for structured records, and HTML/CSS/JavaScript files for the user interface. The directory structure shows planned module boundaries, but not every module or integration is provided as completed version as we mentioned to be provided with as little features and later add on if time permits.
+Academia is a school management project with C backend modules, SQLite database files, and an HTML/CSS/JavaScript frontend. This document describes the files and folders currently present in the repository; their presence does not imply that every feature or integration is complete.
 
 ## Project Structure
 
-The tree below reflects the current repository. Comments distinguish existing files from intended responsibilities; they do not imply that a feature is finished.
+The tree below reflects the current working tree, including source files, documentation, workspace settings, database and SQLite utility files, and image assets.
 
 [academia-project]/
-├── Academia/
-│   ├── BackEnd/                         # C application and data-access code
-│   │   ├── Academia Common/
-│   │   │   └── Academia_Common.c        # Shared entry point; opens SQLite database
-│   │   ├── Academia Database/
-│   │   │   ├── Academia.sql             
-│   │   │   └── SQLite3/
-│   │   │       ├── sqlite3.c             # SQLite implementation source
-│   │   │       └── sqlite3.h             # SQLite API declarations
-│   │   ├── Academia Parents/
-│   │   │   └── Academia_Parents.c       # Parent module scaffold
-│   │   ├── Academia School Staff/
-│   │   │   └── Academia_School_Staff.c  # Staff module scaffold
-│   │   └── Academia Student/
-│   │       ├── Academia_Student.c       # Student data/GPA/attendance prototype
-│   ├── FrontEnd/                        # HTML/CSS/JS presentation layer
-│   │   ├── Academia Authrization/       # Login mockup and styles
-│   │   │   ├── Academia_Auth.html
-│   │   │   └── Auth_Style.css
-│   │   ├── Academia Landing/
-│   │   │   └── Academia_Landing.html    # Landing page mockup
-│   │   ├── Academia Parents/
-│   │   │   ├── Academia_Parents.html    # Parent dashboard mockup
-│   │   │   └── Par_Style.css
-│   │   ├── Academia School Staff/
-│   │   │   ├── Academia_School_Staff.html # Staff dashboard mockup
-│   │   │   └── Tea_Style.css
-│   │   ├── Academia Student/
-│   │   │   ├── Academia_Student.html    # Student dashboard mockup
-│   │   │   └── Stu_style.css
-│   │   ├── Academia.css                 # Shared styles
-│   │   └── Academia.js                  # Shared frontend behavior (currently empty)
-│   └── Images/                          # Branding and interface/error images
 ├── .vscode/
-│   └── settings.json                    # VS Code workspace settings
-├── readme.md                            # Project overview and setup information
-└── ARCHITECTURE.md                      # This architecture and repository guide
+│   └── settings.json
+├── Academia/
+│   ├── BackEnd/
+│   │   ├── Academia Auth/
+│   │   │   ├── Academia_Auth.c
+│   │   │   └── Academia_Auth.h
+│   │   ├── Academia Common/
+│   │   │   ├── Academia_Common.c
+│   │   │   └── Academia_Common.h
+│   │   ├── Academia Database/
+│   │   │   ├── Academia.sql
+│   │   │   ├── Database.c
+│   │   │   ├── Database.h
+│   │   │   ├── academia.db
+│   │   │   └── SQLite3 Source Code/
+│   │   │       ├── SQLite3 Source Code
+│   │   │       ├── sqlite3.c
+│   │   │       ├── sqlite3.exe
+│   │   │       └── sqlite3.h
+│   │   ├── Academia Parents/
+│   │   │   ├── Academia_Parents.c
+│   │   │   └── Academia_Parents.h
+│   │   ├── Academia Server/
+│   │   │   └── Server.c
+│   │   ├── Academia Staff/
+│   │   │   ├── Academia_Staff.c
+│   │   │   └── Academia_Staff.h
+│   │   └── Academia Student/
+│   │       ├── Academia_Student.c
+│   │       └── Academia_Student.h
+│   ├── FrontEnd/
+│   │   ├── Academia Student/
+│   │   │   └── Academia_Student.html
+│   │   ├── CSS/
+│   │   │   └── Academia.css
+│   │   ├── HTML/
+│   │   │   ├── 403 Error Page.html
+│   │   │   ├── 429 Error Page.html
+│   │   │   ├── 500 Error Page.html
+│   │   │   ├── 504 Error Page.html
+│   │   │   ├── Academia_Auth.html
+│   │   │   ├── Academia_Landing.html
+│   │   │   ├── Academia_Parents.html
+│   │   │   ├── Academia_Staff.html
+│   │   │   ├── Academia_Student.html
+│   │   │   ├── Account Locked Page.html
+│   │   │   ├── LinkExpired.html
+│   │   │   ├── No Internet Connection.html
+│   │   │   ├── Session Expired.html
+│   │   │   └── Under Maintainence Page.html
+│   │   └── JS/
+│   │       └── Academia.js
+│   └── Images/
+│       ├── 403Error.png
+│       ├── 429Error.png
+│       ├── 500Error.png
+│       ├── 504Error.png
+│       ├── AccountLocked.png
+│       ├── AuthPage1.png
+│       ├── AuthPage2.png
+│       ├── AuthPage3.png
+│       ├── AuthPage4.png
+│       ├── BrandSheet.png
+│       ├── Footer.png
+│       ├── LandingFeatures1.png
+│       ├── LandingFeatures2.png
+│       ├── LandingFeatures3.png
+│       ├── LandingParents.png
+│       ├── LandingStaff.png
+│       ├── LandingStudents.png
+│       ├── LinkExpired.png
+│       ├── NoInternetConnection.png
+│       ├── Parent_Dash_Banner.png
+│       ├── SessionExpired.png
+│       ├── Student_Dash_Banner.png
+│       ├── Teacher_Dash_Banner.png
+│       ├── UnderMaintenance.png
+│       └── UploadFailed.png
+├── ARCHITECTURE.md
+└── README.md

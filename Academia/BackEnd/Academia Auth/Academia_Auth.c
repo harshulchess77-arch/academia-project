@@ -1,4 +1,10 @@
 /*
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia
+November 1, 2026
+*/
+/*
 Dmitrii Buianov
 CS50 C Project
 SQL Database & Login Method Connection
