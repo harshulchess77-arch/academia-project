@@ -12,18 +12,21 @@ Academia Login Server
 #include <ctype.h>
 #include <winsock2.h>
 
-#include "../Academia Database/SQLite3 Source Code/sqlite3.h"
+#include "SQLite3 Source Code/sqlite3.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
 #define PORT 3000
 #define BUFFER_SIZE 8192
+
 #define DATABASE_PATH \
     "Academia/BackEnd/Academia Database/academia.db"
 
 
-// Parent function located in Academia_Parents.c
+// State functions located in the Parent, Student, and Staff modules.
 void update_parent_frontend_state(int parent_user_id);
+void update_student_frontend_state(int student_user_id);
+void update_staff_frontend_state(int staff_user_id);
 
 
 /*
@@ -44,7 +47,7 @@ void get_json_value(
 
     output[0] = '\0';
 
-    // Finds the requested JSON key
+    // Creates the JSON key pattern.
     snprintf(
         pattern,
         sizeof(pattern),
@@ -52,6 +55,7 @@ void get_json_value(
         key
     );
 
+    // Finds the requested key in the JSON body.
     start = strstr(json, pattern);
 
     if (start == NULL)
@@ -59,8 +63,11 @@ void get_json_value(
         return;
     }
 
-    // Finds the colon after the JSON key
-    start = strchr(start + strlen(pattern), ':');
+    // Finds the colon located after the key.
+    start = strchr(
+        start + strlen(pattern),
+        ':'
+    );
 
     if (start == NULL)
     {
@@ -69,12 +76,16 @@ void get_json_value(
 
     start++;
 
-    // Skips spaces between the colon and value
-    while (*start != '\0' && isspace((unsigned char) *start))
+    // Skips spaces between the colon and value.
+    while (
+        *start != '\0' &&
+        isspace((unsigned char) *start)
+    )
     {
         start++;
     }
 
+    // The requested value must be a JSON string.
     if (*start != '"')
     {
         return;
@@ -82,7 +93,7 @@ void get_json_value(
 
     start++;
 
-    // Finds the closing quotation mark
+    // Finds the closing quotation mark.
     end = strchr(start, '"');
 
     if (end == NULL)
@@ -92,13 +103,18 @@ void get_json_value(
 
     length = (int) (end - start);
 
-    // Prevents the output array from overflowing
+    // Prevents the output array from overflowing.
     if (length >= output_size)
     {
         length = output_size - 1;
     }
 
-    strncpy(output, start, length);
+    strncpy(
+        output,
+        start,
+        length
+    );
+
     output[length] = '\0';
 }
 
@@ -118,8 +134,13 @@ int authenticate_user(
 
     int user_id = -1;
 
-    // Opens the main Academia database
-    if (sqlite3_open(DATABASE_PATH, &db) != SQLITE_OK)
+
+    // Opens the main Academia database.
+    // The function returns -1 if the connection fails.
+    if (sqlite3_open(
+            DATABASE_PATH,
+            &db
+        ) != SQLITE_OK)
     {
         printf(
             "[Error] Cannot open database: %s\n",
@@ -136,7 +157,8 @@ int authenticate_user(
         return -1;
     }
 
-    // Searches for an account matching all login values
+
+    // Searches for an account matching all three login values.
     const char *sql =
         "SELECT id "
         "FROM user "
@@ -144,7 +166,9 @@ int authenticate_user(
         "AND password = ? "
         "AND role = ?;";
 
-    // Prepares the login query for execution
+
+    // Prepares the login query for execution.
+    // The login values are bound after preparation.
     if (sqlite3_prepare_v2(
             db,
             sql,
@@ -162,7 +186,8 @@ int authenticate_user(
         return -1;
     }
 
-    // Inserts the login values into the SQL query
+
+    // Inserts the username into the first question mark.
     sqlite3_bind_text(
         stmt,
         1,
@@ -171,6 +196,7 @@ int authenticate_user(
         SQLITE_TRANSIENT
     );
 
+    // Inserts the password into the second question mark.
     sqlite3_bind_text(
         stmt,
         2,
@@ -179,6 +205,7 @@ int authenticate_user(
         SQLITE_TRANSIENT
     );
 
+    // Inserts the role into the third question mark.
     sqlite3_bind_text(
         stmt,
         3,
@@ -187,12 +214,18 @@ int authenticate_user(
         SQLITE_TRANSIENT
     );
 
-    // Reads the user ID when a matching account exists
+
+    // Reads the user ID when a matching account exists.
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
-        user_id = sqlite3_column_int(stmt, 0);
+        user_id = sqlite3_column_int(
+            stmt,
+            0
+        );
     }
 
+
+    // Releases the query and closes the database.
     sqlite3_finalize(stmt);
     sqlite3_close(db);
 
@@ -202,7 +235,7 @@ int authenticate_user(
 
 /*
 Sends a plain-text HTTP response to the browser.
-The response includes headers required for Live Server requests.
+The response includes the CORS headers required by Live Server.
 */
 void send_text_response(
     SOCKET client_socket,
@@ -216,6 +249,7 @@ void send_text_response(
 
     body_length = (int) strlen(body);
 
+    // Creates the complete HTTP response.
     snprintf(
         response,
         sizeof(response),
@@ -223,7 +257,7 @@ void send_text_response(
         "Access-Control-Allow-Origin: *\r\n"
         "Access-Control-Allow-Methods: POST, OPTIONS\r\n"
         "Access-Control-Allow-Headers: Content-Type\r\n"
-        "Content-Type: text/plain\r\n"
+        "Content-Type: text/plain; charset=UTF-8\r\n"
         "Content-Length: %d\r\n"
         "Connection: close\r\n"
         "\r\n"
@@ -234,6 +268,7 @@ void send_text_response(
         body
     );
 
+    // Sends the response to the browser.
     send(
         client_socket,
         response,
@@ -247,7 +282,9 @@ void send_text_response(
 Handles the browser's CORS preflight request.
 This allows the Auth page to send JSON from Live Server.
 */
-void send_options_response(SOCKET client_socket)
+void send_options_response(
+    SOCKET client_socket
+)
 {
     const char *response =
         "HTTP/1.1 204 No Content\r\n"
@@ -268,8 +305,8 @@ void send_options_response(SOCKET client_socket)
 
 
 /*
-Processes the POST /login request from Academia.js.
-A successful parent login also creates parents_states.js.
+Processes a POST request sent to the /login endpoint.
+Successful login creates the state file for the verified role.
 */
 void handle_login(
     SOCKET client_socket,
@@ -284,9 +321,14 @@ void handle_login(
 
     int user_id;
 
-    // Finds the beginning of the HTTP request body
-    body = strstr(request, "\r\n\r\n");
 
+    // Finds where the HTTP headers end and the JSON body begins.
+    body = strstr(
+        request,
+        "\r\n\r\n"
+    );
+
+    // Rejects the request if an HTTP body was not found.
     if (body == NULL)
     {
         send_text_response(
@@ -301,7 +343,8 @@ void handle_login(
 
     body += 4;
 
-    // Reads the login values from the JSON body
+
+    // Reads the three login values from the JSON body.
     get_json_value(
         body,
         "username",
@@ -323,13 +366,18 @@ void handle_login(
         sizeof(role)
     );
 
-    // Rejects requests with missing login information
+
+    // Rejects the request when any required value is missing.
     if (
         username[0] == '\0' ||
         password[0] == '\0' ||
         role[0] == '\0'
     )
     {
+        printf(
+            "[Login Result] Missing login information.\n"
+        );
+
         send_text_response(
             client_socket,
             400,
@@ -340,22 +388,28 @@ void handle_login(
         return;
     }
 
+
     printf(
         "[Login Request] Username: %s | Role: %s\n",
         username,
         role
     );
 
-    // Checks the account against the SQLite database
+
+    // Checks the login values against the SQLite database.
     user_id = authenticate_user(
         username,
         password,
         role
     );
 
+
+    // Rejects invalid credentials before opening a portal.
     if (user_id == -1)
     {
-        printf("[Login Result] Invalid credentials.\n");
+        printf(
+            "[Login Result] Invalid credentials.\n"
+        );
 
         send_text_response(
             client_socket,
@@ -367,27 +421,18 @@ void handle_login(
         return;
     }
 
-    // Creates the parent data file before opening the Parent Portal
-    if (strcmp(role, "parent") == 0)
-    {
-        update_parent_frontend_state(user_id);
 
-        printf(
-            "[Login Result] Parent login successful. User ID: %d\n",
+    // Creates the Student Portal state before returning the role.
+    // The browser opens the student page after receiving this response.
+    if (strcmp(role, "student") == 0)
+    {
+        update_student_frontend_state(
             user_id
         );
 
-        send_text_response(
-            client_socket,
-            200,
-            "OK",
-            "parent"
-        );
-    }
-    else if (strcmp(role, "student") == 0)
-    {
         printf(
-            "[Login Result] Student login successful. User ID: %d\n",
+            "[Login Result] Student login successful. "
+            "User ID: %d\n",
             user_id
         );
 
@@ -398,10 +443,40 @@ void handle_login(
             "student"
         );
     }
+
+    // Creates the Parent Portal state before returning the role.
+    // The browser opens the parent page after receiving this response.
+    else if (strcmp(role, "parent") == 0)
+    {
+        update_parent_frontend_state(
+            user_id
+        );
+
+        printf(
+            "[Login Result] Parent login successful. "
+            "User ID: %d\n",
+            user_id
+        );
+
+        send_text_response(
+            client_socket,
+            200,
+            "OK",
+            "parent"
+        );
+    }
+
+    // Creates the Staff Portal state before returning the role.
+    // The browser opens the staff page after receiving this response.
     else if (strcmp(role, "staff") == 0)
     {
+        update_staff_frontend_state(
+            user_id
+        );
+
         printf(
-            "[Login Result] Staff login successful. User ID: %d\n",
+            "[Login Result] Staff login successful. "
+            "User ID: %d\n",
             user_id
         );
 
@@ -412,6 +487,8 @@ void handle_login(
             "staff"
         );
     }
+
+    // Rejects unknown role values.
     else
     {
         send_text_response(
@@ -434,8 +511,13 @@ int main(void)
     SOCKET server_socket;
     struct sockaddr_in server;
 
-    // Starts the Windows socket system
-    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+
+    // Starts the Windows socket system.
+    // The program stops if Winsock cannot be initialized.
+    if (WSAStartup(
+            MAKEWORD(2, 2),
+            &wsa
+        ) != 0)
     {
         printf(
             "[Error] WSAStartup failed: %d\n",
@@ -445,7 +527,9 @@ int main(void)
         return 1;
     }
 
-    // Creates the TCP server socket
+
+    // Creates the TCP server socket.
+    // The socket receives login requests from the browser.
     server_socket = socket(
         AF_INET,
         SOCK_STREAM,
@@ -463,14 +547,21 @@ int main(void)
         return 1;
     }
 
-    memset(&server, 0, sizeof(server));
 
-    // Allows the server to accept local requests on port 3000
+    // Clears and configures the server address.
+    memset(
+        &server,
+        0,
+        sizeof(server)
+    );
+
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = htons(PORT);
 
-    // Connects the socket to the selected port
+
+    // Connects the socket to port 3000.
+    // A bind error may mean another server is using the port.
     if (bind(
             server_socket,
             (struct sockaddr *) &server,
@@ -488,8 +579,13 @@ int main(void)
         return 1;
     }
 
-    // Begins listening for browser connections
-    if (listen(server_socket, 5) == SOCKET_ERROR)
+
+    // Begins listening for browser requests.
+    // The server can queue up to five pending connections.
+    if (listen(
+            server_socket,
+            5
+        ) == SOCKET_ERROR)
     {
         printf(
             "[Error] Listen failed: %d\n",
@@ -502,12 +598,17 @@ int main(void)
         return 1;
     }
 
+
     printf("Academia Server Running\n");
-    printf("Login endpoint: http://localhost:%d/login\n", PORT);
+    printf(
+        "Login endpoint: http://localhost:%d/login\n",
+        PORT
+    );
     printf("Press Ctrl+C to stop the server.\n\n");
 
 
-    // Accepts and processes browser requests continuously
+    // Accepts and processes browser requests continuously.
+    // Each connection is closed after its response is sent.
     while (1)
     {
         SOCKET client_socket;
@@ -515,6 +616,8 @@ int main(void)
 
         int received;
 
+
+        // Waits for the next browser connection.
         client_socket = accept(
             server_socket,
             NULL,
@@ -531,9 +634,16 @@ int main(void)
             continue;
         }
 
-        memset(request, 0, sizeof(request));
 
-        // Reads the HTTP request and leaves space for the null character
+        // Clears the request buffer before receiving data.
+        memset(
+            request,
+            0,
+            sizeof(request)
+        );
+
+
+        // Reads the HTTP request and leaves space for '\0'.
         received = recv(
             client_socket,
             request,
@@ -541,6 +651,7 @@ int main(void)
             0
         );
 
+        // Closes the connection if no request data was received.
         if (received <= 0)
         {
             closesocket(client_socket);
@@ -549,14 +660,27 @@ int main(void)
 
         request[received] = '\0';
 
-        // Handles the browser's CORS preflight request
-        if (strstr(request, "OPTIONS /login") != NULL)
+
+        // Handles the browser's CORS preflight request.
+        if (
+            strstr(
+                request,
+                "OPTIONS /login"
+            ) != NULL
+        )
         {
-            send_options_response(client_socket);
+            send_options_response(
+                client_socket
+            );
         }
 
-        // Handles login information sent by Academia.js
-        else if (strstr(request, "POST /login") != NULL)
+        // Handles login information sent by the Auth page.
+        else if (
+            strstr(
+                request,
+                "POST /login"
+            ) != NULL
+        )
         {
             handle_login(
                 client_socket,
@@ -564,7 +688,7 @@ int main(void)
             );
         }
 
-        // Rejects all unsupported server routes
+        // Rejects all routes that are not supported.
         else
         {
             send_text_response(
@@ -575,10 +699,12 @@ int main(void)
             );
         }
 
+
         closesocket(client_socket);
     }
 
 
+    // These lines run only if the server loop ends.
     closesocket(server_socket);
     WSACleanup();
 

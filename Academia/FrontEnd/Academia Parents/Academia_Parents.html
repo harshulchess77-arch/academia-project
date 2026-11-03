@@ -2,106 +2,39 @@
 <html lang="en">
 
 <head>
-    <!-- Defines the document language as English -->
-    <!-- Sets the character encoding to UTF-8 to support standard text characters -->
     <meta charset="UTF-8">
-
-    <!-- Sets the browser tab title for the Parent Portal -->
     <title>Academia - Parent Portal</title>
-
-    <!-- Connects the external CSS stylesheet to control the page's appearance -->
     <link rel="stylesheet" href="../Academia.css">
 </head>
 
 <body>
 
-    <!--
-    JavaScript Connections:
-    The following scripts are currently commented out.
-    They can be enabled to connect the Parent Portal to the shared records,
-    main JavaScript functions, and parent-specific functionality.
-
-    Records.js: Contains shared school records and data.
-    Academia.js: Contains general application functions.
-    Parent.js: Contains functions specific to the Parent Portal.
-    -->
-
-    <!--
-    <script src="../FrontEnd/Records.js"></script>
-    <script src="../FrontEnd/Academia.js"></script>
-    <script src="Parent.js"></script>
-    -->
-
-    <!-- Navigation Bar: Displays the Parent Portal title and logout link -->
     <div class="navbar">
-
-        <!-- Identifies the current portal as the parent interface -->
         <b>Academia Parent Portal</b>
-
-        <!-- Logout Link: Redirects the parent to the authorization page -->
         <a href="../Academia Authorization/Academia_Auth.html">
             Log Out
         </a>
     </div>
 
-    <!-- Error Display:
-         Provides a location for JavaScript to display error messages.
-         The paragraph is initially empty and uses red text for visibility. -->
     <p id="error" style="color: red; text-align: center;"></p>
 
-    <!-- Parent Profile Section:
-         Displays the parent's welcome message and personal contact information -->
     <div class="blue-box">
-
-        <!-- Welcome Message:
-             The welcome heading can be dynamically updated using JavaScript -->
         <h2 id="welcome">Welcome</h2>
-
-        <!-- Parent Username:
-             Displays the parent's username or identifying name -->
-        <p>
-            Username:
-            <span id="parentUsername">Eleanor Vance</span>
-        </p>
-
-        <!-- Parent Contact Information:
-             Displays the phone number associated with the parent account -->
-        <p>
-            Phone:
-            <span id="parentPhone">555-0192</span>
-        </p>
+        <p>Username: <span id="parentUsername"></span></p>
+        <p>Phone: <span id="parentPhone"></span></p>
     </div>
 
-    <!-- Student Information Section:
-         Displays academic information about the child associated with the parent -->
     <div class="box">
-
-        <!-- Section Heading: Introduces the student's basic academic information -->
         <h2>Student Information</h2>
-
-        <!-- Student Name: Displays the student's full name -->
-        <p>Name: <span id="studentName">Alex Johnson</span></p>
-
-        <!-- Grade Level: Displays the student's current grade in school -->
-        <p>Grade Level: <span id="gradeLevel">11th Grade</span></p>
-
-        <!-- GPA: Displays the student's current grade point average -->
-        <p>GPA: <span id="studentGpa">3.75</span></p>
+        <p>Name: <span id="studentName"></span></p>
+        <p>Grade Level: <span id="gradeLevel"></span></p>
+        <p>GPA: <span id="studentGpa"></span></p>
     </div>
 
-    <!-- Grades Section:
-         Displays the student's academic performance across different courses -->
     <div class="box">
-
-        <!-- Section Heading: Identifies the academic grade table -->
         <h2>Grades</h2>
 
-        <!-- Grades Table:
-             Organizes course names and their corresponding scores -->
         <table>
-
-            <!-- Table Header:
-                 Defines the column names for the grade records -->
             <thead>
                 <tr>
                     <th>Course</th>
@@ -109,31 +42,14 @@
                 </tr>
             </thead>
 
-            <!-- Grade List:
-                 Contains the student's course grades.
-                 The tbody ID allows JavaScript to dynamically update the table.
-                 The current rows provide example grade records. -->
-            <tbody id="gradeList">
-                <tr><td>Advanced Algebra</td><td>92%</td></tr>
-                <tr><td>World History</td><td>88%</td></tr>
-                <tr><td>Chemistry Lab</td><td>79%</td></tr>
-            </tbody>
+            <tbody id="gradeList"></tbody>
         </table>
     </div>
 
-    <!-- Attendance Section:
-         Allows parents to monitor the student's attendance in each course -->
     <div class="box">
-
-        <!-- Section Heading: Identifies the attendance records -->
         <h2>Attendance</h2>
 
-        <!-- Attendance Table:
-             Organizes course names and their corresponding attendance statuses -->
         <table>
-
-            <!-- Table Header:
-                 Defines the course and attendance status columns -->
             <thead>
                 <tr>
                     <th>Course</th>
@@ -141,39 +57,205 @@
                 </tr>
             </thead>
 
-            <!-- Attendance List:
-                 Contains example attendance records.
-                 The attendanceList ID allows JavaScript to update the records.
-                 Statuses may include Present, Absent, or Tardy. -->
-            <tbody id="attendanceList">
-                <tr><td>Advanced Algebra</td><td>Present</td></tr>
-                <tr><td>World History</td><td>Present</td></tr>
-                <tr><td>Chemistry Lab</td><td>Tardy</td></tr>
-            </tbody>
+            <tbody id="attendanceList"></tbody>
         </table>
     </div>
 
-    <!-- Announcements Section:
-         Displays important school-wide information and notices for parents -->
     <div class="box">
-
-        <!-- Section Heading: Introduces the school announcements -->
         <h2>Announcements</h2>
-
-        <!-- Announcement List:
-             Contains school notices.
-             JavaScript can use this ID to add or update announcements.
-             The current paragraph provides an example announcement. -->
-        <div id="announcementList">
-            <p><strong>Midterm Exams</strong>: Midterm examinations will begin next Monday. Please check your schedule.</p>
-        </div>
+        <div id="announcementList"></div>
     </div>
 
-    <!-- Footer Section:
-         Displays the portal identification at the bottom of the page -->
     <div class="footer">
-        Academia Parent Portal
+        Academia School System
     </div>
+
+    <script src="../../BackEnd/Academia Parents/parents_states.js"></script>
+
+    <script>
+        window.onload = function()
+        {
+            if (typeof parentState == "undefined")
+            {
+                document.getElementById("error").textContent =
+                    "Parent data could not be loaded.";
+
+                return;
+            }
+
+            if (parentState.success == false)
+            {
+                document.getElementById("error").textContent =
+                    parentState.error;
+
+                return;
+            }
+
+            document.getElementById("welcome").textContent =
+                "Welcome, " +
+                parentState.parent.firstName +
+                " " +
+                parentState.parent.lastName;
+
+            document.getElementById("parentUsername").textContent =
+                parentState.parent.username;
+
+            document.getElementById("parentPhone").textContent =
+                parentState.parent.phone;
+
+            if (parentState.students.length > 0)
+            {
+                var student = parentState.students[0];
+
+                document.getElementById("studentName").textContent =
+                    student.firstName + " " + student.lastName;
+
+                document.getElementById("gradeLevel").textContent =
+                    student.gradeLevel;
+
+                document.getElementById("studentGpa").textContent =
+                    student.gpa;
+
+                showGrades(student.studentId);
+                showAttendance(student.studentId);
+            }
+            else
+            {
+                document.getElementById("studentName").textContent =
+                    "No connected student";
+
+                document.getElementById("gradeLevel").textContent =
+                    "Not available";
+
+                document.getElementById("studentGpa").textContent =
+                    "Not available";
+
+                showEmptyRow("gradeList", "No grades available.");
+                showEmptyRow(
+                    "attendanceList",
+                    "No attendance available."
+                );
+            }
+
+            showAnnouncements();
+        };
+
+
+        function showGrades(studentId)
+        {
+            var gradeList =
+                document.getElementById("gradeList");
+
+            gradeList.innerHTML = "";
+
+            for (var i = 0; i < parentState.grades.length; i++)
+            {
+                var grade = parentState.grades[i];
+
+                if (grade.studentId == studentId)
+                {
+                    var row = gradeList.insertRow();
+
+                    row.insertCell().textContent = grade.course;
+                    row.insertCell().textContent = grade.score;
+                }
+            }
+
+            if (gradeList.rows.length == 0)
+            {
+                showEmptyRow("gradeList", "No grades available.");
+            }
+        }
+
+
+        function showAttendance(studentId)
+        {
+            var attendanceList =
+                document.getElementById("attendanceList");
+
+            attendanceList.innerHTML = "";
+
+            for (
+                var i = 0;
+                i < parentState.attendance.length;
+                i++
+            )
+            {
+                var record = parentState.attendance[i];
+
+                if (record.studentId == studentId)
+                {
+                    var row = attendanceList.insertRow();
+
+                    row.insertCell().textContent = record.course;
+                    row.insertCell().textContent = record.status;
+                }
+            }
+
+            if (attendanceList.rows.length == 0)
+            {
+                showEmptyRow(
+                    "attendanceList",
+                    "No attendance available."
+                );
+            }
+        }
+
+
+        function showAnnouncements()
+        {
+            var list =
+                document.getElementById("announcementList");
+
+            list.innerHTML = "";
+
+            for (
+                var i = 0;
+                i < parentState.announcements.length;
+                i++
+            )
+            {
+                var announcement =
+                    parentState.announcements[i];
+
+                var title = document.createElement("h3");
+                var date = document.createElement("p");
+                var message = document.createElement("p");
+                var line = document.createElement("hr");
+
+                title.textContent = announcement.title;
+                date.textContent = announcement.date;
+                message.textContent = announcement.message;
+
+                list.appendChild(title);
+                list.appendChild(date);
+                list.appendChild(message);
+                list.appendChild(line);
+            }
+
+            if (parentState.announcements.length == 0)
+            {
+                list.textContent =
+                    "No announcements available.";
+            }
+        }
+
+
+        function showEmptyRow(tableId, message)
+        {
+            var tableBody =
+                document.getElementById(tableId);
+
+            tableBody.innerHTML = "";
+
+            var row = tableBody.insertRow();
+            var cell = row.insertCell();
+
+            cell.colSpan = 2;
+            cell.textContent = message;
+        }
+    </script>
 
 </body>
+
 </html>
