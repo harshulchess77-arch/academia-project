@@ -10,12 +10,12 @@ November 1, 2026
     <!-- Creates Title and connects StyleSheet-->
      <!-- main header for the login page -->
     <title>Academia - Login</title>
-    <link rel="stylesheet" href="../Academia.css">
+    <link rel="stylesheet" href="../CSS/Academia.css">
 </head>
 
 <body>
     <!--connect to the js file-->
-    <script src="Academia.js"></script>
+    <script src="../JS/Academia.js"></script>
 
     <!-- left side of the Auth Screen. Creates title and slide show of images-->
     <div class="left-side">
@@ -56,7 +56,7 @@ November 1, 2026
             <button class="btn" onclick="goPortal()">Login</button>
             <p id="err" style="color: red;"></p>
             <br>
-            <a href="../Academia Landing/Academia_Landing.html">Back to Landing Page</a>
+            <a href="../HTML/Academia_Landing.html">Back to Landing Page</a>
         </div>
     </div>
 
@@ -101,11 +101,11 @@ November 1, 2026
 
             // Depending on the role provided by the user load next screen Student/Parent/School Staff.
             if (r == "student") {
-                window.location.href = "../Academia Student/Academia_Student.html";
+                window.location.href = "../HTML/Academia_Student.html";
             } else if (r == "parent") {
-                window.location.href = "../Academia Parents/Academia_Parents.html";
+                window.location.href = "../HTML/Academia_Parents.html";
             } else if (r == "staff") {
-                window.location.href = "../Academia Staff/Academia_Staff.html";
+                window.location.href = "../HTML/Academia_Staff.html";
             }
 
             }
