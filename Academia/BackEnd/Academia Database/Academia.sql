@@ -4,13 +4,6 @@ CS50 C Project
 Academia
 November 1, 2026
 */
-/*
-Dmitri Buiamov
-CS50 C Project
-SQL Database
-10.22.26
-*/
-
 
 PRAGMA foreign_keys = ON;
 
