@@ -133,3 +133,67 @@ CREATE TABLE IF NOT EXISTS grade (
     FOREIGN KEY (student_id) REFERENCES student(id),
     FOREIGN KEY (course_id) REFERENCES course(id)
 );
+
+
+-- value insertion
+-- 1. USER
+INSERT INTO user (id, username, password, first_name, last_name, role)
+VALUES
+(1, 'parent01', 'Parent123', 'David', 'Smith', 'parent'),
+(2, 'student01', 'Student123', 'Alex', 'Smith', 'student'),
+(3, 'staff01', 'Staff123', 'Sarah', 'Johnson', 'staff');
+
+
+-- 2. PARENT
+INSERT INTO parent (id, phone)
+VALUES
+(1, '5551234567');
+
+
+-- 3. STUDENT
+INSERT INTO student (id, parent_id, grade_level, gpa)
+VALUES
+(2, 1, 11, 3.85);
+
+
+-- 4. STAFF
+INSERT INTO staff (id, phone)
+VALUES
+(3, '5559876543');
+
+
+-- 5. COURSE
+INSERT INTO course (id, staff_id, course_name)
+VALUES
+(1, 3, 'AP Calculus BC');
+
+
+-- 6. ASSIGNMENT
+INSERT INTO assignment (id, course_id, assignment_name, due_date)
+VALUES
+(1, 1, 'Unit 1 Homework', '2026-11-10');
+
+
+-- 7. ENROLLMENT
+INSERT INTO enrollment (id, student_id, course_id, status)
+VALUES
+(1, 2, 1, 'active');
+
+
+-- 8. ATTENDANCE
+INSERT INTO attendance (id, course_id, student_id, present)
+VALUES
+(1, 1, 2, 1);
+
+
+-- 9. GRADE
+INSERT INTO grade (id, student_id, course_id, score)
+VALUES
+(1, 2, 1, 95);
+
+
+-- 10. ANNOUNCEMENT
+INSERT INTO announcement
+(id, course_id, title, message, announcement_date)
+VALUES
+(1, 1, 'Upcoming Test', 'The Unit 1 test is next Friday.', '2026-11-04');
