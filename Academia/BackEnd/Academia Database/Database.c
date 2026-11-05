@@ -22,7 +22,7 @@ int main(void)
 
 sqlite3* open_database(void) {
     sqlite3 *database = NULL;
-    int result = sqlite3_open("Academia.sql", &database);
+    int result = sqlite3_open("academia.db", &database);
 
     if(result != SQLITE_OK) {
         printf("Database Connection Failed.\n");
