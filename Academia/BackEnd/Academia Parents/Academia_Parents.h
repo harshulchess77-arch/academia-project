@@ -4,13 +4,6 @@ CS50 C Project
 Academia
 November 1, 2026
 */
-/*
-Seungho Kim
-
-CS50 C Project
-Parent Module Declarations
-10.27.26
-*/
 
 #ifndef ACADEMIA_PARENTS_H
 #define ACADEMIA_PARENTS_H
