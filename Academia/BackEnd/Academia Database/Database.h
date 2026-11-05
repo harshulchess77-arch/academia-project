@@ -4,16 +4,10 @@ CS50 C Project
 Academia
 November 1, 2026
 */
-/*
-Dmitri Buiamov
-Cs50 c project
-sql database
-10.22.26
-*/
 
 // Main Method
 
-// We have added ifndef which uses to check if the header was there and define command to check if its defined and run the file asked 
+// We have added ifndef which uses to check if the header was there and define command to check if its defined and run the file asked
 #ifndef DATABASE_H
 #define DATABASE_H
 #include <sqlite3.h>

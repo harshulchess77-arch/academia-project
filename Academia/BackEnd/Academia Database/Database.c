@@ -4,12 +4,6 @@ CS50 C Project
 Academia
 November 1, 2026
 */
-/*
-Dmitri Buiamov
-CS50 C Project
-Database Setup
-10.27.26
-*/
 
 // Main Method
 // We included the libraries stdio.h, sqlite.h with Database.h to read and display the database
@@ -23,26 +17,26 @@ int main(void)
 // We asked sqlite3 library to open the database and return with empty output and used double loop with if else condition
 // Then we use use sqlite libraries with database to NULL which stores memories and connects the database
 // We use sqlite3_open to call and open the database then opens our Database file name "Academia.sql"
-// With use of "if(result != SQLITE_OK)" we check if the database is connected or not connected and if not connected 
+// With use of "if(result != SQLITE_OK)" we check if the database is connected or not connected and if not connected
     //then show error message of Database Connection Failed and use sqlite3_close to close the database and return NULL
 
-sqlite3* open_database(void) { 
-    sqlite3 *database = NULL; 
-    int result = sqlite3_open("Academia.sql", &database); 
-    
-    if(result != SQLITE_OK) { 
-        printf("Database Connection Failed.\n"); 
-        sqlite3_close(database); 
+sqlite3* open_database(void) {
+    sqlite3 *database = NULL;
+    int result = sqlite3_open("academia.db", &database);
+
+    if(result != SQLITE_OK) {
+        printf("Database Connection Failed.\n");
+        sqlite3_close(database);
         return NULL; // Return NULL only if it fails
-    } 
-    
+    }
+
     return database; // Return the active database connection if successful
 }
 
 /* READ THE DATABASE */
 // If the database is successfully connected, the code moves here and reads our key and activate the database with compeltion of this displays the message of "Database Connected Successfully."
 // Enable foreign keys.
-    sqlite3_exec( database,                         // We are using sqlite3_exec command whihc is used to execute the SQL command to enable foreign keys in the database                         
+    sqlite3_exec( database,                         // We are using sqlite3_exec command whihc is used to execute the SQL command to enable foreign keys in the database
         "PRAGMA foreign_keys = ON;",                // After the command is successfully executed, it reads the PRAGMA from Database and then we will have an active database connection
     );
     printf("Database Connected Successfully.\n");   // Once all this process above is successfully completed then we display a message of "Database Connected Successfully."
