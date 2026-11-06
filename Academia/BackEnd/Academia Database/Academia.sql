@@ -1,4 +1,3 @@
-
 /*
 Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
 CS50 C Project
