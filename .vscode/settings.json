@@ -4,5 +4,6 @@
 // November 1, 2026
 {
     "gitdoc.enabled": true,
-    "liveServer.settings.multiRootWorkspaceName": "academia-project"
+    "liveServer.settings.multiRootWorkspaceName": "academia-project",
+    "liveServer.settings.port": 5501
 }

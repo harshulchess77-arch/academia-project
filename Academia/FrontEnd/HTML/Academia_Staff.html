@@ -14,7 +14,7 @@ November 1, 2026
     <title>Academia Staff Portal</title>
 
     <link rel="stylesheet" href="../CSS/Academia.css">
-    <script src="Staff.js" defer></script>
+    <script src="../JS/Academia.js" defer></script>
 </head>
 
 <body>
@@ -25,6 +25,7 @@ November 1, 2026
         <a href="../HTML/Academia_Auth.html">Log Out</a>
     </div>
 
+    <p id="error" style="color:red;text-align:center"></p>
     <!-- Welcome Section -->
     <div class="blue-box">
         <h2 id="welcome">Welcome, Staff!</h2>
@@ -37,17 +38,17 @@ November 1, 2026
 
         <p>
             <strong>Name:</strong>
-            <span id="staffName">Loading...</span>
+            <span id="staffName"></span>
         </p>
 
         <p>
             <strong>Staff ID:</strong>
-            <span id="staffId">Loading...</span>
+            <span id="staffId"></span>
         </p>
 
         <p>
             <strong>Phone:</strong>
-            <span id="staffPhone">Loading...</span>
+            <span id="staffPhone"></span>
         </p>
     </div>
 
