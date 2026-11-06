@@ -1,0 +1,140 @@
+<!--
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia
+November 1, 2026
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Defines the document language and character encoding -->
+    <meta charset="UTF-8">
+
+    <!-- Makes the page responsive on different screen sizes -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Sets the browser tab title -->
+    <title>Academia - Parent Portal</title>
+
+    <!-- Connects the external stylesheet -->
+    <link rel="stylesheet" href="../CSS/Academia.css">
+
+    <!-- Connects the shared JavaScript that requests live database records -->
+    <script src="../JS/Academia.js" defer></script>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <b>Academia Parent Portal</b>
+
+        <a href="../HTML/Academia_Auth.html">
+            Log Out
+        </a>
+    </div>
+
+    <!-- Error Message Display -->
+    <p id="error" style="color: red; text-align: center;"></p>
+
+    <!-- Parent Profile -->
+    <div class="blue-box">
+
+        <h2 id="welcome">Welcome, Parent!</h2>
+
+        <p>
+            Username:
+            <span id="parentUsername"></span>
+        </p>
+
+        <p>
+            Phone:
+            <span id="parentPhone"></span>
+        </p>
+
+    </div>
+
+    <!-- Student Information -->
+    <div class="box">
+
+        <h2>Student Information</h2>
+
+        <p>
+            Name:
+            <span id="studentName"></span>
+        </p>
+
+        <p>
+            Grade Level:
+            <span id="gradeLevel"></span>
+        </p>
+
+        <p>
+            GPA:
+            <span id="studentGpa"></span>
+        </p>
+
+    </div>
+
+    <!-- Student Grades -->
+    <div class="box">
+
+        <h2>Grades</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+
+            <tbody id="gradeList">
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Student Attendance -->
+    <div class="box">
+
+        <h2>Attendance</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="attendanceList">
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- School Announcements -->
+    <div class="box">
+
+        <h2>Announcements</h2>
+
+        <div id="announcementList">
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Academia Parent Portal
+    </div>
+
+</body>
+
+</html>

@@ -1,3 +1,9 @@
+/*
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia
+November 1, 2026
+*/
 /******************************************************************************
 ** This file is an amalgamation of many separate C source files from SQLite
 ** version 3.54.1.  By combining all the individual C code files into this

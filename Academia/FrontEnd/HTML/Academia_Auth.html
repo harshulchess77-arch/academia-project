@@ -1,3 +1,9 @@
+<!--
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia
+November 1, 2026
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,10 +11,15 @@
     <!-- Creates the page title and connects the shared stylesheet. -->
     <meta charset="UTF-8">
     <title>Academia - Login</title>
-    <link rel="stylesheet" href="../Academia.css">
+    <link rel="stylesheet" href="../CSS/Academia.css">
 </head>
 
 <body>
+<<<<<<< HEAD:Academia/FrontEnd/Academia Authorization/Academia_Auth.html
+=======
+    <!--connect to the js file-->
+    <script src="../JS/Academia.js"></script>
+>>>>>>> 5d5c21d8a9cdc50d185cc209aae2c07752a7344d:Academia/FrontEnd/HTML/Academia_Auth.html
 
     <!-- Creates the left side of the authentication page. -->
     <!-- This section displays the title and image slideshow. -->
@@ -77,11 +88,15 @@
             <p id="err" style="color: red;"></p>
 
             <br>
+<<<<<<< HEAD:Academia/FrontEnd/Academia Authorization/Academia_Auth.html
 
             <a href="../Academia Landing/Academia_Landing.html">
                 Back to Landing Page
             </a>
 
+=======
+            <a href="../HTML/Academia_Landing.html">Back to Landing Page</a>
+>>>>>>> 5d5c21d8a9cdc50d185cc209aae2c07752a7344d:Academia/FrontEnd/HTML/Academia_Auth.html
         </div>
 
     </div>
@@ -152,6 +167,7 @@
             loginButton.disabled = true;
             loginButton.textContent = "Logging in...";
 
+<<<<<<< HEAD:Academia/FrontEnd/Academia Authorization/Academia_Auth.html
 
             try
             {
@@ -209,6 +225,15 @@
                     errorMessage.textContent =
                         "The server returned an unknown role.";
                 }
+=======
+            // Depending on the role provided by the user load next screen Student/Parent/School Staff.
+            if (r == "student") {
+                window.location.href = "../HTML/Academia_Student.html";
+            } else if (r == "parent") {
+                window.location.href = "../HTML/Academia_Parents.html";
+            } else if (r == "staff") {
+                window.location.href = "../HTML/Academia_Staff.html";
+>>>>>>> 5d5c21d8a9cdc50d185cc209aae2c07752a7344d:Academia/FrontEnd/HTML/Academia_Auth.html
             }
             catch (error)
             {
