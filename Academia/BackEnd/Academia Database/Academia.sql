@@ -1,4 +1,3 @@
-
 /*
 Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
 CS50 C Project
@@ -20,37 +19,29 @@ Foreign keys connect records between related tables.
 /*
 Enable foreign key enforcement.
 
-SQLite does not always enforce foreign key constraints by default.
-This command ensures that referenced records exist and helps
-maintain relationships between tables.
+// We use this command to make sure SQLite enforces foreign key constraints correctly.
+// This ensures that all referenced records actually exist and helps maintain 
+// a clean relationship between our different database tables.
 */
 PRAGMA foreign_keys = ON;
 
 
 /* ============================================================
-   1. USER TABLE
-   ============================================================
+    1. USER TABLE
+    ============================================================
 
-   Purpose:
-   Stores the basic account information for every user.
+    Purpose:
+    // Stores the basic account information for every single user in the system.
+    // All students, parents, and school staff must first be registered
+    // in this table before getting their role-specific information.
 
-   All students, parents, and school staff are first registered
-   in this table before receiving their role-specific information.
-
-   Columns:
-   id         - Unique user identification number.
-   username   - Unique username used for signing in.
-   password   - Password associated with the account.
-   first_name - User's first name.
-   last_name  - User's last name.
-   role       - Identifies whether the user is a student,
-                parent, or staff member.
-
-   AUTOINCREMENT automatically creates a new ID when one
-   is not manually provided.
-
-   UNIQUE prevents two users from sharing the same username.
-   NOT NULL prevents required fields from being empty.
+    Columns:
+    id         - Unique user identification number (Auto-incremented primary key).
+    username   - Unique username used for signing into the portal.
+    password   - Password associated with the account.
+    first_name - User's first name.
+    last_name  - User's last name.
+    role       - Identifies whether the user is a student, parent, or staff member.
 */
 
 CREATE TABLE IF NOT EXISTS user (
@@ -64,26 +55,21 @@ CREATE TABLE IF NOT EXISTS user (
 
 
 /* ============================================================
-   2. PARENT TABLE
-   ============================================================
+    2. PARENT TABLE
+    ============================================================
 
-   Purpose:
-   Stores additional information belonging to parent accounts.
+    Purpose:
+    // Stores additional information belonging specifically to parent accounts.
+    // Each parent record corresponds directly to an existing account
+    // in the user table sharing the exact same ID.
 
-   Each parent record corresponds to an existing account
-   in the user table.
+    Columns:
+    id    - Parent's user identification number.
+    phone - Parent's contact phone number.
 
-   Columns:
-   id    - Parent's user identification number.
-   phone - Parent's contact phone number.
-
-   Foreign Key:
-   id references user(id).
-
-   This means that a parent must already exist in the user
-   table before their additional information can be stored.
-
-   The same ID is used in both tables.
+    Foreign Key:
+    // id references user(id) - This ensures a parent must already exist in the user
+    // table before their additional phone information can be stored.
 */
 
 CREATE TABLE IF NOT EXISTS parent (
@@ -95,29 +81,23 @@ CREATE TABLE IF NOT EXISTS parent (
 
 
 /* ============================================================
-   3. STUDENT TABLE
-   ============================================================
+    3. STUDENT TABLE
+    ============================================================
 
-   Purpose:
-   Stores student-specific academic information.
+    Purpose:
+    // Stores student-specific academic information and metrics.
+    // Each student has a base account in the user table and may be
+    // associated with a parent account.
 
-   Each student has an account in the user table and may be
-   associated with a parent.
+    Columns:
+    id          - Student's user identification number.
+    parent_id   - ID of the student's associated parent.
+    grade_level - Student's current school grade level.
+    gpa         - Student's grade point average.
 
-   Columns:
-   id          - Student's user identification number.
-   parent_id   - ID of the student's associated parent.
-   grade_level - Student's current school grade level.
-   gpa         - Student's grade point average.
-
-   Foreign Keys:
-   id references user(id).
-   parent_id references parent(id).
-
-   These relationships allow the system to connect students
-   to their accounts and their associated parents.
-
-   A parent can be connected to multiple students.
+    Foreign Keys:
+    // id references user(id) - Links student details to their user account.
+    // parent_id references parent(id) - Connects the student to their guardian in the parent table.
 */
 
 CREATE TABLE IF NOT EXISTS student (
@@ -132,24 +112,20 @@ CREATE TABLE IF NOT EXISTS student (
 
 
 /* ============================================================
-   4. STAFF TABLE
-   ============================================================
+    4. STAFF TABLE
+    ============================================================
 
-   Purpose:
-   Stores additional information for school staff accounts.
+    Purpose:
+    // Stores additional professional information for school staff accounts.
+    // Staff members can be assigned to manage courses using the course table.
 
-   Staff members can be assigned to courses using the
-   course table.
+    Columns:
+    id    - Staff member's user identification number.
+    phone - Staff member's contact phone number.
 
-   Columns:
-   id    - Staff member's user identification number.
-   phone - Staff member's contact phone number.
-
-   Foreign Key:
-   id references user(id).
-
-   This ensures that staff information belongs to an
-   existing user account.
+    Foreign Key:
+    // id references user(id) - Ensures staff information belongs to an
+    // existing user account in the system.
 */
 
 CREATE TABLE IF NOT EXISTS staff (
@@ -161,27 +137,21 @@ CREATE TABLE IF NOT EXISTS staff (
 
 
 /* ============================================================
-   5. COURSE TABLE
-   ============================================================
+    5. COURSE TABLE
+    ============================================================
 
-   Purpose:
-   Stores courses offered by the school.
+    Purpose:
+    // Stores courses offered by the school institution.
+    // Each course may be associated with a staff member who is
+    // responsible for teaching and managing that course.
 
-   Each course may be associated with a staff member
-   responsible for that course.
+    Columns:
+    id          - Unique course identification number.
+    staff_id    - ID of the staff member assigned to the course.
+    course_name - Name of the course.
 
-   Columns:
-   id          - Unique course identification number.
-   staff_id    - ID of the staff member assigned to the course.
-   course_name - Name of the course.
-
-   Foreign Key:
-   staff_id references staff(id).
-
-   One staff member can be responsible for multiple courses.
-
-   Course records are used by the assignment, attendance,
-   enrollment, announcement, and grade tables.
+    Foreign Key:
+    // staff_id references staff(id) - Links the course to its assigned instructor.
 */
 
 CREATE TABLE IF NOT EXISTS course (
@@ -194,27 +164,22 @@ CREATE TABLE IF NOT EXISTS course (
 
 
 /* ============================================================
-   6. ASSIGNMENT TABLE
-   ============================================================
+    6. ASSIGNMENT TABLE
+    ============================================================
 
-   Purpose:
-   Stores assignments associated with courses.
+    Purpose:
+    // Stores homework and tests associated with specific courses.
+    // This information is displayed on the student portal so students 
+    // can easily view their assignments and upcoming due dates.
 
-   This information can be displayed on the student portal
-   so students can view their assignments and due dates.
+    Columns:
+    id              - Unique assignment identification number.
+    course_id       - ID of the course containing the assignment.
+    assignment_name - Name or title of the assignment.
+    due_date        - Date when the assignment is due (YYYY-MM-DD).
 
-   Columns:
-   id              - Unique assignment identification number.
-   course_id       - ID of the course containing the assignment.
-   assignment_name - Name or title of the assignment.
-   due_date        - Date when the assignment is due.
-
-   Foreign Key:
-   course_id references course(id).
-
-   A single course can contain multiple assignments.
-
-   Dates are stored using the YYYY-MM-DD format.
+    Foreign Key:
+    // course_id references course(id) - Connects the assignment directly to a course.
 */
 
 CREATE TABLE IF NOT EXISTS assignment (
@@ -228,31 +193,22 @@ CREATE TABLE IF NOT EXISTS assignment (
 
 
 /* ============================================================
-   7. ATTENDANCE TABLE
-   ============================================================
+    7. ATTENDANCE TABLE
+    ============================================================
 
-   Purpose:
-   Records whether a student was present or absent
-   for a course.
+    Purpose:
+    // Records whether a student was present or absent for a course session.
+    // Each attendance record connects a specific student to a specific course.
 
-   Each attendance record connects a student to a course.
+    Columns:
+    id         - Unique attendance record identification number.
+    course_id  - ID of the course.
+    student_id - ID of the student.
+    present    - Boolean value indicating attendance (1 = Present, 0 = Absent).
 
-   Columns:
-   id         - Unique attendance record identification number.
-   course_id  - ID of the course.
-   student_id - ID of the student.
-   present    - Boolean value indicating attendance.
-
-   Boolean Values:
-   1 = Present
-   0 = Absent
-
-   Foreign Keys:
-   course_id references course(id).
-   student_id references student(id).
-
-   A student can have multiple attendance records
-   associated with different courses.
+    Foreign Keys:
+    // course_id references course(id).
+    // student_id references student(id).
 */
 
 CREATE TABLE IF NOT EXISTS attendance (
@@ -267,34 +223,23 @@ CREATE TABLE IF NOT EXISTS attendance (
 
 
 /* ============================================================
-   8. ENROLLMENT TABLE
-   ============================================================
+    8. ENROLLMENT TABLE
+    ============================================================
 
-   Purpose:
-   Records which students are enrolled in which courses.
+    Purpose:
+    // Records which students are enrolled in which courses.
+    // This table creates a many-to-many relationship between
+    // students and courses.
 
-   This table creates a many-to-many relationship between
-   students and courses.
+    Columns:
+    id         - Unique enrollment identification number.
+    student_id - ID of the enrolled student.
+    course_id  - ID of the course.
+    status     - Indicates whether enrollment is active (1 = Active, 0 = Inactive).
 
-   A student can enroll in multiple courses.
-   A course can contain multiple students.
-
-   Columns:
-   id         - Unique enrollment identification number.
-   student_id - ID of the enrolled student.
-   course_id  - ID of the course.
-   status     - Indicates whether enrollment is active.
-
-   Boolean Values:
-   1 = Active enrollment
-   0 = Inactive enrollment
-
-   Foreign Keys:
-   student_id references student(id).
-   course_id references course(id).
-
-   The system can use these records to determine which
-   courses should appear on a student's dashboard.
+    Foreign Keys:
+    // student_id references student(id).
+    // course_id references course(id).
 */
 
 CREATE TABLE IF NOT EXISTS enrollment (
@@ -309,26 +254,23 @@ CREATE TABLE IF NOT EXISTS enrollment (
 
 
 /* ============================================================
-   9. ANNOUNCEMENT TABLE
-   ============================================================
+    9. ANNOUNCEMENT TABLE
+    ============================================================
 
-   Purpose:
-   Stores announcements related to individual courses.
+    Purpose:
+    // Stores announcements related to individual courses.
+    // Staff members can create announcements that students
+    // and parents can view through their portals.
 
-   Staff members can create announcements that students
-   and parents may view through their portals.
+    Columns:
+    id                - Unique announcement identification number.
+    course_id         - ID of the related course.
+    title             - Announcement title.
+    message           - Main announcement content.
+    announcement_date - Date the announcement was created.
 
-   Columns:
-   id                - Unique announcement identification number.
-   course_id         - ID of the related course.
-   title             - Announcement title.
-   message           - Main announcement content.
-   announcement_date - Date the announcement was created.
-
-   Foreign Key:
-   course_id references course(id).
-
-   A single course may contain multiple announcements.
+    Foreign Key:
+    // course_id references course(id).
 */
 
 CREATE TABLE IF NOT EXISTS announcement (
@@ -343,30 +285,23 @@ CREATE TABLE IF NOT EXISTS announcement (
 
 
 /* ============================================================
-   10. GRADE TABLE
-   ============================================================
+    10. GRADE TABLE
+    ============================================================
 
-   Purpose:
-   Stores academic scores assigned to students.
+    Purpose:
+    // Stores academic scores assigned to students.
+    // Each grade record connects a student to a course
+    // and contains the student's numerical score value.
 
-   Each grade record connects a student to a course
-   and contains the student's numerical score.
+    Columns:
+    id         - Unique grade record identification number.
+    student_id - ID of the student receiving the grade.
+    course_id  - ID of the course.
+    score      - Numerical grade value.
 
-   Columns:
-   id         - Unique grade record identification number.
-   student_id - ID of the student receiving the grade.
-   course_id  - ID of the course.
-   score      - Numerical grade value.
-
-   Foreign Keys:
-   student_id references student(id).
-   course_id references course(id).
-
-   A student may receive multiple grade records
-   for the same course.
-
-   The backend can retrieve these records to display
-   academic performance on student and parent portals.
+    Foreign Keys:
+    // student_id references student(id).
+    // course_id references course(id).
 */
 
 CREATE TABLE IF NOT EXISTS grade (
@@ -381,37 +316,23 @@ CREATE TABLE IF NOT EXISTS grade (
 
 
 /* ============================================================
-   SAMPLE DATA INSERTION
-   ============================================================
+    SAMPLE DATA INSERTION
+    ============================================================
 
-   Purpose:
-   Inserts example records into the database for testing.
-
-   These records allow the frontend and C backend to demonstrate
-   login, student information, course enrollment, attendance,
-   announcements, assignments, and grade displays.
-
-   All relationships use matching identification numbers.
-
-   Note:
-   These INSERT commands are intended for initial setup.
-   Running them again may cause primary key or username
-   conflicts if the records already exist.
+    Purpose:
+    // Inserts example records into the database for testing and demonstration.
+    // These records allow the frontend and C backend to test
+    // login, student information, course enrollment, attendance,
+    // announcements, assignments, and grade displays.
 */
 
 
 /* ------------------------------------------------------------
-   1. INSERT USERS
-
-   Creates three example accounts:
-   - A parent
-   - A student
-   - A staff member
-
-   Each account receives a unique ID, username, password,
-   first name, last name, and role.
-
-   These IDs will be referenced by the role-specific tables.
+    1. INSERT USERS
+    // We insert three example accounts into our user table:
+    // - A parent (David Smith)
+    // - A student (Alex Smith)
+    // - A staff member (Sarah Johnson)
 */
 
 INSERT INTO user
@@ -423,13 +344,9 @@ VALUES
 
 
 /* ------------------------------------------------------------
-   2. INSERT PARENT
-
-   Creates the additional parent information for David Smith.
-
-   Parent ID 1 matches user ID 1.
-
-   The phone number is stored for contact purposes.
+    2. INSERT PARENT
+    // We create the additional parent information for David Smith.
+    // Parent ID 1 matches user ID 1 and stores his contact phone number.
 */
 
 INSERT INTO parent (id, phone)
@@ -438,15 +355,10 @@ VALUES
 
 
 /* ------------------------------------------------------------
-   3. INSERT STUDENT
-
-   Creates the academic profile for Alex Smith.
-
-   Student ID 2 matches user ID 2.
-   Parent ID 1 connects Alex Smith to David Smith.
-
-   Grade level: 11
-   GPA: 3.85
+    3. INSERT STUDENT
+    // We create the academic profile for Alex Smith.
+    // Student ID 2 matches user ID 2 and parent ID 1 connects Alex to David.
+    // We set the grade level to 11 and GPA to 3.85.
 */
 
 INSERT INTO student (id, parent_id, grade_level, gpa)
@@ -455,13 +367,9 @@ VALUES
 
 
 /* ------------------------------------------------------------
-   4. INSERT STAFF
-
-   Creates the additional staff information for Sarah Johnson.
-
-   Staff ID 3 matches user ID 3.
-
-   This account will be assigned to the example course.
+    4. INSERT STAFF
+    // We create the additional staff information for Sarah Johnson.
+    // Staff ID 3 matches user ID 3 and stores her contact phone number.
 */
 
 INSERT INTO staff (id, phone)
@@ -470,17 +378,9 @@ VALUES
 
 
 /* ------------------------------------------------------------
-   5. INSERT COURSE
-
-   Creates an AP Calculus BC course.
-
-   Course ID: 1
-   Staff ID: 3
-
-   The staff ID links this course to Sarah Johnson.
-
-   This course will also be connected to assignments,
-   enrollment, attendance, grades, and announcements.
+    5. INSERT COURSE
+    // We create an AP Calculus BC course with ID 1 and assign it
+    // to staff member Sarah Johnson (Staff ID 3).
 */
 
 INSERT INTO course (id, staff_id, course_name)
@@ -489,17 +389,9 @@ VALUES
 
 
 /* ------------------------------------------------------------
-   6. INSERT ASSIGNMENT
-
-   Creates an assignment for AP Calculus BC.
-
-   Assignment ID: 1
-   Course ID: 1
-   Assignment name: Unit 1 Homework
-   Due date: November 10, 2026
-
-   Students enrolled in the course can view this assignment
-   through the frontend.
+    6. INSERT ASSIGNMENT
+    // We create an assignment for AP Calculus BC named 'Unit 1 Homework'
+    // with a due date of November 10, 2026.
 */
 
 INSERT INTO assignment
@@ -509,16 +401,9 @@ VALUES
 
 
 /* ------------------------------------------------------------
-   7. INSERT ENROLLMENT
-
-   Enrolls Alex Smith in AP Calculus BC.
-
-   Student ID: 2
-   Course ID: 1
-   Status: 1 (Active)
-
-   The enrollment table allows the backend to determine
-   which courses belong to each student.
+    7. INSERT ENROLLMENT
+    // We enroll student Alex Smith (Student ID 2) into AP Calculus BC (Course ID 1)
+    // with an active status of 1.
 */
 
 INSERT INTO enrollment
@@ -528,16 +413,9 @@ VALUES
 
 
 /* ------------------------------------------------------------
-   8. INSERT ATTENDANCE
-
-   Creates an attendance record for Alex Smith.
-
-   Student ID: 2
-   Course ID: 1
-   Present: 1 (Yes)
-
-   The student and parent portals can use this information
-   to display attendance records.
+    8. INSERT ATTENDANCE
+    // We create an attendance record for Alex Smith showing they were
+    // present (value 1) for AP Calculus BC.
 */
 
 INSERT INTO attendance
@@ -547,16 +425,9 @@ VALUES
 
 
 /* ------------------------------------------------------------
-   9. INSERT GRADE
-
-   Creates a grade record for Alex Smith.
-
-   Student ID: 2
-   Course ID: 1
-   Score: 95
-
-   This score can be displayed in the student portal
-   and the associated parent's portal.
+    9. INSERT GRADE
+    // We create a grade record for Alex Smith in AP Calculus BC
+    // with a numerical score of 95.
 */
 
 INSERT INTO grade
@@ -566,18 +437,9 @@ VALUES
 
 
 /* ------------------------------------------------------------
-   10. INSERT ANNOUNCEMENT
-
-   Creates an announcement for AP Calculus BC.
-
-   Course ID: 1
-   Title: Upcoming Test
-   Date: November 4, 2026
-
-   The message informs students about an upcoming test.
-
-   The backend can retrieve the announcement and display
-   it on the appropriate frontend pages.
+    10. INSERT ANNOUNCEMENT
+    // We create an announcement for AP Calculus BC titled 'Upcoming Test'
+    // to notify students about the unit test scheduled for next Friday.
 */
 
 INSERT INTO announcement
