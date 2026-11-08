@@ -6,265 +6,83 @@ November 1, 2026
 -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <!-- Creates the page title and connects the shared stylesheet. -->
     <meta charset="UTF-8">
-    <title>Academia - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia - Secure Login</title>
     <link rel="stylesheet" href="../CSS/Academia.css">
+    <link rel="stylesheet" href="Academia.css">
+    <script src="../JS/Academia.js"></script>
 </head>
 
 <body>
-<<<<<<< HEAD:Academia/FrontEnd/Academia Authorization/Academia_Auth.html
-=======
-    <!--connect to the js file-->
-    <script src="../JS/Academia.js"></script>
->>>>>>> 5d5c21d8a9cdc50d185cc209aae2c07752a7344d:Academia/FrontEnd/HTML/Academia_Auth.html
-
-    <!-- Creates the left side of the authentication page. -->
-    <!-- This section displays the title and image slideshow. -->
+    <!-- Left side of Auth Screen: Brand statement and slideshow -->
     <div class="left-side">
-
         <h1>Academia</h1>
-
-        <h2>
-            One System.<br>
-            A Stronger School Community.
-        </h2>
-
-        <p style="color: #60A5FA;">
-            Students. Parents. Staff. All Connected.
-        </p>
-
-        <!-- Displays the current slideshow image. -->
-        <img
-            id="slide-pic"
-            src="../../Images/AuthPage1.png"
-            width="360"
-            alt="Academia Slide"
-        >
-
+        <h2>One System.<br>A Stronger School Community.</h2>
+        <p>Students. Parents. Staff. All Connected.</p>
+        <img id="slide-pic" src="../Images/AuthPage1.png" onerror="this.src='../../Images/AuthPage1.png'; this.onerror=null;" width="380" alt="Academia Portal Preview">
     </div>
 
-
-    <!-- Creates the login menu on the right side. -->
-    <!-- The user enters account information and selects a role. -->
+    <!-- Right side of Auth Screen: Clean Login Menu -->
     <div class="right-side">
+        <div class="box">
+            <h2>Sign In / Sign Up</h2>
 
-        <div class="box" style="width: 300px;">
-
-            <h2>Sign In</h2>
-
-            <!-- Creates the username input. -->
             <p>Username:</p>
-            <input type="text" id="username">
+            <input type="text" id="username" placeholder="e.g. student1, parent1, staff1" autocomplete="username">
 
-            <!-- Creates the password input. -->
             <p>Password:</p>
-            <input type="password" id="password">
+            <input type="password" id="password" placeholder="Default: password123" autocomplete="current-password">
 
-            <!-- Allows the user to select an account role. -->
             <p>Role:</p>
-
             <select id="role">
-                <option value="student">Student</option>
-                <option value="parent">Parent</option>
-                <option value="staff">Staff</option>
+                <option value="student">Student Portal</option>
+                <option value="parent">Parent Portal</option>
+                <option value="staff">School Staff Portal</option>
             </select>
 
-            <br><br>
+            <button class="btn" onclick="goPortal()" id="loginBtn">Login to Academia</button>
+            <p id="err" style="color: #EF4444; margin-top: 1rem; text-align: center; font-weight: 500;"></p>
 
-            <!-- Sends the login information to the C server. -->
-            <button
-                class="btn"
-                id="loginButton"
-                type="button"
-                onclick="goPortal()"
-            >
-                Login
-            </button>
+            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 1.2rem; margin-top: 1.5rem; font-size: 1.25rem; color: #64748B;">
+                <strong style="color: #0B3D91;">Quick Demo Logins (Password: password123):</strong><br>
+                • Student: <code>student1</code> (Alex Rivera)<br>
+                • Parent: <code>parent1</code> (Marcus Rivera)<br>
+                • Staff: <code>staff1</code> (Dr. Eleanor Vance)
+            </div>
 
-            <!-- Displays login and connection errors. -->
-            <p id="err" style="color: red;"></p>
-
-            <br>
-<<<<<<< HEAD:Academia/FrontEnd/Academia Authorization/Academia_Auth.html
-
-            <a href="../Academia Landing/Academia_Landing.html">
-                Back to Landing Page
-            </a>
-
-=======
-            <a href="../HTML/Academia_Landing.html">Back to Landing Page</a>
->>>>>>> 5d5c21d8a9cdc50d185cc209aae2c07752a7344d:Academia/FrontEnd/HTML/Academia_Auth.html
+            <a href="Academia_Landing.html" style="margin-top: 1.5rem;">← Back to Landing Page</a>
         </div>
-
     </div>
 
-
+    <!-- Slideshow rotation -->
     <script>
-        // Stores the images used by the authentication slideshow.
         var pics = [
-            "../../Images/AuthPage1.png",
-            "../../Images/AuthPage2.png",
-            "../../Images/AuthPage3.png",
-            "../../Images/AuthPage4.png"
+            "../Images/AuthPage1.png",
+            "../Images/AuthPage2.png",
+            "../Images/AuthPage3.png",
+            "../Images/AuthPage4.png"
         ];
-
         var i = 0;
 
-        // Changes the slideshow to the next image.
-        function changePic()
-        {
-            i = i + 1;
-
-            if (i == pics.length)
-            {
-                i = 0;
-            }
-
-            document.getElementById("slide-pic").src = pics[i];
-        }
-
-        // Changes the slideshow image every five seconds.
-        setInterval(changePic, 5000);
-
-
-        // Sends the username, password, and role to the C server.
-        // The server response determines which portal should open.
-        async function goPortal()
-        {
-            var username =
-                document.getElementById("username").value.trim();
-
-            var password =
-                document.getElementById("password").value;
-
-            var role =
-                document.getElementById("role").value;
-
-            var errorMessage =
-                document.getElementById("err");
-
-            var loginButton =
-                document.getElementById("loginButton");
-
-            // Removes the previous error message.
-            errorMessage.textContent = "";
-
-
-            // Stops when required login information is missing.
-            if (username == "" || password == "")
-            {
-                errorMessage.textContent =
-                    "Enter username and password.";
-
-                return;
-            }
-
-
-            // Prevents repeated requests while login is processing.
-            loginButton.disabled = true;
-            loginButton.textContent = "Logging in...";
-
-<<<<<<< HEAD:Academia/FrontEnd/Academia Authorization/Academia_Auth.html
-
-            try
-            {
-                // Sends the login values to the C server on port 3000.
-                var response = await fetch(
-                    "http://localhost:3000/login",
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            username: username,
-                            password: password,
-                            role: role
-                        })
-                    }
-                );
-
-                // Reads the role or error returned by the server.
-                var result = await response.text();
-                result = result.trim();
-
-
-                // Rejects an invalid username, password, or role.
-                if (!response.ok || result == "invalid")
-                {
-                    errorMessage.textContent =
-                        "Invalid username, password, or role.";
-
-                    return;
-                }
-
-
-                // Opens the portal matching the verified role.
-                if (result == "student")
-                {
-                    window.location.href =
-                        "../Academia Student/Academia_Student.html";
-                }
-                else if (result == "parent")
-                {
-                    window.location.href =
-                        "../Academia Parents/Academia_Parents.html";
-                }
-                else if (result == "staff")
-                {
-                    window.location.href =
-                        "../Academia Staff/Academia_Staff.html";
-                }
-                else
-                {
-                    errorMessage.textContent =
-                        "The server returned an unknown role.";
-                }
-=======
-            // Depending on the role provided by the user load next screen Student/Parent/School Staff.
-            if (r == "student") {
-                window.location.href = "../HTML/Academia_Student.html";
-            } else if (r == "parent") {
-                window.location.href = "../HTML/Academia_Parents.html";
-            } else if (r == "staff") {
-                window.location.href = "../HTML/Academia_Staff.html";
->>>>>>> 5d5c21d8a9cdc50d185cc209aae2c07752a7344d:Academia/FrontEnd/HTML/Academia_Auth.html
-            }
-            catch (error)
-            {
-                // Displays an error when server.exe is not running.
-                errorMessage.textContent =
-                    "Cannot connect to the Academia server.";
-
-                console.log(error);
-            }
-            finally
-            {
-                // Allows the user to try logging in again.
-                loginButton.disabled = false;
-                loginButton.textContent = "Login";
+        function changePic() {
+            i = (i + 1) % pics.length;
+            var el = document.getElementById("slide-pic");
+            if (el) {
+                el.src = pics[i];
             }
         }
 
+        setInterval(changePic, 4000);
 
-        // Allows the Enter key to run the login function.
-        document.addEventListener(
-            "keydown",
-            function(event)
-            {
-                if (event.key == "Enter")
-                {
-                    goPortal();
-                }
+        // Allow Enter key to trigger login
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                goPortal();
             }
-        );
+        });
     </script>
 
 </body>
-
 </html>

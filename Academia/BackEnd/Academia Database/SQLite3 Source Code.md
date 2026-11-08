@@ -11,7 +11,7 @@ and sort of libraries type and for more understanding please refer to the files
 And for our code please go to this part of repositotry
 academia-project and change directory to Academia Database where you will find these things you need to read files 2 to 4
 To understand our code logic for Database and everything:
-1. SQLite3 SOurce COde as folder
+1. SQLite3 Source Code as folder
 2. Academia.sql
 3. Database.c
 4. Database.h

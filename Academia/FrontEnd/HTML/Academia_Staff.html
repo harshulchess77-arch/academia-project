@@ -4,16 +4,15 @@ CS50 C Project
 Academia
 November 1, 2026
 -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Academia Staff Portal</title>
-
+    <title>Academia - Staff & Faculty Portal</title>
     <link rel="stylesheet" href="../CSS/Academia.css">
+    <link rel="stylesheet" href="Academia.css">
+    <script src="../JS/staff_states.js" onerror="this.onerror=null;"></script>
     <script src="../JS/Academia.js" defer></script>
 </head>
 
@@ -22,118 +21,102 @@ November 1, 2026
     <!-- Navigation Bar -->
     <div class="navbar">
         <b>Academia Staff Portal</b>
-        <a href="../HTML/Academia_Auth.html">Log Out</a>
+        <a href="Academia_Auth.html">Log Out</a>
     </div>
 
-    <p id="error" style="color:red;text-align:center"></p>
+    <p id="error" style="color: #EF4444; text-align: center; margin-top: 1rem;"></p>
+
     <!-- Welcome Section -->
     <div class="blue-box">
-        <h2 id="welcome">Welcome, Staff!</h2>
-        <p>Manage student grades, attendance, and course announcements.</p>
+        <h2 id="welcome">Welcome, Faculty Member!</h2>
+        <p>Manage student grades, record daily attendance, and publish course announcements.</p>
+        <div style="margin-top: 1.5rem; display: inline-flex; gap: 2rem; background: rgba(255,255,255,0.12); padding: 0.8rem 1.8rem; border-radius: 8px;">
+            <span>Instructor: <strong id="staffName" style="color: #FACC15;">Dr. Eleanor Vance</strong></span>
+            <span>Faculty ID: <strong id="staffId" style="color: #FACC15;">4</strong></span>
+            <span>Phone: <strong id="staffPhone" style="color: #FACC15;">(555) 987-6543</strong></span>
+        </div>
     </div>
 
-    <!-- Staff Information -->
-    <div class="box">
-        <h2>Staff Information</h2>
-
-        <p>
-            <strong>Name:</strong>
-            <span id="staffName"></span>
-        </p>
-
-        <p>
-            <strong>Staff ID:</strong>
-            <span id="staffId"></span>
-        </p>
-
-        <p>
-            <strong>Phone:</strong>
-            <span id="staffPhone"></span>
-        </p>
-    </div>
-
-    <!-- Student Grades -->
+    <!-- Student Grades Section -->
     <div class="box">
         <h2>Enter Student Grades</h2>
-
         <form id="gradeForm">
-
-            Student Name:
-            <select id="studentName" required></select>
-
-            <br><br>
-
-            Course:
-            <select id="course" required></select>
-
-            <br><br>
-
-            Grade:
-            <input
-                type="number"
-                id="grade"
-                min="0"
-                max="100"
-                step="0.01"
-                required
-            >
-
-            <br><br>
-
-            <button class="btn" type="submit">
-                Save Grade
-            </button>
-
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; align-items: end;">
+                <div>
+                    <label><strong>Student:</strong></label>
+                    <select id="studentName" required>
+                        <option value="1">Alex Rivera (ID: 1)</option>
+                        <option value="2">Sophia Chen (ID: 2)</option>
+                    </select>
+                </div>
+                <div>
+                    <label><strong>Course:</strong></label>
+                    <select id="course" required>
+                        <option value="1">AP Computer Science A</option>
+                        <option value="2">Advanced Mathematics</option>
+                        <option value="3">Physics with Calculus</option>
+                    </select>
+                </div>
+                <div>
+                    <label><strong>Score (0 - 100):</strong></label>
+                    <input type="number" id="grade" min="0" max="100" step="0.1" placeholder="e.g. 95.5" required>
+                </div>
+                <div>
+                    <button class="btn" type="submit" style="width: 100%; margin-bottom: 1.2rem;">Save / Update Grade</button>
+                </div>
+            </div>
         </form>
 
-        <h3>Grade Records</h3>
-
+        <h3>Recorded Course Grades</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Student</th>
-                    <th>Course</th>
-                    <th>Grade</th>
+                    <th>Student Name</th>
+                    <th>Course Name</th>
+                    <th>Recorded Score</th>
                     <th>Action</th>
                 </tr>
             </thead>
-
-            <tbody id="gradeList"></tbody>
+            <tbody id="gradeList">
+                <tr><td colspan="4" style="text-align: center; color: #64748B;">Connecting to Academia Backend...</td></tr>
+            </tbody>
         </table>
     </div>
 
-    <!-- Student Attendance -->
+    <!-- Student Attendance Section -->
     <div class="box">
-        <h2>Student Attendance</h2>
-
+        <h2>Record Daily Attendance</h2>
         <form id="attendanceForm">
-
-            Student Name:
-            <select id="attendanceName" required></select>
-
-            <br><br>
-
-            Course:
-            <select id="attendanceCourse" required></select>
-
-            <br><br>
-
-            Attendance:
-            <select id="attendanceStatus" required>
-                <option value="1">Present</option>
-                <option value="0">Absent</option>
-            </select>
-
-            <br><br>
-
-            <button class="btn" type="submit">
-                Record Attendance
-            </button>
-
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; align-items: end;">
+                <div>
+                    <label><strong>Student:</strong></label>
+                    <select id="attendanceName" required>
+                        <option value="1">Alex Rivera (ID: 1)</option>
+                        <option value="2">Sophia Chen (ID: 2)</option>
+                    </select>
+                </div>
+                <div>
+                    <label><strong>Course:</strong></label>
+                    <select id="attendanceCourse" required>
+                        <option value="1">AP Computer Science A</option>
+                        <option value="2">Advanced Mathematics</option>
+                        <option value="3">Physics with Calculus</option>
+                    </select>
+                </div>
+                <div>
+                    <label><strong>Status:</strong></label>
+                    <select id="attendanceStatus" required>
+                        <option value="1">Present</option>
+                        <option value="0">Absent</option>
+                    </select>
+                </div>
+                <div>
+                    <button class="btn" type="submit" style="width: 100%; margin-bottom: 1.2rem;">Submit Attendance</button>
+                </div>
+            </div>
         </form>
 
-        <h3>Attendance Records</h3>
-
+        <h3>Attendance History</h3>
         <table>
             <thead>
                 <tr>
@@ -143,56 +126,45 @@ November 1, 2026
                     <th>Action</th>
                 </tr>
             </thead>
-
-            <tbody id="attendanceList"></tbody>
+            <tbody id="attendanceList">
+                <tr><td colspan="4" style="text-align: center; color: #64748B;">Loading attendance logs...</td></tr>
+            </tbody>
         </table>
     </div>
 
-    <!-- Course Announcements -->
+    <!-- Course Announcements Section -->
     <div class="box">
-        <h2>Course Announcements</h2>
-
+        <h2>Publish Course Announcement</h2>
         <form id="announcementForm">
-
-            Course:
-            <select id="announcementCourse" required></select>
-
-            <br><br>
-
-            Title:
-            <input
-                type="text"
-                id="announcementTitle"
-                maxlength="120"
-                required
-            >
-
-            <br><br>
-
-            Message:
-            <input
-                type="text"
-                id="announcementMessage"
-                maxlength="1000"
-                required
-            >
-
-            <br><br>
-
-            <button class="btn" type="submit">
-                Post Announcement
-            </button>
-
+            <div style="margin-bottom: 1rem;">
+                <label><strong>Target Course:</strong></label>
+                <select id="announcementCourse" required>
+                    <option value="0">All Courses (School-Wide)</option>
+                    <option value="1">AP Computer Science A</option>
+                    <option value="2">Advanced Mathematics</option>
+                    <option value="3">Physics with Calculus</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label><strong>Announcement Title:</strong></label>
+                <input type="text" id="announcementTitle" placeholder="e.g. Midterm Project Due Date" maxlength="120" required>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label><strong>Message Details:</strong></label>
+                <input type="text" id="announcementMessage" placeholder="Enter message text for students and parents..." maxlength="1000" required>
+            </div>
+            <button class="btn" type="submit">Publish Announcement</button>
         </form>
 
         <h3>Published Announcements</h3>
-
-        <div id="announcementList"></div>
+        <div id="announcementList">
+            <p style="color: #64748B;">Loading announcements...</p>
+        </div>
     </div>
 
     <!-- Footer -->
     <div class="footer">
-        Academia School System
+        LEARN. GROW. ACHIEVE. TOGETHER. &nbsp;|&nbsp; EDUCATION TODAY. A BRIGHTER TOMORROW.
     </div>
 
 </body>
