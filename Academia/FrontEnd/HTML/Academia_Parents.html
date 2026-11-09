@@ -4,24 +4,20 @@ CS50 C Project
 Academia
 November 1, 2026
 -->
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <!-- Defines the document language and character encoding -->
     <meta charset="UTF-8">
-
-    <!-- Makes the page responsive on different screen sizes -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Sets the browser tab title -->
     <title>Academia - Parent Portal</title>
-
-    <!-- Connects the external stylesheet -->
     <link rel="stylesheet" href="../CSS/Academia.css">
+<<<<<<< HEAD
 
     <!-- Connects the Parent JavaScript file -->
+=======
+    <link rel="stylesheet" href="Academia.css">
+    <script src="../JS/parents_states.js" onerror="this.onerror=null;"></script>
+>>>>>>> 57558642637b144e2b83d4799c7f861c409ca802
     <script src="../JS/Academia.js" defer></script>
 </head>
 
@@ -30,111 +26,84 @@ November 1, 2026
     <!-- Navigation Bar -->
     <div class="navbar">
         <b>Academia Parent Portal</b>
-
-        <a href="../HTML/Academia_Auth.html">
-            Log Out
-        </a>
+        <a href="Academia_Auth.html">Log Out</a>
     </div>
 
-    <!-- Error Message Display -->
-    <p id="error" style="color: red; text-align: center;"></p>
+    <p id="error" style="color: #EF4444; text-align: center; margin-top: 1rem;"></p>
 
-    <!-- Parent Profile -->
+    <!-- Parent Profile Banner -->
     <div class="blue-box">
-
-        <h2 id="welcome">Welcome, Parent!</h2>
-
-        <p>
-            Username:
-            <span id="parentUsername">Loading...</span>
-        </p>
-
-        <p>
-            Phone:
-            <span id="parentPhone">Loading...</span>
-        </p>
-
+        <h2 id="welcome">Welcome, Marcus Rivera!</h2>
+        <p>Monitor your child's academic progress, attendance history, and school notices.</p>
+        <div style="margin-top: 1.5rem; display: inline-flex; gap: 2rem; background: rgba(255,255,255,0.12); padding: 0.8rem 1.8rem; border-radius: 8px;">
+            <span>Username: <strong id="parentUsername" style="color: #FACC15;">parent1</strong></span>
+            <span>Contact Phone: <strong id="parentPhone" style="color: #FACC15;">(555) 234-5678</strong></span>
+        </div>
     </div>
 
     <!-- Student Information -->
     <div class="box">
-
-        <h2>Student Information</h2>
-
-        <p>
-            Name:
-            <span id="studentName">Loading...</span>
-        </p>
-
-        <p>
-            Grade Level:
-            <span id="gradeLevel">Loading...</span>
-        </p>
-
-        <p>
-            GPA:
-            <span id="studentGpa">Loading...</span>
-        </p>
-
+        <h2>Linked Student Profile</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+            <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
+                <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Student Name</p>
+                <p style="font-size: 1.8rem; font-weight: 700; color: #0B3D91;" id="studentName">Alex Rivera</p>
+            </div>
+            <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
+                <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Grade Level</p>
+                <p style="font-size: 1.8rem; font-weight: 700; color: #0B3D91;" id="gradeLevel">Grade 11</p>
+            </div>
+            <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
+                <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Current Cumulative GPA</p>
+                <p style="font-size: 1.8rem; font-weight: 700; color: #2563EB;" id="studentGpa">3.85 / 4.00</p>
+            </div>
+        </div>
     </div>
 
     <!-- Student Grades -->
     <div class="box">
-
-        <h2>Grades</h2>
-
+        <h2>Grades & Course Performance</h2>
         <table>
-
             <thead>
                 <tr>
                     <th>Course</th>
-                    <th>Score</th>
+                    <th>Recorded Score</th>
                 </tr>
             </thead>
-
             <tbody id="gradeList">
+                <tr><td colspan="2" style="text-align: center; color: #64748B;">Connecting to Academia Backend...</td></tr>
             </tbody>
-
         </table>
-
     </div>
 
-    <!-- Student Attendance -->
+    <!-- Attendance Record -->
     <div class="box">
-
-        <h2>Attendance</h2>
-
+        <h2>Attendance Record</h2>
         <table>
-
             <thead>
                 <tr>
                     <th>Course</th>
-                    <th>Status</th>
+                    <th>Attendance Status</th>
                 </tr>
             </thead>
-
             <tbody id="attendanceList">
+                <tr><td colspan="2" style="text-align: center; color: #64748B;">Loading attendance logs...</td></tr>
             </tbody>
-
         </table>
-
     </div>
 
-    <!-- School Announcements -->
+    <!-- Announcements -->
     <div class="box">
-
-        <h2>Announcements</h2>
-
+        <h2>School & Course Announcements</h2>
         <div id="announcementList">
+            <p style="color: #64748B;">Loading announcements...</p>
         </div>
-
     </div>
 
     <!-- Footer -->
     <div class="footer">
-        Academia Parent Portal
+        LEARN. GROW. ACHIEVE. TOGETHER. &nbsp;|&nbsp; EDUCATION TODAY. A BRIGHTER TOMORROW.
     </div>
 
 </body>
-
 </html>

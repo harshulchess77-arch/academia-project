@@ -2,24 +2,21 @@
 Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
 CS50 C Project
 Academia
-November 1, 2026
+Database Header Interface
 */
-
-// Main Method
-
-// We have added ifndef which uses to check if the header was there and define command to check if its defined and run the file asked
 #ifndef DATABASE_H
 #define DATABASE_H
-#include <sqlite3.h>
 
-//We ask sqlite3 to connect with database and use void to return with empty output.
-sqlite3* open_database(void);
+#include <winsqlite/winsqlite3.h>
 
-// With the void we also close the database after it return with empty output.
-void close_database(sqlite3* database);
+/* Opens the database and creates tables if needed */
+sqlite3 *open_database(void);
 
-// We ask sqlite3 to create table with the help of sqlite3* in the database
-int create_table(sqlite3* database);
+/* Closes the database connection */
+void close_database(sqlite3 *database);
 
-// We use endif to end the process of the database.h fierl once its completed the task which we have asked it to do.
+/* Creates all required tables and default sample data */
+int create_tables(sqlite3 *database);
+
 #endif
+

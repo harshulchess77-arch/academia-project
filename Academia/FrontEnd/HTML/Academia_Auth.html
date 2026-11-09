@@ -5,111 +5,84 @@ Academia
 November 1, 2026
 -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <!-- Creates Title and connects StyleSheet-->
-     <!-- main header for the login page -->
-    <title>Academia - Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia - Secure Login</title>
     <link rel="stylesheet" href="../CSS/Academia.css">
+    <link rel="stylesheet" href="Academia.css">
+    <!-- defer: the button calls goPortal(), which this file defines. -->
+    <script src="../JS/Academia.js" defer></script>
 </head>
 
 <body>
-    <!--connect to the js file-->
-    <script src="../JS/Academia.js"></script>
-
-    <!-- left side of the Auth Screen. Creates title and slide show of images-->
+    <!-- Left side of Auth Screen: Brand statement and slideshow -->
     <div class="left-side">
-
         <h1>Academia</h1>
         <h2>One System.<br>A Stronger School Community.</h2>
-
-        <!-- change color for the text, and load image from the imges folder -->
-        <p style="color: #60A5FA;">Students. Parents. Staff. All Connected.</p>
-        <img id="slide-pic" src="../../Images/AuthPage1.png" width="360" alt="Academia Slide">
+        <p>Students. Parents. Staff. All Connected.</p>
+        <img id="slide-pic" src="../Images/AuthPage1.png" onerror="this.src='../../Images/AuthPage1.png'; this.onerror=null;" width="380" alt="Academia Portal Preview">
     </div>
 
-    <!-- Rigth side of the Auth Screen and Creates the SignIn/SignUp menu.-->
+    <!-- Right side of Auth Screen: Clean Login Menu -->
     <div class="right-side">
-        <!-- set the width of the box -->
-        <div class="box" style="width: 300px;">
-            <!-- Sign In / Sign Up text -->
+        <div class="box">
             <h2>Sign In / Sign Up</h2>
 
-            <!-- create typing box for username-->
             <p>Username:</p>
-            <input type="text" id="username">
+            <input type="text" id="username" placeholder="e.g. student1, parent1, staff1" autocomplete="username">
 
-            <!-- create typing box for password-->
             <p>Password:</p>
-            <input type="password" id="password">
+            <input type="password" id="password" placeholder="Default: password123" autocomplete="current-password">
 
-            <!-- Creates select option box with 3 options to choose-->
             <p>Role:</p>
             <select id="role">
-                <option value="student">Student</option>
-                <option value="parent">Parent</option>
-                <option value="staff">Staff</option>
+                <option value="student">Student Portal</option>
+                <option value="parent">Parent Portal</option>
+                <option value="staff">School Staff Portal</option>
             </select>
-            <br><br>
 
-            <!-- Sign in button that uses goPortal function and load Landing Screen-->
-            <button class="btn" onclick="goPortal()">Login</button>
-            <p id="err" style="color: red;"></p>
-            <br>
-            <a href="../HTML/Academia_Landing.html">Back to Landing Page</a>
+            <button class="btn" onclick="goPortal()" id="loginBtn">Login to Academia</button>
+            <p id="err" style="color: #EF4444; margin-top: 1rem; text-align: center; font-weight: 500;"></p>
+
+            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 1.2rem; margin-top: 1.5rem; font-size: 1.25rem; color: #64748B;">
+                <strong style="color: #0B3D91;">Quick Demo Logins (Password: password123):</strong><br>
+                • Student: <code>student1</code> (Alex Rivera)<br>
+                • Parent: <code>parent1</code> (Marcus Rivera)<br>
+                • Staff: <code>staff1</code> (Dr. Eleanor Vance)
+            </div>
+
+            <a href="Academia_Landing.html" style="margin-top: 1.5rem;">← Back to Landing Page</a>
         </div>
     </div>
 
-    <!--Creates list of pics-->
+    <!-- Slideshow rotation -->
     <script>
         var pics = [
-            "../../Images/AuthPage1.png",
-            "../../Images/AuthPage2.png",
-            "../../Images/AuthPage3.png",
-            "../../Images/AuthPage4.png"
+            "../Images/AuthPage1.png",
+            "../Images/AuthPage2.png",
+            "../Images/AuthPage3.png",
+            "../Images/AuthPage4.png"
         ];
-        // Variable to interpret the id of the image shown right now
         var i = 0;
 
-        // Changes picture to the next one on the list
         function changePic() {
-            i = i + 1;
-            if (i == 4) {
-                i = 0;
+            i = (i + 1) % pics.length;
+            var el = document.getElementById("slide-pic");
+            if (el) {
+                el.src = pics[i];
             }
-            document.getElementById("slide-pic").src = pics[i];
         }
 
-        // Calss fucnction changePic every 5 sec
-        setInterval(changePic, 5000);
+        setInterval(changePic, 4000);
 
-
-
-        // Creates function that saves data user put during sign in operation.
-        function goPortal() {
-            var u = document.getElementById("username").value;
-            var p = document.getElementById("password").value;
-            var r = document.getElementById("role").value;
-
-            // Checkes if inputs provided by User are empty and tells user to Enter username and password.
-            if (u == "" || p == "") {
-                document.getElementById("err").innerHTML = "Enter username and password.";
-                return;
+        // Allow Enter key to trigger login
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                goPortal();
             }
-
-
-
-            // Depending on the role provided by the user load next screen Student/Parent/School Staff.
-            if (r == "student") {
-                window.location.href = "../HTML/Academia_Student.html";
-            } else if (r == "parent") {
-                window.location.href = "../HTML/Academia_Parents.html";
-            } else if (r == "staff") {
-                window.location.href = "../HTML/Academia_Staff.html";
-            }
-
-            }
-
+        });
     </script>
 
 </body>

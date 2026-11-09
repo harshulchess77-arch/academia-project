@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="avGrad6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0B3D91;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563EB;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="58" fill="url(#avGrad6)" stroke="#FACC15" stroke-width="3"/>
+  <circle cx="60" cy="46" r="22" fill="#F8FAFC"/>
+  <path d="M26 104 C26 78, 94 78, 94 104 Z" fill="#E2E8F0"/>
+  <text x="60" y="52" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0B3D91" text-anchor="middle">A6</text>
+</svg>

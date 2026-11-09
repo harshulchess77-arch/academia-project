@@ -6,91 +6,104 @@ November 1, 2026
 -->
 # Architecture Overview
 
-Academia is a school management project with C backend modules, SQLite database files, and an HTML/CSS/JavaScript frontend. This document describes the files and folders currently present in the repository; their presence does not imply that every feature or integration is complete.
+Academia is a unified school management system featuring a high-performance **C backend** compiled with native **SQLite3** (`winsqlite3`) and **Winsock2** on Windows, connected seamlessly to a modern, responsive HTML/CSS/JavaScript frontend designed strictly from the **Academia Brand Guidelines** (`Images/BrandSheet.png`).
 
-## Project Structure
+---
 
-The tree below reflects the current working tree, including source files, documentation, workspace settings, database and SQLite utility files, and image assets.
+## 1. Directory Structure
 
-[academia-project]/
-├── .vscode/
-│   └── settings.json
-├── Academia/
-│   ├── BackEnd/
-│   │   ├── Academia Auth/
-│   │   │   ├── Academia_Auth.c
-│   │   │   └── Academia_Auth.h
-│   │   ├── Academia Common/
-│   │   │   ├── Academia_Common.c
-│   │   │   └── Academia_Common.h
-│   │   ├── Academia Database/
-│   │   │   ├── Academia.sql
-│   │   │   ├── Database.c
-│   │   │   ├── Database.h
-│   │   │   ├── academia.db
-│   │   │   └── SQLite3 Source Code/
-│   │   │       ├── SQLite3 Source Code
-│   │   │       ├── sqlite3.c
-│   │   │       ├── sqlite3.exe
-│   │   │       └── sqlite3.h
-│   │   ├── Academia Parents/
-│   │   │   ├── Academia_Parents.c
-│   │   │   └── Academia_Parents.h
-│   │   ├── Academia Server/
-│   │   │   └── Server.c
-│   │   ├── Academia Staff/
-│   │   │   ├── Academia_Staff.c
-│   │   │   └── Academia_Staff.h
-│   │   └── Academia Student/
-│   │       ├── Academia_Student.c
-│   │       └── Academia_Student.h
-│   ├── FrontEnd/
-│   │   ├── Academia Student/
-│   │   │   └── Academia_Student.html
-│   │   ├── CSS/
-│   │   │   └── Academia.css
-│   │   ├── HTML/
-│   │   │   ├── 403 Error Page.html
-│   │   │   ├── 429 Error Page.html
-│   │   │   ├── 500 Error Page.html
-│   │   │   ├── 504 Error Page.html
-│   │   │   ├── Academia_Auth.html
-│   │   │   ├── Academia_Landing.html
-│   │   │   ├── Academia_Parents.html
-│   │   │   ├── Academia_Staff.html
-│   │   │   ├── Academia_Student.html
-│   │   │   ├── Account Locked Page.html
-│   │   │   ├── LinkExpired.html
-│   │   │   ├── No Internet Connection.html
-│   │   │   ├── Session Expired.html
-│   │   │   └── Under Maintainence Page.html
-│   │   └── JS/
-│   │       └── Academia.js
-│   └── Images/
-│       ├── 403Error.png
-│       ├── 429Error.png
-│       ├── 500Error.png
-│       ├── 504Error.png
-│       ├── AccountLocked.png
-│       ├── AuthPage1.png
-│       ├── AuthPage2.png
-│       ├── AuthPage3.png
-│       ├── AuthPage4.png
-│       ├── BrandSheet.png
-│       ├── Footer.png
-│       ├── LandingFeatures1.png
-│       ├── LandingFeatures2.png
-│       ├── LandingFeatures3.png
-│       ├── LandingParents.png
-│       ├── LandingStaff.png
-│       ├── LandingStudents.png
-│       ├── LinkExpired.png
-│       ├── NoInternetConnection.png
-│       ├── Parent_Dash_Banner.png
-│       ├── SessionExpired.png
-│       ├── Student_Dash_Banner.png
-│       ├── Teacher_Dash_Banner.png
-│       ├── UnderMaintenance.png
-│       └── UploadFailed.png
-├── ARCHITECTURE.md
-└── README.md
+```text
+front-end - online courses website/
+├── run_server.bat                # 1-Click Launch Script (builds & runs C server, opens browser)
+├── build_and_run.bat             # Convenience alias for launching
+├── academia_server.exe           # Compiled native C HTTP Server binary
+├── academia.db                   # SQLite3 Relational Database
+│
+├── BackEnd/
+│   ├── sqlite3.h                 # Windows native SQLite3 wrapper header
+│   ├── Academia Auth/
+│   │   ├── Academia_Auth.c       # Authentication & session token management
+│   │   └── Academia_Auth.h
+│   ├── Academia Database/
+│   │   ├── Academia.sql          # Relational database schema & initial seed data
+│   │   ├── Academia_Database.c   # Database opener, table creator & closer
+│   │   ├── Academia_Database.h   # Database header interface
+│   │   ├── Database.h
+│   │   └── sqlite3.h
+│   ├── Academia Student/
+│   │   ├── Academia_Student.c    # Student data query & JS state exporter
+│   │   └── Academia_Student.h
+│   ├── Academia Staff/
+│   │   ├── Academia_Staff.c      # Staff data query, grade recorder & JS state exporter
+│   │   └── Academia_Staff.h
+│   ├── Academia Parent/
+│   │   ├── Academia_Parents.c    # Parent & linked child query & JS state exporter
+│   │   └── Academia_Parents.h
+│   └── Academia Server/
+│       └── Academia_Server.c     # Standalone Winsock2 C HTTP Server & REST API
+│
+├── FrontEnd/
+│   ├── CSS/
+│   │   └── Academia.css          # Master Brand Sheet stylesheet (Navy, Royal Blue, Gold, Poppins)
+│   ├── JS/
+│   │   ├── Academia.js           # Live API client & offline fallback controller
+│   │   ├── script.js             # Shared JS wrapper
+│   │   ├── student_states.js     # Live student state generated by C backend
+│   │   ├── staff_states.js       # Live staff state generated by C backend
+│   │   └── parents_states.js     # Live parent state generated by C backend
+│   ├── HTML/
+│   │   ├── Academia_Landing.html # Main Brand Landing Page
+│   │   ├── Academia_Auth.html    # Role-based Login / Sign In portal
+│   │   ├── Academia_Student.html # Student Academic Portal (Grades, GPA, Attendance, News)
+│   │   ├── Academia_Staff.html   # Faculty Portal (Enter grades, attendance, announcements)
+│   │   ├── Academia_Parents.html # Parent Portal (Monitor child grades, attendance, news)
+│   │   ├── 403 Error Page.html
+│   │   ├── 429 Error Page.html
+│   │   ├── 500 Error Page.html
+│   │   ├── 504 Error Page.html
+│   │   ├── Account Locked Page.html
+│   │   ├── LinkExpired.html
+│   │   ├── No Internet Connection.html
+│   │   ├── Session Expired.html
+│   │   └── Under Maintainence Page.html
+│   └── Images/                   # Brand sheet, user portraits, badges & error graphics
+└── Images/                       # Workspace root mirror for universal relative path compatibility
+```
+
+---
+
+## 2. Brand Guidelines Implementation (`Images/BrandSheet.png`)
+
+The CSS (`FrontEnd/CSS/Academia.css`) was completely rewritten to follow the official Academia brand guide:
+
+| Brand Element | Value | Purpose |
+| :--- | :--- | :--- |
+| **Primary** | `#0B3D91` | Deep Navy Blue — headers, navbars, brand logo, strong accents |
+| **Secondary** | `#2563EB` | Vibrant Royal Blue — primary buttons (`.btn`), interactive links |
+| **Accent** | `#60A5FA` | Light Sky Blue — subtitle badges, selection highlight, glowing focus rings |
+| **Highlight** | `#FACC15` | Warm Golden Yellow — hero buttons (`.btn-yellow`), callouts |
+| **Neutral** | `#E5E7EB` / `#F8FAFC` | Soft cool gray borders, slate clean background surfaces |
+| **Typography** | `Poppins`, sans-serif | Modern, approachable, high-legibility geometric sans-serif |
+| **Motto** | *"Education Today. A Brighter Tomorrow."* | Footer & brand headers |
+
+---
+
+## 3. How the C Backend Connects with SQLite3 and the JS Frontend
+
+1. **Procedural, Basic C Code Methodology**:
+   - Uses standard Windows C libraries: `winsock2.h` for sockets, `winsqlite/winsqlite3.h` for SQLite3, standard I/O for file serving.
+   - Zero bulky third-party dependencies — compiles with standard MSVC (`cl.exe /Fe:academia_server.exe winsqlite3.lib ws2_32.lib`).
+
+2. **Full-Stack Connection Flow**:
+   - **Running the Server**: Launch `run_server.bat` or `./academia_server.exe`. It binds port `3000` and automatically opens `http://localhost:3000`.
+   - **Web Browser**: Navigates to `http://localhost:3000/`.
+   - **Static File Dispatch**: C server automatically serves HTML, CSS, JS, and Images directly.
+   - **API Interaction (`Academia.js`)**:
+     - `POST /api/login`: Validates credentials directly against `user` table in SQLite.
+     - `GET /api/student-data`: Queries SQLite for student record, courses, grades, attendance, and announcements, and returns structured JSON.
+     - `GET /api/staff-data`: Returns staff courses, enrolled students, grade records, and attendance history.
+     - `GET /api/parent-data`: Returns linked student information, child's grades, and attendance.
+     - `POST /api/staff/grade`: Updates or inserts grade in SQLite, recalculates student 4.0 GPA, and writes synced `student_states.js`.
+     - `POST /api/staff/attendance`: Logs attendance in SQLite.
+     - `POST /api/staff/announcement`: Publishes new announcement in SQLite.
+   - **Offline / Standalone Fallback**: If HTML pages are opened directly (`file:///...`), `Academia.js` automatically uses the C-generated `student_states.js`, `staff_states.js`, and `parents_states.js` state files or local mock accounts (`student1`, `parent1`, `staff1` with `password123`) so the UI never crashes.

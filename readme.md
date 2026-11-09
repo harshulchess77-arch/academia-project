@@ -8,52 +8,65 @@ November 1, 2026
 
 **Transforming education through a unified digital ecosystem**
 
-Academia is a school management system designed to bring grades, attendance, announcements, and student information together in one place. It aims to make it easier for students, parents, and school staff to find the information they need and stay connected.
+Academia is a complete school management system designed to bring grades, attendance, announcements, and student information together in one place. It gives students, parents, and school staff one unified system to use, improving communication, organization, and efficiency across the school community.
 
+Built as a CS50 Final Project featuring a **C backend with SQLite3**, a **local HTTP server**, and a **modern HTML/CSS/JavaScript frontend** styled to the official **Academia Brand Guidelines** (`Images/BrandSheet.png`).
 
-## Why Academia?
+---
 
-Schools often rely on separate websites and tools for academic records and communication. Academia aims to provide a clearer, more convenient experience by giving each member of the school community one place to access relevant information.
+## Quick Start (Run the Project)
 
-## Planned features
+### Option 1: 1-Click Launch (Recommended)
+Double-click or run:
+```bat
+run_server.bat
+```
+This automatically initializes SQLite3, starts the local C server on port `3000`, and opens `http://localhost:3000` in your default browser.
 
-### Students
+### Option 2: Command Line
+```powershell
+.\academia_server.exe
+```
+Then navigate to `http://localhost:3000/` in Chrome, Edge, or Firefox.
 
-- View grades and GPA.
-- Check attendance.
-- Read school announcements.
+---
 
-### Parents
+## Demo Login Credentials
 
-- View their child's grades and attendance.
-- Keep up with school announcements and notices.
+All demo accounts use password: `password123`
 
-### School staff
+| Role | Username | Password | Features / View |
+| :--- | :--- | :--- | :--- |
+| **Student** | `student1` | `password123` | Alex Rivera — View live course grades, 4.0 GPA, daily attendance history, assignments, and school news |
+| **Parent** | `parent1` | `password123` | Marcus Rivera — Monitor child's grades, GPA, attendance logs, and school notices |
+| **Faculty / Staff** | `staff1` | `password123` | Dr. Eleanor Vance — Enter student grades (auto-recalculates GPA), record daily attendance, and publish course announcements |
 
-- Enter and manage grades.
-- Record attendance.
-- Publish announcements.
+---
 
-### Future Project goals
+## Brand Guidelines (`Images/BrandSheet.png`)
 
-- **Role-based access:** Give users access to the information and tools appropriate to their responsibilities.
-- **A reliable core first:** Complete and test essential features before expanding the scope.
-- **Modular design:** Keep the system ready for future additions without making the core harder to maintain.
-- **Accessible setup:** Aim to run without special hardware and provide sample data for learning and testing.
-- With Addititonal features: Schedules, course resources, parent-teacher messaging, weather updates, college and scholarship planning, advanced reporting, database support, and a graphical interface are ideas for future development—not current features.
+- **Primary**: Deep Navy Blue (`#0B3D91`)
+- **Secondary**: Vibrant Royal Blue (`#2563EB`)
+- **Accent**: Light Sky Blue (`#60A5FA`)
+- **Highlight**: Warm Golden Yellow (`#FACC15`)
+- **Neutral**: Soft Slate Gray (`#E5E7EB` / `#F8FAFC`)
+- **Typography**: `Poppins`, sans-serif
+- **Motto**: *Education Today. A Brighter Tomorrow. | Learn. Grow. Achieve. Together.*
 
-## Technology and current repository
+---
 
-The current solution is built with **C# and Full-Stack**:
+## Technical Architecture
 
-## Project structure
-Refer to the ARCHITECTURE.md file for more information
+- **Backend**: Pure C (`Academia_Server.c`, `Academia_Auth.c`, `Academia_Database.c`, `Academia_Student.c`, `Academia_Staff.c`, `Academia_Parents.c`) using Windows `winsock2` and native Windows `winsqlite3`.
+- **Database**: SQLite3 (`academia.db` initialized via `Academia.sql`) storing users, parents, students, staff, courses, enrollments, grades, attendance, assignments, and announcements.
+- **Frontend**: Clean HTML5, CSS3 (`FrontEnd/CSS/Academia.css`), and JavaScript (`FrontEnd/JS/Academia.js`).
+- **Connection**: REST API endpoints (`/api/login`, `/api/student-data`, `/api/parent-data`, `/api/staff-data`, `/api/staff/grade`, `/api/staff/attendance`, `/api/staff/announcement`) backed by real-time SQLite read/write operations and automatic JS state exports (`student_states.js`, `staff_states.js`, `parents_states.js`).
 
-## Contributing
-The Contributors to this Project are:
-  1. Harshul Gupta
-  2. Lawrence Mao
-  3. Dmitrii Buianov
-  4. Suengho Kim
+---
 
-We work toward the planned features by starting with a small, tested core. Keep the implementation and documentation aligned, and update this README as features become available.
+## Contributions
+
+- **Harshul Gupta**
+- **Lawrence Mao**
+- **Dmitrii Buianov**
+- **Suengho Kim**

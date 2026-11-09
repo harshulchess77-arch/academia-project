@@ -5,81 +5,415 @@ Academia
 November 1, 2026
 -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Academia - Landing Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia - Transforming Education Through a Unified Digital Ecosystem</title>
+    <!-- Font Awesome link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
     <link rel="stylesheet" href="../CSS/Academia.css">
+    <link rel="stylesheet" href="Academia.css">
+    <script src="../JS/script.js" defer></script>
 </head>
 <body>
 
+    <!-- Main Navigation Bar -->
     <div class="navbar">
         <b>Academia</b>
-        <a href="../HTML/Academia_Auth.html">Login / Sign Up</a>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="#overview" onclick="showSection('overview-tab')">Overview</a>
+            <a href="#about" onclick="showSection('about-tab')">About Us</a>
+            <a href="#courses" onclick="showSection('courses-tab')">Courses</a>
+            <a href="#contact" onclick="showSection('contact-tab')">Contact Us</a>
+            <a href="Academia_Auth.html" style="background-color: var(--highlight); color: var(--primary-dark);">Login / Sign Up</a>
+        </div>
     </div>
 
-    <div class="blue-box">
-        <h1>Academia</h1>
-        <h2 style="color: #FACC15;">Transforming Education Through a Unified Digital Ecosystem</h2>
-        <p style="color: #60A5FA;">One System. A Stronger School Community. Students. Parents. Staff. All Connected.</p>
-        <br>
-        <a href="../HTML/Academia_Auth.html" class="btn-yellow">Get Started Now</a>
-        <br><br>
-        <img src="../../Images/Footer.png" width="550" alt="Academia Brand">
+    <!-- Navigation Pills / Tabs -->
+    <div class="portal-tabs" style="margin-top: 2rem;">
+        <button type="button" class="tab-btn active" data-tab="overview-tab"><i class="fas fa-home"></i> Ecosystem Overview</button>
+        <button type="button" class="tab-btn" data-tab="about-tab"><i class="fas fa-question-circle"></i> About Academia</button>
+        <button type="button" class="tab-btn" data-tab="courses-tab"><i class="fas fa-graduation-cap"></i> Featured Courses</button>
+        <button type="button" class="tab-btn" data-tab="contact-tab"><i class="fas fa-headset"></i> Contact & Support</button>
     </div>
 
-    <div class="box">
-        <h2>Executive Summary: Why Academia?</h2>
-        <p>
-            Schools often rely on separate websites and tools for academic records and communication.
-            Academia is a school management system that puts grades, attendance, announcements, and student
-            information in one place. It gives students, parents, and school staff one system to use,
-            improving communication, organization, and efficiency within the school community.
-        </p>
+    <!-- =========================================================================
+         SECTION 1: OVERVIEW / HOME LANDING
+         ========================================================================= -->
+    <div id="overview-tab" class="portal-section active">
+        <div class="blue-box">
+            <h1>Academia</h1>
+            <h2>Transforming Education Through a Unified Digital Ecosystem</h2>
+            <p>One System. A Stronger School Community. Students. Parents. Staff. All Connected.</p>
+            <br>
+            <a href="Academia_Auth.html" class="btn-yellow">Get Started Now</a>
+            <br><br>
+            <img src="../Images/Footer.png" onerror="this.src='../../Images/Footer.png'; this.onerror=null;" width="550" alt="Academia Brand Banner">
+        </div>
+
+        <div class="box">
+            <h2>Executive Summary: Why Academia?</h2>
+            <p>
+                Schools often rely on separate websites and tools for academic records and communication.
+                Academia is a school management system that puts grades, attendance, announcements, and student
+                information in one place. It gives students, parents, and school staff one system to use,
+                improving communication, organization, and efficiency within the school community.
+            </p>
+        </div>
+
+        <div class="box">
+            <h2>Target Users: Made For Everyone</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 33%;">Students</th>
+                        <th style="width: 33%;">Parents</th>
+                        <th style="width: 33%;">School Staff</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div style="text-align: center; margin-bottom: 1rem;">
+                                <img src="../Images/LandingStudents.png" onerror="this.src='images/LandingStudents.png'; this.onerror=null;" style="max-width: 140px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Students">
+                            </div>
+                            <strong>Access your academic world:</strong> View live grades, calculate 4.0 GPA, check attendance, and read school news.
+                        </td>
+                        <td>
+                            <div style="text-align: center; margin-bottom: 1rem;">
+                                <img src="../Images/LandingParents.png" onerror="this.src='images/LandingParents.png'; this.onerror=null;" style="max-width: 140px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Parents">
+                            </div>
+                            <strong>Stay engaged and informed:</strong> View real-time grades and daily attendance records about your child.
+                        </td>
+                        <td>
+                            <div style="text-align: center; margin-bottom: 1rem;">
+                                <img src="../Images/LandingStaff.png" onerror="this.src='images/LandingStaff.png'; this.onerror=null;" style="max-width: 140px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Staff">
+                            </div>
+                            <strong>Streamlined management:</strong> Enter student grades, record daily attendance, and publish school-wide announcements.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="box">
+            <h2>Key Features</h2>
+            <ul>
+                <li><b>Secure Login:</b> Role-based access for Students, Parents, and School Staff.</li>
+                <li><b>Grade Management:</b> Fast course grade tables with instant updates via SQLite3 backend.</li>
+                <li><b>GPA Calculation:</b> Automatic 4.0 GPA calculation powered by C backend logic.</li>
+                <li><b>Attendance Tracking:</b> Real-time Present and Absent status logs.</li>
+                <li><b>Announcements:</b> School-wide news and notice board for everyone.</li>
+                <li><b>Modular Design:</b> Built with a reliable C core ready for future expansion.</li>
+            </ul>
+        </div>
+
+        <div class="box">
+            <h2>Unique Benefits</h2>
+            <ul>
+                <li><b>Improved Communication:</b> Keeps students, parents, and teachers connected in one unified ecosystem.</li>
+                <li><b>Greater Organization:</b> All school records stored centrally in one relational SQLite database.</li>
+                <li><b>Easy Accessibility:</b> Lightweight interface that runs smoothly without special hardware.</li>
+                <li><b>Higher Efficiency & Stronger Security:</b> Lightning-fast C logic with protected role-based portals.</li>
+            </ul>
+            <p><strong>Future Possibilities:</strong> Schedules, Messaging, Weather Updates, Advanced Reporting, and Mobile Support.</p>
+            <br>
+            <a href="Academia_Auth.html" class="btn">Enter School Portal</a>
+        </div>
     </div>
 
-    <div class="box">
-        <h2>Target Users: Made For Everyone</h2>
-        <table>
-            <tr>
-                <th>Students</th>
-                <th>Parents</th>
-                <th>School Staff</th>
-            </tr>
-            <tr>
-                <td>View grades, GPA, attendance, and school news in one place.</td>
-                <td>View grades and attendance information about their child.</td>
-                <td>Enter grades, record daily attendance, and post announcements.</td>
-            </tr>
-        </table>
+    <!-- =========================================================================
+         SECTION 2: ABOUT ACADEMIA
+         ========================================================================= -->
+    <div id="about-tab" class="portal-section">
+        <section class="about" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
+            <div class="row">
+                <div class="image">
+                    <img src="../Images/about-img.svg" onerror="this.src='images/about-img.svg'; this.onerror=null;" alt="About Academia">
+                </div>
+                <div class="content">
+                    <h3>Why Choose Academia?</h3>
+                    <p>
+                        Academia bridges the communication gap between educational institutions, students, and parents.
+                        Engineered with a robust C-based backend architecture and high-performance SQLite database, Academia provides
+                        instant real-time synchronization of academic metrics, attendance logs, and interactive learning media.
+                    </p>
+                    <a href="Academia_Auth.html" class="inline-btn">Join Academia Today</a>
+                </div>
+            </div>
+
+            <div class="box-container">
+                <div class="box">
+                    <i class="fas fa-graduation-cap"></i>
+                    <div>
+                        <h3>+10k</h3>
+                        <p>Active Students</p>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-user-graduate"></i>
+                    <div>
+                        <h3>99.8%</h3>
+                        <p>System Reliability</p>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-chalkboard-user"></i>
+                    <div>
+                        <h3>+500</h3>
+                        <p>Faculty & Teachers</p>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <h3>100%</h3>
+                        <p>Role-Based Security</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews & Testimonials -->
+        <section class="reviews" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
+            <h1 class="heading">Community & Student Reviews</h1>
+            <div class="box-container">
+                <div class="box">
+                    <p>"Academia completely changed how our teachers track daily attendance and submit scores. Everything is immediate and clean!"</p>
+                    <div class="student">
+                        <img src="../Images/pic-2.jpg" onerror="this.src='images/pic-2.jpg'; this.onerror=null;" alt="Reviewer">
+                        <div>
+                            <h3>Dr. Eleanor Vance</h3>
+                            <div class="stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <p>"Being able to check my GPA calculation and grade reports anytime helps me stay on top of all my college prerequisites."</p>
+                    <div class="student">
+                        <img src="../Images/pic-1.jpg" onerror="this.src='images/pic-1.jpg'; this.onerror=null;" alt="Reviewer">
+                        <div>
+                            <h3>Alex Rivera</h3>
+                            <div class="stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <p>"As a parent, I love getting immediate visibility into announcements and daily class attendance without waiting for quarterly reports."</p>
+                    <div class="student">
+                        <img src="../Images/pic-3.jpg" onerror="this.src='images/pic-3.jpg'; this.onerror=null;" alt="Reviewer">
+                        <div>
+                            <h3>Marcus Rivera</h3>
+                            <div class="stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <div class="box">
-        <h2>Key Features</h2>
-        <ul>
-            <li><b>Secure Login:</b> Role-based access for Students, Parents, and Staff.</li>
-            <li><b>Grade Management:</b> Simple course grade tables and updates.</li>
-            <li><b>GPA Calculation:</b> Automatic 4.0 GPA calculation powered by C backend logic.</li>
-            <li><b>Attendance Tracking:</b> Daily Present and Absent status logs.</li>
-            <li><b>Announcements:</b> School-wide news and notices for everyone.</li>
-            <li><b>Modular Design:</b> Built with a reliable core ready for future expansion.</li>
-        </ul>
+    <!-- =========================================================================
+         SECTION 3: FEATURED COURSES & TOPICS (From home.html & courses.html)
+         ========================================================================= -->
+    <div id="courses-tab" class="portal-section">
+        <!-- Quick Options & Category Explorer -->
+        <section class="home-grid" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
+            <h1 class="heading">Academic Disciplines & Quick Access</h1>
+            <div class="box-container">
+                <div class="box">
+                    <h3 class="title">Course Categories</h3>
+                    <div class="flex">
+                        <a href="#courses"><i class="fas fa-code"></i><span>Computer Science</span></a>
+                        <a href="#courses"><i class="fas fa-calculator"></i><span>Mathematics</span></a>
+                        <a href="#courses"><i class="fas fa-flask"></i><span>Physics</span></a>
+                        <a href="#courses"><i class="fas fa-dna"></i><span>Biology</span></a>
+                        <a href="#courses"><i class="fas fa-book"></i><span>Literature</span></a>
+                        <a href="#courses"><i class="fas fa-landmark"></i><span>History</span></a>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <h3 class="title">Digital Curriculum</h3>
+                    <div class="flex">
+                        <a href="#courses"><i class="fab fa-html5"></i><span>HTML5 Architecture</span></a>
+                        <a href="#courses"><i class="fab fa-css3"></i><span>CSS3 & Design</span></a>
+                        <a href="#courses"><i class="fab fa-js"></i><span>Modern JavaScript</span></a>
+                        <a href="#courses"><i class="fas fa-c"></i><span>C & Systems</span></a>
+                        <a href="#courses"><i class="fas fa-database"></i><span>SQLite Databases</span></a>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <h3 class="title">Join Our Faculty</h3>
+                    <p class="likes">Are you an educator looking to streamline student engagement and classroom tracking?</p>
+                    <a href="Academia_Auth.html" class="inline-btn">Register as Staff</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Course Cards -->
+        <section class="courses" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
+            <h1 class="heading">Featured Academic Courses</h1>
+            <div class="box-container">
+                <div class="box">
+                    <div class="tutor">
+                        <img src="../Images/pic-2.jpg" onerror="this.src='images/pic-2.jpg'; this.onerror=null;" alt="Tutor">
+                        <div class="info">
+                            <h3>Dr. Eleanor Vance</h3>
+                            <span>Faculty Member</span>
+                        </div>
+                    </div>
+                    <div class="thumb">
+                        <img src="../Images/thumb-1.png" onerror="this.src='images/thumb-1.png'; this.onerror=null;" alt="AP Computer Science A">
+                        <span>10 Modules</span>
+                    </div>
+                    <h3 class="title">AP Computer Science A</h3>
+                    <a href="Academia_Student.html" class="inline-btn">View in Portal</a>
+                </div>
+
+                <div class="box">
+                    <div class="tutor">
+                        <img src="../Images/pic-3.jpg" onerror="this.src='images/pic-3.jpg'; this.onerror=null;" alt="Tutor">
+                        <div class="info">
+                            <h3>Prof. Gregory Bell</h3>
+                            <span>Faculty Member</span>
+                        </div>
+                    </div>
+                    <div class="thumb">
+                        <img src="../Images/thumb-2.png" onerror="this.src='images/thumb-2.png'; this.onerror=null;" alt="Advanced Mathematics">
+                        <span>12 Modules</span>
+                    </div>
+                    <h3 class="title">Advanced Mathematics</h3>
+                    <a href="Academia_Student.html" class="inline-btn">View in Portal</a>
+                </div>
+
+                <div class="box">
+                    <div class="tutor">
+                        <img src="../Images/pic-4.jpg" onerror="this.src='images/pic-4.jpg'; this.onerror=null;" alt="Tutor">
+                        <div class="info">
+                            <h3>Dr. Julian Ward</h3>
+                            <span>Faculty Member</span>
+                        </div>
+                    </div>
+                    <div class="thumb">
+                        <img src="../Images/thumb-3.png" onerror="this.src='images/thumb-3.png'; this.onerror=null;" alt="Physics with Calculus">
+                        <span>8 Modules</span>
+                    </div>
+                    <h3 class="title">Physics with Calculus</h3>
+                    <a href="Academia_Student.html" class="inline-btn">View in Portal</a>
+                </div>
+
+                <div class="box">
+                    <div class="tutor">
+                        <img src="../Images/pic-5.jpg" onerror="this.src='images/pic-5.jpg'; this.onerror=null;" alt="Tutor">
+                        <div class="info">
+                            <h3>Sarah Connor</h3>
+                            <span>Instructor</span>
+                        </div>
+                    </div>
+                    <div class="thumb">
+                        <img src="../Images/thumb-4.png" onerror="this.src='images/thumb-4.png'; this.onerror=null;" alt="Interactive Web Design">
+                        <span>15 Modules</span>
+                    </div>
+                    <h3 class="title">Interactive Web Systems</h3>
+                    <a href="Academia_Student.html" class="inline-btn">View in Portal</a>
+                </div>
+
+                <div class="box">
+                    <div class="tutor">
+                        <img src="../Images/pic-6.jpg" onerror="this.src='images/pic-6.jpg'; this.onerror=null;" alt="Tutor">
+                        <div class="info">
+                            <h3>David Kim</h3>
+                            <span>Instructor</span>
+                        </div>
+                    </div>
+                    <div class="thumb">
+                        <img src="../Images/thumb-5.png" onerror="this.src='images/thumb-5.png'; this.onerror=null;" alt="Database Architecture">
+                        <span>10 Modules</span>
+                    </div>
+                    <h3 class="title">Relational Database Systems</h3>
+                    <a href="Academia_Student.html" class="inline-btn">View in Portal</a>
+                </div>
+
+                <div class="box">
+                    <div class="tutor">
+                        <img src="../Images/pic-7.jpg" onerror="this.src='images/pic-7.jpg'; this.onerror=null;" alt="Tutor">
+                        <div class="info">
+                            <h3>Elena Rostova</h3>
+                            <span>Instructor</span>
+                        </div>
+                    </div>
+                    <div class="thumb">
+                        <img src="../Images/thumb-6.png" onerror="this.src='images/thumb-6.png'; this.onerror=null;" alt="Data Structures & Algorithms">
+                        <span>14 Modules</span>
+                    </div>
+                    <h3 class="title">Data Structures in C</h3>
+                    <a href="Academia_Student.html" class="inline-btn">View in Portal</a>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <div class="box">
-        <h2>Unique Benefits</h2>
-        <ul>
-            <li><b>Improved Communication:</b> Keeps students, parents, and teachers connected.</li>
-            <li><b>Greater Organization:</b> All school records stored in one SQLite database.</li>
-            <li><b>Easy Accessibility:</b> Simple interface that runs without special hardware.</li>
-            <li><b>Higher Efficiency & Stronger Security:</b> Fast C logic and role-based portals.</li>
-        </ul>
-        <p><b>Future Possibilities:</b> Schedules, Messaging, Weather Updates, Database Support, and Graphical Interface.</p>
-        <br>
-        <a href="../HTML/Academia_Auth.html" class="btn">Go to Login Page</a>
+    <!-- =========================================================================
+         SECTION 4: CONTACT & SUPPORT (From contact.html)
+         ========================================================================= -->
+    <div id="contact-tab" class="portal-section">
+        <section class="contact" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
+            <h1 class="heading">Get in Touch with Academia</h1>
+            <div class="row">
+                <div class="image">
+                    <img src="../Images/contact-img.svg" onerror="this.src='images/contact-img.svg'; this.onerror=null;" alt="Contact Support">
+                </div>
+
+                <form action="javascript:void(0);" onsubmit="alert('Thank you for reaching out to Academia! Our administrative team will respond shortly.');">
+                    <h3>Send a Direct Inquiry</h3>
+                    <input type="text" placeholder="Your Full Name" name="name" required maxlength="50" class="box">
+                    <input type="email" placeholder="Your Email Address" name="email" required maxlength="50" class="box">
+                    <input type="text" placeholder="Phone Number / Extension" name="number" maxlength="20" class="box">
+                    <textarea name="msg" class="box" placeholder="Describe your inquiry, enrollment question, or technical request..." required maxlength="1000" cols="30" rows="6"></textarea>
+                    <input type="submit" value="Submit Inquiry" class="inline-btn" style="width: 100%;">
+                </form>
+            </div>
+
+            <div class="box-container">
+                <div class="box">
+                    <i class="fas fa-phone"></i>
+                    <h3>Phone Support</h3>
+                    <a href="tel:5551234567">(555) 123-4567 (Administration)</a>
+                    <a href="tel:5559876543">(555) 987-6543 (Academic Support)</a>
+                </div>
+                
+                <div class="box">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email Inquiries</h3>
+                    <a href="mailto:support@academia.edu">support@academia.edu</a>
+                    <a href="mailto:admin@academia.edu">admin@academia.edu</a>
+                </div>
+
+                <div class="box">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Campus Location</h3>
+                    <a href="javascript:void(0);">CS50 Education Pavilion, University Square, Digital District</a>
+                </div>
+            </div>
+        </section>
     </div>
 
+    <!-- Universal Footer -->
     <div class="footer">
-        LEARN. GROW. ACHIEVE. TOGETHER. | EDUCATION TODAY. A BRIGHTER TOMORROW.
+        LEARN. GROW. ACHIEVE. TOGETHER. &nbsp;|&nbsp; EDUCATION TODAY. A BRIGHTER TOMORROW.
     </div>
 
 </body>
