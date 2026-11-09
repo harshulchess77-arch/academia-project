@@ -7,10 +7,45 @@
    ==========================================================================
 */
 
-// Server base URL (relative for same-origin, or localhost:3000)
-const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-    ? ''
-    : 'http://localhost:3000';
+// ---------------------------------------------------------------------------
+// ACCOUNTS
+//
+// The passwords below are stored as SHA-256 hashes, not as plain text. When
+// someone signs in, the password they type is hashed and the two hashes are
+// compared, so the real password is never written in this file.
+//
+// You can check a hash by hashing the password yourself and comparing. All
+// four accounts use the password: password123
+//
+// This is a client-side check. It stops someone guessing a password, but
+// anyone with the browser tools can still set the session value by hand. A
+// real check needs the C server and the user table.
+// ---------------------------------------------------------------------------
+
+const ACCOUNTS = [
+    { username: 'student1', id: 1, name: 'Alex Rivera',       role: 'student', hash: 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f' },
+    { username: 'student2', id: 2, name: 'Sophia Chen',       role: 'student', hash: 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f' },
+    { username: 'parent1',  id: 3, name: 'Marcus Rivera',     role: 'parent',  hash: 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f' },
+    { username: 'staff1',   id: 4, name: 'Dr. Eleanor Vance', role: 'staff',   hash: 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f' }
+];
+
+// Turns a typed password into its SHA-256 hash, as a lowercase hex string.
+async function hashPassword(text) {
+    const bytes = new TextEncoder().encode(text);
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    const list = Array.from(new Uint8Array(digest));
+    return list.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Looks up an account by the username typed in the form.
+function findAccount(username) {
+    for (let i = 0; i < ACCOUNTS.length; i++) {
+        if (ACCOUNTS[i].username === username) {
+            return ACCOUNTS[i];
+        }
+    }
+    return null;
+}
 
 // Current session helper
 function getCurrentUser() {
@@ -31,9 +66,10 @@ function setCurrentUser(user) {
 }
 
 function clearSession() {
+    // Remove the stored session, so the portal pages no longer see a signed-in
+    // user and send the visitor back to the login page.
     sessionStorage.removeItem('academia_user');
     localStorage.removeItem('academia_user');
-    fetch(`${API_BASE}/api/logout`, { method: 'POST' }).catch(() => {});
 }
 
 // -------------------------------------------------------------------------
@@ -56,48 +92,32 @@ async function goPortal() {
         return;
     }
 
-    if (errEl) errEl.innerHTML = "Signing in...";
+    if (errEl) errEl.innerHTML = "Checking...";
 
-    try {
-        const response = await fetch(`${API_BASE}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: u, password: p })
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            if (data.success && data.user) {
-                setCurrentUser(data.user);
-                routeToRolePortal(data.user.role);
-                return;
-            } else {
-                if (errEl) errEl.innerHTML = data.message || "Invalid credentials.";
-                return;
-            }
-        }
-    } catch (err) {
-        console.warn("Backend server not responding, using offline fallback:", err);
+    // Step 1: is the username known?
+    const account = findAccount(u);
+    if (account === null) {
+        if (errEl) errEl.innerHTML = "Invalid username or password.";
+        return;
     }
 
-    // Offline / Demo Fallback
-    const demoAccounts = {
-        'student1': { id: 1, name: 'Alex Rivera', role: 'student' },
-        'student2': { id: 2, name: 'Sophia Chen', role: 'student' },
-        'parent1': { id: 3, name: 'Marcus Rivera', role: 'parent' },
-        'staff1': { id: 4, name: 'Dr. Eleanor Vance', role: 'staff' }
-    };
-
-    if (demoAccounts[u] && p === 'password123') {
-        const user = demoAccounts[u];
-        setCurrentUser(user);
-        routeToRolePortal(user.role);
-    } else {
-        // Fallback for simple testing with role selector
-        const fallbackUser = { id: r === 'student' ? 1 : (r === 'parent' ? 3 : 4), name: u, role: r };
-        setCurrentUser(fallbackUser);
-        routeToRolePortal(r);
+    // Step 2: does the typed password hash to the stored one?
+    const typedHash = await hashPassword(p);
+    if (typedHash !== account.hash) {
+        if (errEl) errEl.innerHTML = "Invalid username or password.";
+        return;
     }
+
+    // Step 3: does the Role box agree with this account?
+    if (r !== account.role) {
+        if (errEl) errEl.innerHTML = "That username is a " + account.role +
+            " account. Choose " + account.role + " in the Role box.";
+        return;
+    }
+
+    // All three checks passed: start the session and open the right portal.
+    setCurrentUser({ id: account.id, name: account.name, role: account.role });
+    routeToRolePortal(account.role);
 }
 
 function routeToRolePortal(role) {
@@ -116,6 +136,12 @@ function routeToRolePortal(role) {
 // STUDENT PORTAL (Academia_Student.html)
 // -------------------------------------------------------------------------
 async function loadStudentPortal() {
+
+    // Nobody reaches a portal without signing in first.
+    if (!getCurrentUser()) {
+        window.location.href = "Academia_Auth.html";
+        return;
+    }
     const user = getCurrentUser() || { id: 1, name: "Alex Rivera", role: "student" };
     const errorEl = document.getElementById("error");
 
@@ -236,6 +262,12 @@ function renderStudentData(data) {
 // PARENT PORTAL (Academia_Parents.html)
 // -------------------------------------------------------------------------
 async function loadParentPortal() {
+
+    // Nobody reaches a portal without signing in first.
+    if (!getCurrentUser()) {
+        window.location.href = "Academia_Auth.html";
+        return;
+    }
     const user = getCurrentUser() || { id: 3, name: "Marcus Rivera", role: "parent" };
 
     try {
@@ -278,7 +310,20 @@ async function loadParentPortal() {
 
 function renderParentData(data) {
     const p = data.parent || {};
-    const s = data.student || {};
+
+    // parents_states.js keeps the child under "students" (a list).
+    // The server sends it under "student" (one object). Accept both, so the
+    // parent's own name is never replaced by the child's.
+    let s = data.student || {};
+    if (!s.firstName && Array.isArray(data.students) && data.students.length > 0) {
+        s = data.students[0];
+    }
+
+    // The state file keeps the grades, attendance and announcements inside the
+    // child; the server sends them at the top level. Read whichever is present.
+    const grades = data.grades || s.grades || [];
+    const attendance = data.attendance || s.attendance || [];
+    const announcements = data.announcements || s.announcements || [];
 
     const welcomeEl = document.getElementById("welcome");
     const userEl = document.getElementById("parentUsername");
@@ -299,8 +344,8 @@ function renderParentData(data) {
 
     // Grades Table
     const gradeList = document.getElementById("gradeList");
-    if (gradeList && data.grades) {
-        gradeList.innerHTML = data.grades.map(g => `
+    if (gradeList && grades.length > 0) {
+        gradeList.innerHTML = grades.map(g => `
             <tr>
                 <td><strong>${escapeHtml(g.course)}</strong></td>
                 <td><span class="badge badge-score">${Number(g.score).toFixed(1)}%</span></td>
@@ -310,8 +355,8 @@ function renderParentData(data) {
 
     // Attendance Table
     const attList = document.getElementById("attendanceList");
-    if (attList && data.attendance) {
-        attList.innerHTML = data.attendance.map(a => {
+    if (attList && attendance.length > 0) {
+        attList.innerHTML = attendance.map(a => {
             const isPresent = a.status === 'Present' || a.present === 1 || a.present === true;
             return `
                 <tr>
@@ -324,8 +369,8 @@ function renderParentData(data) {
 
     // Announcements List
     const annList = document.getElementById("announcementList");
-    if (annList && data.announcements) {
-        annList.innerHTML = data.announcements.map(a => `
+    if (annList && announcements.length > 0) {
+        annList.innerHTML = announcements.map(a => `
             <div class="announcement-card">
                 <div class="card-header">
                     <span class="card-title">${escapeHtml(a.title)}</span>
@@ -344,6 +389,12 @@ function renderParentData(data) {
 let currentStaffData = null;
 
 async function loadStaffPortal() {
+
+    // Nobody reaches a portal without signing in first.
+    if (!getCurrentUser()) {
+        window.location.href = "Academia_Auth.html";
+        return;
+    }
     const user = getCurrentUser() || { id: 4, name: "Dr. Eleanor Vance", role: "staff" };
 
     try {
@@ -457,39 +508,89 @@ function renderStaffData(data) {
 }
 
 function populateStaffDropdowns(data) {
-    // Unique students from enrollments
-    const enrollments = data.enrollments || [];
-    const courses = data.courses || [];
+    // The state file (staff_states.js) stores students and courses like this:
+    //
+    //     students: [ { id: 1, name: "Alex Rivera" } ]
+    //     courses:  [ { id: 1, name: "AP Computer Science A" } ]
+    //
+    // The server sends them as "enrollments" and "courses" with different
+    // field names. Read both, so the dropdowns fill either way. Reading only
+    // one shape is what left the course box empty and the options blank.
 
+    // ---------------- students ----------------
     const studentMap = {};
-    enrollments.forEach(e => {
-        studentMap[e.studentId] = e.student;
+
+    // From staff_states.js: students: [ { id, name } ]
+    if (Array.isArray(data.students)) {
+        data.students.forEach(st => {
+            studentMap[st.id] = st.name;
+        });
+    }
+
+    // From the server: enrollments: [ { studentId, student } ]
+    if (Array.isArray(data.enrollments)) {
+        data.enrollments.forEach(e => {
+            studentMap[e.studentId] = e.student;
+        });
+    }
+
+    // ---------------- courses ----------------
+    const courseMap = {};
+
+    // From staff_states.js: courses: [ { id, name } ]
+    // From the server:       courses: [ { courseId, course } ]
+    if (Array.isArray(data.courses)) {
+        data.courses.forEach(c => {
+            if (c.id !== undefined) {
+                courseMap[c.id] = c.name;
+            } else {
+                courseMap[c.courseId] = c.course;
+            }
+        });
+    }
+
+    // Fall back to the courses that appear in the grades and attendance rows,
+    // in case the courses list is ever missing.
+    ['grades', 'attendance'].forEach(listName => {
+        if (Array.isArray(data[listName])) {
+            data[listName].forEach(row => {
+                if (row.courseId !== undefined && row.course) {
+                    courseMap[row.courseId] = row.course;
+                }
+            });
+        }
     });
 
-    const studentOptions = Object.keys(studentMap).map(id => 
-        `<option value="${id}">${escapeHtml(studentMap[id])} (ID: ${id})</option>`
-    ).join("");
+    // ---------------- build the options ----------------
+    let studentOptions = '';
+    Object.keys(studentMap).forEach(id => {
+        studentOptions += '<option value="' + id + '">' +
+            escapeHtml(studentMap[id]) + ' (ID: ' + id + ')</option>';
+    });
 
-    const courseOptions = courses.map(c => 
-        `<option value="${c.courseId}">${escapeHtml(c.course)}</option>`
-    ).join("");
+    let courseOptions = '';
+    Object.keys(courseMap).forEach(id => {
+        courseOptions += '<option value="' + id + '">' +
+            escapeHtml(courseMap[id]) + '</option>';
+    });
 
-    // Grade form dropdowns (student select in HTML might have id studentName or gradeStudent)
-    const gradeStudentSelect = document.querySelector("#gradeForm select#studentName, #gradeForm select");
-    const gradeCourseSelect = document.querySelector("#gradeForm select#course");
+    // ---------------- fill the three forms ----------------
+    // Grade form
+    const gradeStudentSelect = document.getElementById("studentName");
+    const gradeCourseSelect = document.getElementById("course");
     if (gradeStudentSelect && studentOptions) gradeStudentSelect.innerHTML = studentOptions;
     if (gradeCourseSelect && courseOptions) gradeCourseSelect.innerHTML = courseOptions;
 
-    // Attendance form dropdowns
+    // Attendance form
     const attStudentSelect = document.getElementById("attendanceName");
     const attCourseSelect = document.getElementById("attendanceCourse");
     if (attStudentSelect && studentOptions) attStudentSelect.innerHTML = studentOptions;
     if (attCourseSelect && courseOptions) attCourseSelect.innerHTML = courseOptions;
 
-    // Announcement form dropdowns
+    // Announcement form. Keep the school-wide option at the top.
     const annCourseSelect = document.getElementById("announcementCourse");
-    if (annCourseSelect) {
-        annCourseSelect.innerHTML = `<option value="0">All Courses (School-Wide)</option>` + courseOptions;
+    if (annCourseSelect && courseOptions) {
+        annCourseSelect.innerHTML = '<option value="0">All Courses (School-Wide)</option>' + courseOptions;
     }
 }
 
@@ -659,11 +760,17 @@ function escapeHtml(text) {
 document.addEventListener("DOMContentLoaded", () => {
     const path = window.location.pathname.toLowerCase();
 
-    // Check which page we are currently on
-    if (path.includes("academia_student.html") || document.getElementById("studentGpa")) {
-        loadStudentPortal();
-    } else if (path.includes("academia_parents.html") || document.getElementById("parentUsername")) {
+    // Which page are we on?
+    //
+    // The parent page and the student page share element ids (welcome,
+    // studentName, gradeLevel, studentGpa, gradeList, attendanceList), so an
+    // id test alone cannot tell them apart: both have studentGpa. The parent
+    // test must come first, or the student loader runs on the parent page and
+    // fills the banner with the child's name.
+    if (path.includes("academia_parents.html") || document.getElementById("parentUsername")) {
         loadParentPortal();
+    } else if (path.includes("academia_student.html") || document.getElementById("studentGpa")) {
+        loadStudentPortal();
     } else if (path.includes("academia_staff.html") || document.getElementById("gradeForm")) {
         loadStaffPortal();
     }
