@@ -34,11 +34,6 @@
       it opens everything, calls the functions above, then closes up.
 
 */
-<<<<<<< HEAD
-
-#include "academia_export.h"
-=======
->>>>>>> 57558642637b144e2b83d4799c7f861c409ca802
 
 #include "Academia_Student.h"
 
@@ -378,7 +373,7 @@ void update_student_frontend_state(int student_user_id) {
 
     /* Step 1: open the database. Every function below uses this same
        connection, so it is opened once here. */
-    if (sqlite3_open("academia.db", &db) != SQLITE_OK) {
+    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK) {
         printf("[Student Module] Cannot open academia.db\n");
         if (db != NULL) {
             sqlite3_close(db);
@@ -389,10 +384,8 @@ void update_student_frontend_state(int student_user_id) {
     /* Step 2: open the file the portal reads. If the usual place is missing
        (for example when the program is run from another folder) it tries a
        second location before giving up. */
-    out = fopen("FrontEnd/JS/student_states.js", "w");
-    if (out == NULL) {
-        out = fopen("BackEnd/Academia Student/student_states.js", "w");
-    }
+    out = fopen("Academia/FrontEnd/JS/student_states.js", "w");
+
     if (out == NULL) {
         printf("[Student Module] Cannot open student_states.js for writing.\n");
         sqlite3_close(db);

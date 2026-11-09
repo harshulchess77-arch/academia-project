@@ -359,7 +359,7 @@ void update_parent_frontend_state(int parent_user_id) {
     int child_id;
 
     /* Step 1: open the database. */
-    if (sqlite3_open("academia.db", &db) != SQLITE_OK) {
+    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK) {
         printf("[Parent Module] Cannot open academia.db\n");
         if (db != NULL) {
             sqlite3_close(db);
@@ -368,10 +368,8 @@ void update_parent_frontend_state(int parent_user_id) {
     }
 
     /* Step 2: open the file the portal reads. */
-    out = fopen("FrontEnd/JS/parents_states.js", "w");
-    if (out == NULL) {
-        out = fopen("BackEnd/Academia Parent/parents_states.js", "w");
-    }
+    out = fopen("Academia/FrontEnd/JS/parents_states.js", "w");
+
     if (out == NULL) {
         printf("[Parent Module] Cannot open parents_states.js for writing.\n");
         sqlite3_close(db);

@@ -368,7 +368,7 @@ void update_staff_frontend_state(int staff_user_id) {
     FILE *out = NULL;
 
     /* Step 1: open the database. */
-    if (sqlite3_open("academia.db", &db) != SQLITE_OK) {
+    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK) {
         printf("[Staff Module] Cannot open academia.db\n");
         if (db != NULL) {
             sqlite3_close(db);
@@ -377,10 +377,8 @@ void update_staff_frontend_state(int staff_user_id) {
     }
 
     /* Step 2: open the file the portal reads. */
-    out = fopen("FrontEnd/JS/staff_states.js", "w");
-    if (out == NULL) {
-        out = fopen("BackEnd/Academia Staff/staff_states.js", "w");
-    }
+    out = fopen("Academia/FrontEnd/JS/staff_states.js", "w");
+
     if (out == NULL) {
         printf("[Staff Module] Cannot open staff_states.js for writing.\n");
         sqlite3_close(db);
