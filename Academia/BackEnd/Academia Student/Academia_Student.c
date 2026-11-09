@@ -4,7 +4,7 @@ CS50 C Project
 Academia
 November 1, 2026
 */
-<<<<<<< HEAD
+
 #include "academia_export.h"
 
 void update_student_frontend_state(int id)

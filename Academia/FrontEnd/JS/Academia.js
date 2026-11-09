@@ -179,4 +179,5 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (typeof parentState !== "undefined") loadParent(parentState);
     else if (typeof staffState !== "undefined") loadStaff(staffState);
     else setText("error", "Portal data not found. Log in again.");
+
 });
