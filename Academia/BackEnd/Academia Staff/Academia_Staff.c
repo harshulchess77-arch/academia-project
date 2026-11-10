@@ -13,8 +13,25 @@ void update_staff_frontend_state(int staff_user_id) {
     sqlite3 *db = NULL;
     if (sqlite3_open("academia.db", &db) != SQLITE_OK) return;
 
+<<<<<<< HEAD
     FILE *out = fopen("FrontEnd/JS/staff_states.js", "w");
     if (!out) {
+=======
+    /* Step 1: open the database. */
+    if (sqlite3_open("Academia/BackEnd/Academia Database/academia.db", &db) != SQLITE_OK) {
+        printf("[Staff Module] Cannot open academia.db\n");
+        if (db != NULL) {
+            sqlite3_close(db);
+        }
+        return;
+    }
+
+    /* Step 2: open the file the portal reads. */
+    out = fopen("Academia/FrontEnd/JS/staff_states.js", "w");
+
+    if (out == NULL) {
+        printf("[Staff Module] Cannot open staff_states.js for writing.\n");
+>>>>>>> bdb42e454203584397cfaf2b125bce25ee9f012e
         sqlite3_close(db);
         return;
     }
