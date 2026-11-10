@@ -1,17 +1,14 @@
 <!--
-Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
-CS50 C Project
-Academia
-November 1, 2026
+   Academia Student Portal
+   Created for CS50 / School Web Project
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academia - Student Portal</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
     <link rel="stylesheet" href="../CSS/Academia.css">
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 
     <!-- Connects the JavaScript files -->
@@ -21,464 +18,177 @@ November 1, 2026
     <script src="../JS/script.js" defer></script>
 >>>>>>> 57558642637b144e2b83d4799c7f861c409ca802
     <script src="../JS/Academia.js" defer></script>
+=======
+>>>>>>> Stashed changes
 </head>
-
 <body>
 
-    <!-- Header / Nav bar with user quick access -->
-    <header class="header">
-        <section class="flex">
-            <a href="Academia_Landing.html" class="logo">Academia.</a>
-
-            <div class="icons">
-                <div id="toggle-btn" class="fas fa-sun" title="Toggle Theme"></div>
-                <div id="user-btn" class="fas fa-user" title="Account Menu"></div>
-            </div>
-
-            <div class="profile">
-                <img src="../Images/pic-1.jpg" onerror="this.src='images/pic-1.jpg'; this.onerror=null;" class="image" alt="User Avatar">
-                <h3 class="name" id="menuStudentName">Alex Rivera</h3>
-                <p class="role">Student</p>
-                <a href="#profile" onclick="showSection('profile-tab')" class="btn">View Profile</a>
-                <div class="flex-btn">
-                    <a href="Academia_Auth.html" class="option-btn">Log Out</a>
-                </div>
-            </div>
-        </section>
-    </header>
-
-    <!-- Portal Navigation Bar -->
-    <div class="navbar">
+    <!-- Top Header Bar -->
+    <div class="header">
         <b>Academia Student Portal</b>
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <a href="#dashboard" onclick="showSection('dashboard-tab')">Dashboard</a>
-            <a href="#courses" onclick="showSection('courses-tab')">Courses</a>
-            <a href="#playlist" onclick="showSection('playlist-tab')">Playlists</a>
-            <a href="#watch" onclick="showSection('watch-tab')">Watch Video</a>
-            <a href="#profile" onclick="showSection('profile-tab')">Profile</a>
-            <a href="Academia_Auth.html">Log Out</a>
+        <div>
+            <span>Welcome, Alex Rivera</span> | 
+            <a href="Academia_Auth.html">Logout</a>
         </div>
     </div>
 
-    <!-- Navigation Pills / Tabs -->
-    <div class="portal-tabs">
-        <button type="button" class="tab-btn active" data-tab="dashboard-tab"><i class="fas fa-chart-line"></i> Academic Records</button>
-        <button type="button" class="tab-btn" data-tab="courses-tab"><i class="fas fa-graduation-cap"></i> My Courses</button>
-        <button type="button" class="tab-btn" data-tab="playlist-tab"><i class="fas fa-list-ul"></i> Video Playlists</button>
-        <button type="button" class="tab-btn" data-tab="watch-tab"><i class="fas fa-play-circle"></i> Watch Video & Comments</button>
-        <button type="button" class="tab-btn" data-tab="profile-tab"><i class="fas fa-id-card"></i> Student Profile</button>
-    </div>
-
-    <!-- Error Display for C Backend alerts -->
-    <p id="error" style="color: #EF4444; text-align: center; margin-top: 1rem;"></p>
-
-    <!-- =========================================================================
-         SECTION 1: DASHBOARD / ACADEMIC RECORDS (Live backend connection)
-         ========================================================================= -->
-    <div id="dashboard-tab" class="portal-section active">
-        <!-- Welcome Section -->
-        <div class="blue-box">
-            <h2 id="welcome">Welcome, Student!</h2>
-            <p>View your live grades, GPA, course attendance, and school announcements.</p>
+    <!-- Main Layout (Sidebar + Container) -->
+    <div class="main-layout">
+        
+        <!-- Left Sidebar Navigation -->
+        <div class="sidebar">
+            <h3>Menu</h3>
+            <a href="#" onclick="showPage('dashboard')">Dashboard</a>
+            <a href="#" onclick="showPage('courses')">All Courses</a>
+            <a href="Academia_Auth.html">Logout</a>
         </div>
 
-        <!-- Student Information Section -->
-        <div class="box">
-            <h2>Student Information</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
-                <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
-                    <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Full Name</p>
-                    <p style="font-size: 1.8rem; font-weight: 700; color: #0B3D91;" id="studentName">Alex Rivera</p>
-                </div>
-                <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
-                    <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Student ID</p>
-                    <p style="font-size: 1.8rem; font-weight: 700; color: #0B3D91;" id="studentId">1</p>
-                </div>
-                <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
-                    <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Current Grade Level</p>
-                    <p style="font-size: 1.8rem; font-weight: 700; color: #0B3D91;" id="gradeLevel">Grade 11</p>
-                </div>
-                <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
-                    <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Cumulative GPA</p>
-                    <p style="font-size: 1.8rem; font-weight: 700; color: #2563EB;" id="studentGpa">3.85 / 4.00</p>
-                </div>
-            </div>
-        </div>
+        <!-- Main Content Area -->
+        <div class="container">
 
-        <!-- Grades Section -->
-        <div class="box">
-            <h2>Academic Grades</h2>
-            <table>
-                <thead>
+            <!-- PAGE 1: DASHBOARD -->
+            <div id="dashboard-page" class="page-content">
+                <h2>Student Dashboard</h2>
+                <p><b>Name:</b> Alex Rivera</p>
+                <p><b>Student ID:</b> 10948 | <b>Grade:</b> 11th Grade</p>
+                <p><b>Current GPA:</b> 3.85 / 4.00</p>
+
+                <br>
+                <h3>My Grades</h3>
+                <table border="1" width="100%">
                     <tr>
-                        <th>Enrolled Course</th>
-                        <th>Recorded Score</th>
+                        <th>Course Title</th>
+                        <th>Instructor</th>
+                        <th>Grade</th>
                     </tr>
-                </thead>
-                <tbody id="gradeList">
-                    <tr><td colspan="2" style="text-align: center; color: #64748B;">Connecting to Academia Backend...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Attendance Section -->
-        <div class="box">
-            <h2>Attendance Tracking</h2>
-            <table>
-                <thead>
                     <tr>
-                        <th>Course</th>
-                        <th>Attendance Status</th>
+                        <td>Complete HTML Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>97.0%</td>
                     </tr>
-                </thead>
-                <tbody id="attendanceList">
-                    <tr><td colspan="2" style="text-align: center; color: #64748B;">Loading attendance logs...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Assignments Section -->
-        <div class="box">
-            <h2>Upcoming Assignments & Due Dates</h2>
-            <table>
-                <thead>
                     <tr>
-                        <th>Course</th>
-                        <th>Assignment Name</th>
-                        <th>Due Date</th>
+                        <td>Complete CSS Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>96.5%</td>
                     </tr>
-                </thead>
-                <tbody id="assignmentList">
-                    <tr><td colspan="3" style="text-align: center; color: #64748B;">Loading course assignments...</td></tr>
-                </tbody>
-            </table>
-        </div>
+                    <tr>
+                        <td>Complete JavaScript Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>95.0%</td>
+                    </tr>
+                </table>
 
-        <!-- Announcements Section -->
-        <div class="box">
-            <h2>School & Course Announcements</h2>
-            <div id="announcementList">
-                <p style="color: #64748B;">Loading announcements...</p>
+                <br>
+                <h3>Attendance Record</h3>
+                <table border="1" width="100%">
+                    <tr>
+                        <th>Course Title</th>
+                        <th>Instructor</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <td>Complete HTML Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>Present</td>
+                    </tr>
+                    <tr>
+                        <td>Complete CSS Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>Present</td>
+                    </tr>
+                    <tr>
+                        <td>Complete JavaScript Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>Present</td>
+                    </tr>
+                </table>
             </div>
-        </div>
-    </div>
 
-    <!-- =========================================================================
-         SECTION 2: ENROLLED COURSES (From courses.html)
-         ========================================================================= -->
-    <div id="courses-tab" class="portal-section">
-        <section class="courses" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
-            <h1 class="heading">Enrolled Curriculum & Tutorials</h1>
-            <div class="box-container">
-                <div class="box">
-                    <div class="tutor">
-                        <img src="../Images/pic-2.jpg" onerror="this.src='images/pic-2.jpg'; this.onerror=null;" alt="Tutor">
-                        <div class="info">
-                            <h3>Dr. Eleanor Vance</h3>
-                            <span>AP CS Teacher</span>
-                        </div>
+            <!-- PAGE 2: COURSES & VIDEO WORKSPACE -->
+            <div id="courses-page" class="page-content" style="display: none;">
+                
+                <!-- Course List View -->
+                <div id="course-list-view">
+                    <h2>Enrolled Courses by Cmdr. Schenck</h2>
+                    <br>
+                    
+                    <!-- HTML Course Card -->
+                    <div class="course-card" onclick="openWorkspace('Complete HTML Tutorial')">
+                        <img src="../Images/thumb-1.png" alt="HTML Thumbnail" style="width: 100px; height: 60px; float: left; margin-right: 15px;">
+                        <h3>Complete HTML Tutorial</h3>
+                        <p>Instructor: Cmdr. Schenck (6 Lessons)</p>
+                        <button style="margin-top: 5px;">View Course</button>
+                        <div style="clear: both;"></div>
                     </div>
-                    <div class="thumb">
-                        <img src="../Images/thumb-1.png" onerror="this.src='images/thumb-1.png'; this.onerror=null;" alt="AP Computer Science A">
-                        <span>10 modules</span>
-                    </div>
-                    <h3 class="title">AP Computer Science A & Algorithms</h3>
-                    <a href="#playlist" onclick="showSection('playlist-tab')" class="inline-btn">View Playlist</a>
-                </div>
+                    <br>
 
-                <div class="box">
-                    <div class="tutor">
-                        <img src="../Images/pic-3.jpg" onerror="this.src='images/pic-3.jpg'; this.onerror=null;" alt="Tutor">
-                        <div class="info">
-                            <h3>Prof. Gregory Bell</h3>
-                            <span>Math Chair</span>
-                        </div>
+                    <!-- CSS Course Card -->
+                    <div class="course-card" onclick="openWorkspace('Complete CSS Tutorial')">
+                        <img src="../Images/thumb-2.png" alt="CSS Thumbnail" style="width: 100px; height: 60px; float: left; margin-right: 15px;">
+                        <h3>Complete CSS Tutorial</h3>
+                        <p>Instructor: Cmdr. Schenck (6 Lessons)</p>
+                        <button style="margin-top: 5px;">View Course</button>
+                        <div style="clear: both;"></div>
                     </div>
-                    <div class="thumb">
-                        <img src="../Images/thumb-2.png" onerror="this.src='images/thumb-2.png'; this.onerror=null;" alt="Advanced Mathematics">
-                        <span>12 modules</span>
-                    </div>
-                    <h3 class="title">Advanced Mathematics & Calculus</h3>
-                    <a href="#playlist" onclick="showSection('playlist-tab')" class="inline-btn">View Playlist</a>
-                </div>
+                    <br>
 
-                <div class="box">
-                    <div class="tutor">
-                        <img src="../Images/pic-4.jpg" onerror="this.src='images/pic-4.jpg'; this.onerror=null;" alt="Tutor">
-                        <div class="info">
-                            <h3>Dr. Julian Ward</h3>
-                            <span>Physics Dept</span>
-                        </div>
-                    </div>
-                    <div class="thumb">
-                        <img src="../Images/thumb-3.png" onerror="this.src='images/thumb-3.png'; this.onerror=null;" alt="Physics with Calculus">
-                        <span>8 modules</span>
-                    </div>
-                    <h3 class="title">Physics with Calculus</h3>
-                    <a href="#playlist" onclick="showSection('playlist-tab')" class="inline-btn">View Playlist</a>
-                </div>
-
-                <div class="box">
-                    <div class="tutor">
-                        <img src="../Images/pic-5.jpg" onerror="this.src='images/pic-5.jpg'; this.onerror=null;" alt="Tutor">
-                        <div class="info">
-                            <h3>Sarah Connor</h3>
-                            <span>Web Faculty</span>
-                        </div>
-                    </div>
-                    <div class="thumb">
-                        <img src="../Images/thumb-4.png" onerror="this.src='images/thumb-4.png'; this.onerror=null;" alt="Web Architecture">
-                        <span>15 modules</span>
-                    </div>
-                    <h3 class="title">Web Engineering & UI/UX</h3>
-                    <a href="#playlist" onclick="showSection('playlist-tab')" class="inline-btn">View Playlist</a>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- =========================================================================
-         SECTION 3: PLAYLIST VIEW (From playlist.html)
-         ========================================================================= -->
-    <div id="playlist-tab" class="portal-section">
-        <section class="playlist-details" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
-            <h1 class="heading">Course Playlist Details</h1>
-            <div class="row">
-                <div class="column">
-                    <div class="save-playlist">
-                        <button type="button" onclick="alert('Playlist saved to your bookmarks!');"><i class="far fa-bookmark"></i> <span>Bookmark Playlist</span></button>
-                    </div>
-                    <div class="thumb">
-                        <img src="../Images/thumb-1.png" onerror="this.src='images/thumb-1.png'; this.onerror=null;" alt="AP Computer Science A">
+                    <!-- JavaScript Course Card -->
+                    <div class="course-card" onclick="openWorkspace('Complete JavaScript Tutorial')">
+                        <img src="../Images/thumb-3.png" alt="JS Thumbnail" style="width: 100px; height: 60px; float: left; margin-right: 15px;">
+                        <h3>Complete JavaScript Tutorial</h3>
+                        <p>Instructor: Cmdr. Schenck (6 Lessons)</p>
+                        <button style="margin-top: 5px;">View Course</button>
+                        <div style="clear: both;"></div>
                     </div>
                 </div>
-                <div class="column">
-                    <div class="tutor">
-                        <img src="../Images/pic-2.jpg" onerror="this.src='images/pic-2.jpg'; this.onerror=null;" alt="Tutor">
-                        <div>
-                            <h3>Dr. Eleanor Vance</h3>
-                            <span>Department of Computer Science</span>
-                        </div>
-                    </div>
-                    <div class="details">
-                        <h3>AP Computer Science A Video Curriculum</h3>
-                        <p>Comprehensive video lectures covering object-oriented architecture, algorithms, recursion, and data structures tested on the AP exam.</p>
-                        <a href="#watch" onclick="showSection('watch-tab')" class="inline-btn">Play First Video</a>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <section class="playlist-videos" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
-            <h1 class="heading">Course Lectures</h1>
-            <div class="box-container">
-                <a class="box" href="#watch" onclick="showSection('watch-tab'); loadVideo('../Images/vid-1.mp4', '../Images/post-1-1.png', 'Lecture 1: Computational Thinking & C Fundamentals');">
-                    <i class="fas fa-play"></i>
-                    <img src="../Images/post-1-1.png" onerror="this.src='images/post-1-1.png'; this.onerror=null;" alt="Lecture 1">
-                    <h3>Lecture 1: Computational Thinking & C Fundamentals</h3>
-                </a>
-
-                <a class="box" href="#watch" onclick="showSection('watch-tab'); loadVideo('../Images/vid-2.mp4', '../Images/post-1-2.png', 'Lecture 2: Memory Models, Pointers & Buffers');">
-                    <i class="fas fa-play"></i>
-                    <img src="../Images/post-1-2.png" onerror="this.src='images/post-1-2.png'; this.onerror=null;" alt="Lecture 2">
-                    <h3>Lecture 2: Memory Models, Pointers & Buffers</h3>
-                </a>
-
-                <a class="box" href="#watch" onclick="showSection('watch-tab'); loadVideo('../Images/vid-3.mp4', '../Images/post-1-3.png', 'Lecture 3: Relational Data & SQLite Queries');">
-                    <i class="fas fa-play"></i>
-                    <img src="../Images/post-1-3.png" onerror="this.src='images/post-1-3.png'; this.onerror=null;" alt="Lecture 3">
-                    <h3>Lecture 3: Relational Data & SQLite Queries</h3>
-                </a>
-
-                <a class="box" href="#watch" onclick="showSection('watch-tab'); loadVideo('../Images/vid-4.mp4', '../Images/post-1-4.png', 'Lecture 4: Sockets, HTTP Protocol & Server Architecture');">
-                    <i class="fas fa-play"></i>
-                    <img src="../Images/post-1-4.png" onerror="this.src='images/post-1-4.png'; this.onerror=null;" alt="Lecture 4">
-                    <h3>Lecture 4: Sockets, HTTP Protocol & Server Architecture</h3>
-                </a>
-
-                <a class="box" href="#watch" onclick="showSection('watch-tab'); loadVideo('../Images/vid-5.mp4', '../Images/post-1-5.png', 'Lecture 5: Frontend Integration & State Sync');">
-                    <i class="fas fa-play"></i>
-                    <img src="../Images/post-1-5.png" onerror="this.src='images/post-1-5.png'; this.onerror=null;" alt="Lecture 5">
-                    <h3>Lecture 5: Frontend Integration & State Sync</h3>
-                </a>
-
-                <a class="box" href="#watch" onclick="showSection('watch-tab'); loadVideo('../Images/vid-6.mp4', '../Images/post-1-6.png', 'Lecture 6: Comprehensive Review & Project Defense');">
-                    <i class="fas fa-play"></i>
-                    <img src="../Images/post-1-6.png" onerror="this.src='images/post-1-6.png'; this.onerror=null;" alt="Lecture 6">
-                    <h3>Lecture 6: Comprehensive Review & Project Defense</h3>
-                </a>
-            </div>
-        </section>
-    </div>
-
-    <!-- =========================================================================
-         SECTION 4: WATCH VIDEO & COMMENTS (From watch-video.html)
-         ========================================================================= -->
-    <div id="watch-tab" class="portal-section">
-        <section class="watch-video" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
-            <div class="video-container">
-                <div class="video">
-                    <video src="../Images/vid-1.mp4" controls poster="../Images/post-1-1.png" id="studentMainVideo"></video>
-                </div>
-                <h3 class="title" id="videoLectureTitle">Lecture 1: Computational Thinking & C Fundamentals</h3>
-                <div class="info">
-                    <p class="date"><i class="fas fa-calendar"></i><span>Fall Term 2026</span></p>
-                    <p class="date"><i class="fas fa-heart"></i><span id="videoLikeCount">48 likes</span></p>
-                </div>
-                <div class="tutor">
-                    <img src="../Images/pic-2.jpg" onerror="this.src='images/pic-2.jpg'; this.onerror=null;" alt="Instructor">
-                    <div>
-                        <h3>Dr. Eleanor Vance</h3>
-                        <span>Department Chair of Computer Science</span>
-                    </div>
-                </div>
-                <div class="flex">
-                    <a href="#playlist" onclick="showSection('playlist-tab')" class="inline-btn">Back to Playlist</a>
-                    <button type="button" onclick="likeCurrentVideo()"><i class="far fa-heart"></i><span>Like Video</span></button>
-                </div>
-                <p class="description">
-                    This lecture walks through core computational principles, memory allocation, variable scopes, and compiler toolchains.
-                    Students will prepare the foundation required for low-level backend server programming and data structure algorithms.
-                </p>
-            </div>
-        </section>
-
-        <!-- Comments -->
-        <section class="comments" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
-            <h1 class="heading">Classroom Discussion</h1>
-            <form class="add-comment" onsubmit="event.preventDefault(); postComment();">
-                <h3>Add a Question or Note</h3>
-                <textarea id="commentInputText" placeholder="Write your question or observation for the instructor..." required maxlength="1000"></textarea>
-                <input type="submit" value="Post Comment" class="inline-btn">
-            </form>
-
-            <h1 class="heading">Student & Teacher Notes</h1>
-            <div class="box-container" id="studentCommentsContainer">
-                <div class="box">
-                    <div class="user">
-                        <img src="../Images/pic-1.jpg" onerror="this.src='images/pic-1.jpg'; this.onerror=null;" alt="Alex Rivera">
-                        <div>
-                            <h3>Alex Rivera</h3>
-                            <span>Student &bull; Yesterday</span>
-                        </div>
-                    </div>
-                    <div class="comment-box">Could we review the pointer dereferencing diagrams again in next Tuesday's recitation? The heap vs stack visualization was very helpful.</div>
-                </div>
-
-                <div class="box">
-                    <div class="user">
-                        <img src="../Images/pic-2.jpg" onerror="this.src='images/pic-2.jpg'; this.onerror=null;" alt="Dr. Vance">
-                        <div>
-                            <h3>Dr. Eleanor Vance</h3>
-                            <span>Faculty Member &bull; 2 days ago</span>
-                        </div>
-                    </div>
-                    <div class="comment-box">Absolutely Alex! We will dedicate the first 15 minutes of lab session to stack frames and memory leaks.</div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- =========================================================================
-         SECTION 5: PROFILE VIEW (From profile.html)
-         ========================================================================= -->
-    <div id="profile-tab" class="portal-section">
-        <section class="user-profile" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
-            <h1 class="heading">Student Profile Overview</h1>
-            <div class="info">
-                <div class="user">
-                    <img src="../Images/pic-1.jpg" onerror="this.src='images/pic-1.jpg'; this.onerror=null;" alt="Alex Rivera">
-                    <h3 id="profileFullName">Alex Rivera</h3>
-                    <p>Enrolled Student &bull; Grade 11</p>
-                    <a href="javascript:void(0);" onclick="alert('Profile details are synchronized with the Academia central registrar.');" class="inline-btn">Verified Record</a>
-                </div>
-
-                <div class="box-container">
-                    <div class="box">
-                        <div class="flex">
-                            <i class="fas fa-bookmark"></i>
-                            <div>
-                                <span>4</span>
-                                <p>Saved Playlists</p>
+                <!-- Course Workspace (Video Player + Right Playlist Sidebar) -->
+                <div id="course-workspace-view" style="display: none;">
+                    <button onclick="backToList()" style="padding: 5px 10px; cursor: pointer;">&larr; Back to Courses</button>
+                    <h2 id="workspace-title" style="margin-top: 10px;">Course Title</h2>
+                    
+                    <div class="workspace-layout">
+                        <!-- Left Side: Video Player & Discussion -->
+                        <div class="main-video-area">
+                            <video id="my-video" width="100%" controls>
+                                <source id="video-source" src="" type="video/mp4">
+                                Your browser does not support video.
+                            </video>
+                            <h3 id="video-title" style="margin-top: 10px;">Select a lesson from the playlist</h3>
+                            <p>Instructor: <b>Cmdr. Schenck</b></p>
+                            <button onclick="likeVideo()">Like Video (<span id="likes">44</span>)</button>
+                            
+                            <br><br>
+                            <h3>Discussion Board</h3>
+                            <textarea id="comment-box" placeholder="Ask Cmdr. Schenck a question..." rows="3" cols="40"></textarea><br>
+                            <button onclick="addComment()" style="margin-top: 5px;">Post Comment</button>
+                            
+                            <div id="comments-section" style="margin-top: 15px;">
+                                <p><b>Alex Rivera:</b> Ready to learn!</p>
                             </div>
                         </div>
-                        <a href="#playlist" onclick="showSection('playlist-tab')" class="inline-btn">View Playlists</a>
-                    </div>
 
-                    <div class="box">
-                        <div class="flex">
-                            <i class="fas fa-graduation-cap"></i>
-                            <div>
-                                <span id="profileCourseCount">3</span>
-                                <p>Enrolled Courses</p>
+                        <!-- Right Side Playlist Bar with 6 Lessons & Proper Thumbnails -->
+                        <div class="right-sidebar">
+                            <h3>Playlist Lessons (6)</h3>
+                            <div id="playlist-links">
+                                <!-- Populated dynamically by JS -->
                             </div>
                         </div>
-                        <a href="#courses" onclick="showSection('courses-tab')" class="inline-btn">View Courses</a>
-                    </div>
-
-                    <div class="box">
-                        <div class="flex">
-                            <i class="fas fa-star"></i>
-                            <div>
-                                <span>3.85</span>
-                                <p>Cumulative GPA</p>
-                            </div>
-                        </div>
-                        <a href="#dashboard" onclick="showSection('dashboard-tab')" class="inline-btn">View Grades</a>
                     </div>
                 </div>
+
             </div>
-        </section>
+
+        </div>
+
     </div>
 
-    <!-- Universal Footer -->
+    <!-- Footer -->
     <div class="footer">
-        LEARN. GROW. ACHIEVE. TOGETHER. &nbsp;|&nbsp; EDUCATION TODAY. A BRIGHTER TOMORROW.
+        <p>&copy; 2026 Academia Project</p>
     </div>
 
-    <!-- Inline script for video and comment interactions -->
-    <script>
-        function loadVideo(src, poster, title) {
-            const v = document.getElementById('studentMainVideo');
-            const t = document.getElementById('videoLectureTitle');
-            if (v) {
-                v.src = src;
-                if (poster) v.poster = poster;
-                v.play().catch(() => {});
-            }
-            if (t) t.innerText = title;
-        }
-
-        let likes = 48;
-        function likeCurrentVideo() {
-            likes++;
-            const el = document.getElementById('videoLikeCount');
-            if (el) el.innerText = likes + ' likes';
-            alert('Video added to your liked lecture list!');
-        }
-
-        function postComment() {
-            const txtEl = document.getElementById('commentInputText');
-            if (!txtEl || !txtEl.value.trim()) return;
-            const container = document.getElementById('studentCommentsContainer');
-            if (container) {
-                const newBox = document.createElement('div');
-                newBox.className = 'box';
-                newBox.innerHTML = `
-                    <div class="user">
-                        <img src="../Images/pic-1.jpg" onerror="this.src='images/pic-1.jpg'; this.onerror=null;" alt="Student">
-                        <div>
-                            <h3>Alex Rivera</h3>
-                            <span>Student &bull; Just now</span>
-                        </div>
-                    </div>
-                    <div class="comment-box">\${txtEl.value.trim()}</div>
-                `;
-                container.prepend(newBox);
-            }
-            txtEl.value = '';
-            alert('Your comment was posted to the classroom forum!');
-        }
-    </script>
+    <script src="../JS/Academia.js"></script>
 </body>
 </html>

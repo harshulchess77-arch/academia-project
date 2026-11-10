@@ -1,12 +1,11 @@
-/*
-   ==========================================================================
-   ACADEMIA - Frontend Connector & State Controller (Academia.js)
-   Connects HTML pages with the C SQLite3 Server Backend
-   Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
-   CS50 C Project - Academia
-   ==========================================================================
-*/
+// ==========================================
+// STUDENT PORTAL FUNCTIONS
+// ==========================================
+function showPage(pageId) {
+    var dash = document.getElementById("dashboard-page");
+    var courses = document.getElementById("courses-page");
 
+<<<<<<< Updated upstream
 // ---------------------------------------------------------------------------
 // ACCOUNTS
 //
@@ -46,52 +45,118 @@ function findAccount(username) {
     }
     return null;
 }
+=======
+    if (!dash || !courses) return;
+>>>>>>> Stashed changes
 
-// Current session helper
-function getCurrentUser() {
-    try {
-        const stored = sessionStorage.getItem('academia_user') || localStorage.getItem('academia_user');
-        if (stored) {
-            return JSON.parse(stored);
-        }
-    } catch (e) {
-        console.warn('Error reading stored session:', e);
+    if (pageId === 'dashboard') {
+        dash.style.display = 'block';
+        courses.style.display = 'none';
+    } else if (pageId === 'courses') {
+        dash.style.display = 'none';
+        courses.style.display = 'block';
+        backToList();
     }
-    return null;
 }
 
-function setCurrentUser(user) {
-    sessionStorage.setItem('academia_user', JSON.stringify(user));
-    localStorage.setItem('academia_user', JSON.stringify(user));
+function openWorkspace(courseTitle) {
+    var listView = document.getElementById("course-list-view");
+    var workspaceView = document.getElementById("course-workspace-view");
+    var titleEl = document.getElementById("workspace-title");
+    
+    if (!listView || !workspaceView) return;
+
+    listView.style.display = "none";
+    workspaceView.style.display = "block";
+    if (titleEl) titleEl.innerText = courseTitle + " - Cmdr. Schenck";
+
+    var playlistDiv = document.getElementById("playlist-links");
+    var htmlContent = "";
+    var prefix = "post-1"; // Default for HTML
+
+    if (courseTitle === "Complete CSS Tutorial") {
+        prefix = "post-2"; // Uses post-2-1 through post-2-6
+    } else if (courseTitle === "Complete JavaScript Tutorial") {
+        prefix = "post-3"; // Uses post-3-1 through post-3-6
+    }
+
+    var lessons = [];
+    for (var i = 1; i <= 6; i++) {
+        lessons.push({
+            title: "Part 0" + i + " Lesson",
+            thumb: "../Images/" + prefix + "-" + i + ".png"
+        });
+    }
+
+    for (var j = 0; j < lessons.length; j++) {
+        var les = lessons[j];
+        htmlContent += '<div class="lesson-item" onclick="changeVideo(\'' + courseTitle + ' (' + les.title + ')\', \'' + les.thumb + '\', \'../Images/vid-1.mp4\')">';
+        htmlContent += '<img src="' + les.thumb + '" onerror="this.style.display=\'none\';">';
+        htmlContent += '<span>' + les.title + '</span></div>';
+    }
+
+    if (playlistDiv) playlistDiv.innerHTML = htmlContent;
+
+    var vid = document.getElementById("my-video");
+    var src = document.getElementById("video-source");
+    var vidTitle = document.getElementById("video-title");
+    
+    if (vid && src) {
+        src.src = "";
+        vid.poster = lessons[0].thumb;
+        vid.load();
+    }
+    if (vidTitle) vidTitle.innerText = "Please select a lesson from the playlist";
 }
 
+<<<<<<< Updated upstream
 function clearSession() {
     // Remove the stored session, so the portal pages no longer see a signed-in
     // user and send the visitor back to the login page.
     sessionStorage.removeItem('academia_user');
     localStorage.removeItem('academia_user');
+=======
+function backToList() {
+    var listView = document.getElementById("course-list-view");
+    var workspaceView = document.getElementById("course-workspace-view");
+    if (listView && workspaceView) {
+        listView.style.display = "block";
+        workspaceView.style.display = "none";
+    }
+>>>>>>> Stashed changes
 }
 
-// -------------------------------------------------------------------------
-// AUTHENTICATION (Academia_Auth.html)
-// -------------------------------------------------------------------------
-async function goPortal() {
-    const userEl = document.getElementById("username");
-    const passEl = document.getElementById("password");
-    const roleEl = document.getElementById("role");
-    const errEl = document.getElementById("err");
+function changeVideo(title, posterImg, videoFile) {
+    var vidTitle = document.getElementById("video-title");
+    var vid = document.getElementById("my-video");
+    var src = document.getElementById("video-source");
 
-    if (!userEl || !passEl) return;
+    if (vidTitle) vidTitle.innerText = title;
+    if (vid && src) {
+        src.src = videoFile;
+        vid.poster = posterImg;
+        vid.load();
+        vid.play().catch(function() {});
+    }
+}
 
-    const u = userEl.value.trim();
-    const p = passEl.value.trim();
-    const r = roleEl ? roleEl.value : 'student';
+var likes = 44;
+function likeVideo() {
+    likes++;
+    var likesEl = document.getElementById("likes");
+    if (likesEl) likesEl.innerText = likes;
+}
 
-    if (u === "" || p === "") {
-        if (errEl) errEl.innerHTML = "Please enter both username and password.";
+function addComment() {
+    var box = document.getElementById("comment-box");
+    if (!box) return;
+    var txt = box.value;
+    if (txt === "") {
+        alert("Please write a comment first!");
         return;
     }
 
+<<<<<<< Updated upstream
     if (errEl) errEl.innerHTML = "Checking...";
 
     // Step 1: is the username known?
@@ -99,13 +164,44 @@ async function goPortal() {
     if (account === null) {
         if (errEl) errEl.innerHTML = "Invalid username or password.";
         return;
+=======
+    var section = document.getElementById("comments-section");
+    if (section) {
+        section.innerHTML += "<p><b>Alex Rivera:</b> " + txt + "</p>";
+>>>>>>> Stashed changes
     }
+    box.value = "";
+}
 
+<<<<<<< Updated upstream
     // Step 2: does the typed password hash to the stored one?
     const typedHash = await hashPassword(p);
     if (typedHash !== account.hash) {
         if (errEl) errEl.innerHTML = "Invalid username or password.";
         return;
+=======
+// ==========================================
+// STAFF / FACULTY PORTAL FUNCTIONS
+// ==========================================
+function showStaffTab(tabId) {
+    var tabs = ['management', 'directory', 'profile', 'courses', 'lectures'];
+    for (var i = 0; i < tabs.length; i++) {
+        var el = document.getElementById('staff-' + tabs[i]);
+        if (el) el.style.display = 'none';
+    }
+    var target = document.getElementById('staff-' + tabId);
+    if (target) target.style.display = 'block';
+}
+
+function loadStaffVideo(title, posterImg) {
+    var titleEl = document.getElementById("staff-video-title");
+    var vid = document.getElementById("staff-video");
+
+    if (titleEl) titleEl.innerText = title;
+    if (vid) {
+        vid.poster = posterImg;
+        vid.load();
+>>>>>>> Stashed changes
     }
 
     // Step 3: does the Role box agree with this account?
@@ -120,18 +216,20 @@ async function goPortal() {
     routeToRolePortal(account.role);
 }
 
-function routeToRolePortal(role) {
-    if (role === 'student') {
-        window.location.href = "Academia_Student.html";
-    } else if (role === 'parent') {
-        window.location.href = "Academia_Parents.html";
-    } else if (role === 'staff') {
-        window.location.href = "Academia_Staff.html";
-    } else {
-        window.location.href = "Academia_Landing.html";
+function saveGrade() {
+    var student = document.getElementById("grade-student");
+    var course = document.getElementById("grade-course");
+    var score = document.getElementById("grade-score");
+
+    if (!score || score.value === "") {
+        alert("Please enter a valid grade score!");
+        return;
     }
+    alert("Successfully recorded " + score.value + "% for " + student.value + " in " + course.value + "!");
+    score.value = "";
 }
 
+<<<<<<< Updated upstream
 // -------------------------------------------------------------------------
 // STUDENT PORTAL (Academia_Student.html)
 // -------------------------------------------------------------------------
@@ -144,120 +242,34 @@ async function loadStudentPortal() {
     }
     const user = getCurrentUser() || { id: 1, name: "Alex Rivera", role: "student" };
     const errorEl = document.getElementById("error");
+=======
+function saveAttendance() {
+    var student = document.getElementById("attendance-student");
+    var course = document.getElementById("attendance-course");
+    var status = document.getElementById("attendance-status");
+>>>>>>> Stashed changes
 
-    try {
-        const res = await fetch(`${API_BASE}/api/student-data?id=${user.id}`);
-        if (res.ok) {
-            const data = await res.json();
-            if (data.success) {
-                renderStudentData(data);
-                return;
-            }
-        }
-    } catch (e) {
-        console.warn("Could not fetch student data from C server, using local state:", e);
-    }
-
-    // Check if studentState is defined globally (from student_states.js)
-    if (typeof studentState !== 'undefined' && studentState.student) {
-        renderStudentData(studentState);
-    } else {
-        // Safe default mock data
-        renderStudentData({
-            student: { userId: user.id || 1, firstName: "Alex", lastName: "Rivera", gradeLevel: 11, gpa: 3.85 },
-            grades: [
-                { course: "AP Computer Science A", score: 96.5 },
-                { course: "Advanced Mathematics", score: 92.0 },
-                { course: "Physics with Calculus", score: 94.5 },
-                { course: "World History & Civics", score: 89.0 }
-            ],
-            attendance: [
-                { course: "AP Computer Science A", status: "Present" },
-                { course: "Advanced Mathematics", status: "Present" },
-                { course: "Physics with Calculus", status: "Present" },
-                { course: "World History & Civics", status: "Absent" }
-            ],
-            assignments: [
-                { course: "AP Computer Science A", assignmentName: "C Binary Search Tree Lab", dueDate: "2026-11-15" },
-                { course: "Advanced Mathematics", assignmentName: "Integral Calculus Problem Set 5", dueDate: "2026-11-18" },
-                { course: "Physics with Calculus", assignmentName: "Kinematics & Optics Lab Report", dueDate: "2026-11-20" }
-            ],
-            announcements: [
-                { course: "AP Computer Science A", title: "CS Project Milestone Submission", message: "Please submit your C server and database integration milestones by Friday 5:00 PM.", date: "2026-11-06" },
-                { course: "General", title: "Academia Unified Digital Ecosystem Live", message: "Welcome students, parents, and staff. Education Today. A Brighter Tomorrow.", date: "2026-11-01" }
-            ]
-        });
-    }
+    if (!student || !course || !status) return;
+    alert("Successfully recorded attendance as '" + status.value + "' for " + student.value + " in " + course.value + "!");
 }
 
-function renderStudentData(data) {
-    const s = data.student || {};
-    const welcomeEl = document.getElementById("welcome");
-    const nameEl = document.getElementById("studentName");
-    const idEl = document.getElementById("studentId");
-    const gradeLevelEl = document.getElementById("gradeLevel");
-    const gpaEl = document.getElementById("studentGpa");
-
-    const fullName = `${s.firstName || 'Student'} ${s.lastName || ''}`.trim();
-    if (welcomeEl) welcomeEl.innerText = `Welcome, ${fullName}!`;
-    if (nameEl) nameEl.innerText = fullName;
-    if (idEl) idEl.innerText = s.userId || "1";
-    if (gradeLevelEl) gradeLevelEl.innerText = `Grade ${s.gradeLevel || 11}`;
-    if (gpaEl) gpaEl.innerText = `${typeof s.gpa === 'number' ? s.gpa.toFixed(2) : (s.gpa || '3.85')} / 4.00`;
-
-    // Grades Table
-    const gradeList = document.getElementById("gradeList");
-    if (gradeList && data.grades) {
-        gradeList.innerHTML = data.grades.map(g => `
-            <tr>
-                <td><strong>${escapeHtml(g.course)}</strong></td>
-                <td><span class="badge badge-score">${Number(g.score).toFixed(1)}%</span></td>
-            </tr>
-        `).join("");
+function postStaffComment() {
+    var box = document.getElementById("staff-comment-box");
+    if (!box) return;
+    var txt = box.value;
+    if (txt === "") {
+        alert("Please write a message first!");
+        return;
     }
 
-    // Attendance Table
-    const attList = document.getElementById("attendanceList");
-    if (attList && data.attendance) {
-        attList.innerHTML = data.attendance.map(a => {
-            const isPresent = a.status === 'Present' || a.present === 1 || a.present === true;
-            return `
-                <tr>
-                    <td><strong>${escapeHtml(a.course)}</strong></td>
-                    <td><span class="badge ${isPresent ? 'badge-present' : 'badge-absent'}">${isPresent ? 'Present' : 'Absent'}</span></td>
-                </tr>
-            `;
-        }).join("");
+    var section = document.getElementById("staff-comments-section");
+    if (section) {
+        section.innerHTML += "<p><b>Cmdr. Schenck (Instructor):</b> " + txt + "</p>";
     }
-
-    // Assignments Table
-    const assList = document.getElementById("assignmentList");
-    if (assList && data.assignments) {
-        assList.innerHTML = data.assignments.map(a => `
-            <tr>
-                <td><strong>${escapeHtml(a.course)}</strong></td>
-                <td>${escapeHtml(a.assignmentName || a.name)}</td>
-                <td><span class="badge" style="background:#F1F5F9; color:#475569;">${escapeHtml(a.dueDate || a.due)}</span></td>
-            </tr>
-        `).join("");
-    }
-
-    // Announcements List
-    const annList = document.getElementById("announcementList");
-    if (annList && data.announcements) {
-        annList.innerHTML = data.announcements.map(a => `
-            <div class="announcement-card">
-                <div class="card-header">
-                    <span class="card-title">${escapeHtml(a.title)}</span>
-                    <span class="card-date">${escapeHtml(a.date)}</span>
-                </div>
-                <div class="card-course">${escapeHtml(a.course || 'School-Wide')}</div>
-                <div class="card-body">${escapeHtml(a.message)}</div>
-            </div>
-        `).join("");
-    }
+    box.value = "";
 }
 
+<<<<<<< Updated upstream
 // -------------------------------------------------------------------------
 // PARENT PORTAL (Academia_Parents.html)
 // -------------------------------------------------------------------------
@@ -269,19 +281,25 @@ async function loadParentPortal() {
         return;
     }
     const user = getCurrentUser() || { id: 3, name: "Marcus Rivera", role: "parent" };
+=======
+// ==========================================
+// PARENT PORTAL FUNCTIONS
+// ==========================================
+function showParentTab(tabId) {
+    var overview = document.getElementById("parent-overview");
+    var announcements = document.getElementById("parent-announcements");
+>>>>>>> Stashed changes
 
-    try {
-        const res = await fetch(`${API_BASE}/api/parent-data?id=${user.id}`);
-        if (res.ok) {
-            const data = await res.json();
-            if (data.success) {
-                renderParentData(data);
-                return;
-            }
-        }
-    } catch (e) {
-        console.warn("Could not fetch parent data from C server, using local state:", e);
+    if (!overview || !announcements) return;
+
+    if (tabId === 'overview') {
+        overview.style.display = 'block';
+        announcements.style.display = 'none';
+    } else if (tabId === 'announcements') {
+        overview.style.display = 'none';
+        announcements.style.display = 'block';
     }
+<<<<<<< Updated upstream
 
     if (typeof parentState !== 'undefined' && parentState.parent) {
         renderParentData(parentState);
@@ -793,3 +811,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 >>>>>>> 57558642637b144e2b83d4799c7f861c409ca802
+=======
+}
+>>>>>>> Stashed changes
