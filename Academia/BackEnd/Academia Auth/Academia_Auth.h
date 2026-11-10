@@ -5,15 +5,26 @@ Academia
 October 27, 2026
 */
 
-// Main Method
+/* Academia Auth Header */
 
-// We check for the header file if its defined or not and then we use define to
-// use it and show the rest of the code in the file
-#ifndef ACADEMIA_AUTH_H // We use the "ifndef" to call whether the file is there
-                        // or not there
-#define ACADEMIA_AUTH_H // We use the "define" to call the file to read the code
-                        // inside after the "ifndef" is successful
-// We add required libraries to make sure the code runs properly and for that we
-// have used "sqlite3.h" and "stddef.h"
+#ifndef ACADEMIA_AUTH_H
+#define ACADEMIA_AUTH_H
+
 #include <sqlite3.h>
 #include <stddef.h>
+
+/* Sign a user in. Returns 1 on success and fills in the token, id, role and
+   name. Returns 0 if the username, password and role do not all match. */
+int auth_login(sqlite3 *database, const char *username, const char *password,
+               char *response, size_t response_size, char *token,
+               size_t token_size, int *user_id, char *role, size_t role_size,
+               char *name, size_t name_size);
+
+/* Check a session token. Returns 1 if it is valid, 0 if not. */
+int auth_check(const char *token, int *user_id, char *role, size_t role_size,
+               char *name, size_t name_size);
+
+/* Forget one token. Passing "" forgets every session. */
+void auth_logout(const char *token);
+
+#endif
