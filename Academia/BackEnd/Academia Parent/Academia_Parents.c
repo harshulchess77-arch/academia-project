@@ -5,33 +5,6 @@
    CS50 C Project
    Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
    ==========================================================================
-
-      WHAT THIS FILE DOES
-   -------------------
-   When a parent signs in, the server calls update_parent_frontend_state(id).
-   This file looks up the parent, finds the child linked to that parent, and
-   writes the parent's details, the child's profile, grades, attendance and
-   the school announcements into a JavaScript file:
-
-       FrontEnd/JS/parents_states.js
-
-   The Parent Portal page reads that file, so a parent sees their own child's
-   records and nothing else.
-
-   HOW IT IS ORGANISED
-   -------------------
-   1. write_js_text() / write_js_quoted() - helpers that copy text into the file
-   2. open_output_file()   - creates parents_states.js
-   3. find_child_id()      - asks the database which student belongs to this
-                             parent; the answer is used by the next sections
-   4. one function per section of the state file:
-        write_parent_section()       - name, username, phone
-        write_child_section()        - the child's name, grade level, GPA
-        write_grades_section()       - the child's score in each course
-        write_attendance_section()   - the child's Present / Absent record
-        write_announcements_section()- notices from the school
-   5. update_parent_frontend_state() - the function the server calls
-
 */
 
 #include "Academia_Parents.h"
@@ -43,35 +16,25 @@
 
 /* -------------------------------------------------------------------------
    write_js_text
-   Copies one piece of text into the output file, adding a backslash before
-   any character that would otherwise break a JavaScript string.
-
-   Without this, a student called  Ann "Annie" Lee  would end the string
-   early and the browser would refuse to read the file.
    ------------------------------------------------------------------------- */
 static void write_js_text(FILE *out, const unsigned char *text) {
     int i;
 
-    /* A database column can be empty. If so there is nothing to write. */
     if (text == NULL) {
         return;
     }
 
     for (i = 0; text[i] != '\0'; i++) {
         if (text[i] == '\\' || text[i] == '"') {
-            /* A quote or a backslash needs a backslash in front of it. */
             fputc('\\', out);
             fputc(text[i], out);
         } else if (text[i] == '\n') {
-            /* A new line becomes the two characters \ and n. */
             fputs("\\n", out);
         } else if (text[i] == '\t') {
-            /* A tab becomes the two characters \ and t. */
             fputs("\\t", out);
         } else if (text[i] == '\r') {
-            /* Carriage returns are dropped; they upset JavaScript. */
+            /* Carriage returns are dropped. */
         } else {
-            /* An ordinary character is copied as it is. */
             fputc(text[i], out);
         }
     }
@@ -79,8 +42,6 @@ static void write_js_text(FILE *out, const unsigned char *text) {
 
 /* -------------------------------------------------------------------------
    write_js_quoted
-   Writes a piece of text surrounded by quotation marks, using the helper
-   above for the text itself.
    ------------------------------------------------------------------------- */
 static void write_js_quoted(FILE *out, const unsigned char *text) {
     fputc('"', out);
@@ -90,9 +51,9 @@ static void write_js_quoted(FILE *out, const unsigned char *text) {
 
 /* -------------------------------------------------------------------------
    find_child_id
-   A parent does not type a student id anywhere, so the code has to work out
-   which student belongs to them. The student table keeps a parent_id column;
-   this function returns the id found there, or 0 when there is no match.
+   A parent does not type a student id anywhere, so the code works out which
+   student belongs to them from student.parent_id. Returns 0 when there is no
+   match, and every caller below guards on that.
    ------------------------------------------------------------------------- */
 static int find_child_id(sqlite3 *db, int parent_id) {
     sqlite3_stmt *statement = NULL;
@@ -115,14 +76,11 @@ static int find_child_id(sqlite3 *db, int parent_id) {
 }
 
 /* -------------------------------------------------------------------------
-   write_parent_section
-   Writes the parent's own details.
+   write_parent_section - the parent's own details.
    ------------------------------------------------------------------------- */
 static void write_parent_section(FILE *out, sqlite3 *db, int parent_id) {
     sqlite3_stmt *statement = NULL;
 
-    /* The name comes from user, the phone number from parent. The role test
-       confirms that this id belongs to a parent. */
     const char *sql =
         "SELECT user.id, user.username, user.first_name, user.last_name, parent.phone "
         "FROM user "
@@ -165,9 +123,7 @@ static void write_parent_section(FILE *out, sqlite3 *db, int parent_id) {
 }
 
 /* -------------------------------------------------------------------------
-   write_child_section
-   Writes the linked student's profile. child_id == 0 means the parent has no
-   student attached, in which case the section is written empty.
+   write_child_section - the linked student's profile.
    ------------------------------------------------------------------------- */
 static void write_child_section(FILE *out, sqlite3 *db, int child_id) {
     sqlite3_stmt *statement = NULL;
@@ -219,8 +175,7 @@ static void write_child_section(FILE *out, sqlite3 *db, int child_id) {
 }
 
 /* -------------------------------------------------------------------------
-   write_grades_section
-   Writes the child's score in each course.
+   write_grades_section - the child's score in each course.
    ------------------------------------------------------------------------- */
 static void write_grades_section(FILE *out, sqlite3 *db, int child_id) {
     sqlite3_stmt *statement = NULL;
@@ -257,8 +212,7 @@ static void write_grades_section(FILE *out, sqlite3 *db, int child_id) {
 }
 
 /* -------------------------------------------------------------------------
-   write_attendance_section
-   Writes the child's attendance record.
+   write_attendance_section - the child's attendance record.
    ------------------------------------------------------------------------- */
 static void write_attendance_section(FILE *out, sqlite3 *db, int child_id) {
     sqlite3_stmt *statement = NULL;
@@ -301,8 +255,7 @@ static void write_attendance_section(FILE *out, sqlite3 *db, int child_id) {
 }
 
 /* -------------------------------------------------------------------------
-   write_announcements_section
-   Writes the school announcements, newest first.
+   write_announcements_section - the school announcements, newest first.
    ------------------------------------------------------------------------- */
 static void write_announcements_section(FILE *out, sqlite3 *db) {
     sqlite3_stmt *statement = NULL;
@@ -349,9 +302,7 @@ static void write_announcements_section(FILE *out, sqlite3 *db) {
 
 /* -------------------------------------------------------------------------
    update_parent_frontend_state
-   The function the server calls. It opens the database and the output file,
-   works out which child belongs to this parent, writes each section and then
-   closes both.
+   The function the server calls.
    ------------------------------------------------------------------------- */
 void update_parent_frontend_state(int parent_user_id) {
     sqlite3 *db = NULL;
@@ -376,8 +327,8 @@ void update_parent_frontend_state(int parent_user_id) {
         return;
     }
 
-    /* Step 3: find the child once, then hand the id to the sections that need
-       it. Asking four times would be slower and would repeat the same SQL. */
+    /* Find the child once, then hand the id to the sections that need it.
+       Asking four times would be slower and repeat the same SQL. */
     child_id = find_child_id(db, parent_user_id);
 
     fputs("// Auto-generated by the Academia C backend. Do not edit by hand.\n", out);
@@ -392,7 +343,6 @@ void update_parent_frontend_state(int parent_user_id) {
     fputs("  success: true\n", out);
     fputs("};\n", out);
 
-    /* Step 4: close both. */
     fclose(out);
     sqlite3_close(db);
 

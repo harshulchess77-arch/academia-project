@@ -1,109 +1,103 @@
-<!--
-Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
-CS50 C Project
-Academia
-November 1, 2026
+﻿<!--
+   Academia Parent Portal
+   Created for CS50 / School Web Project
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academia - Parent Portal</title>
     <link rel="stylesheet" href="../CSS/Academia.css">
-<<<<<<< HEAD
-
-    <!-- Connects the Parent JavaScript file -->
-=======
-    <link rel="stylesheet" href="Academia.css">
-    <script src="../JS/parents_states.js" onerror="this.onerror=null;"></script>
->>>>>>> 57558642637b144e2b83d4799c7f861c409ca802
-    <script src="../JS/Academia.js" defer></script>
 </head>
-
 <body>
 
-    <!-- Navigation Bar -->
-    <div class="navbar">
+    <div class="header">
         <b>Academia Parent Portal</b>
-        <a href="Academia_Auth.html">Log Out</a>
-    </div>
-
-    <p id="error" style="color: #EF4444; text-align: center; margin-top: 1rem;"></p>
-
-    <!-- Parent Profile Banner -->
-    <div class="blue-box">
-        <h2 id="welcome">Welcome, Marcus Rivera!</h2>
-        <p>Monitor your child's academic progress, attendance history, and school notices.</p>
-        <div style="margin-top: 1.5rem; display: inline-flex; gap: 2rem; background: rgba(255,255,255,0.12); padding: 0.8rem 1.8rem; border-radius: 8px;">
-            <span>Username: <strong id="parentUsername" style="color: #FACC15;">parent1</strong></span>
-            <span>Contact Phone: <strong id="parentPhone" style="color: #FACC15;">(555) 234-5678</strong></span>
+        <div>
+            <span>Welcome, Parent</span> | 
+            <a href="Academia_Auth.html">Logout</a>
         </div>
     </div>
 
-    <!-- Student Information -->
-    <div class="box">
-        <h2>Linked Student Profile</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
-            <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
-                <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Student Name</p>
-                <p style="font-size: 1.8rem; font-weight: 700; color: #0B3D91;" id="studentName">Alex Rivera</p>
+    <div class="main-layout">
+        <div class="sidebar">
+            <h3>Parent Menu</h3>
+            <a href="#" onclick="showParentTab('overview')">Student Overview</a>
+            <a href="#" onclick="showParentTab('announcements')">Announcements</a>
+            <a href="Academia_Auth.html">Logout</a>
+        </div>
+
+        <div class="container">
+            <div id="parent-overview" class="parent-tab-content">
+                <h2>Linked Student Profile: Alex Rivera</h2>
+                <p><b>Student ID:</b> 10948 | <b>Grade:</b> 11th Grade | <b>Cumulative GPA:</b> 3.85 / 4.00</p>
+
+                <br>
+                <h3>Student Grades (HTML, CSS, JavaScript)</h3>
+                <table border="1" width="100%">
+                    <tr>
+                        <th>Course Title</th>
+                        <th>Instructor</th>
+                        <th>Recorded Score</th>
+                    </tr>
+                    <tr>
+                        <td>Complete HTML Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>97.0%</td>
+                    </tr>
+                    <tr>
+                        <td>Complete CSS Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>96.5%</td>
+                    </tr>
+                    <tr>
+                        <td>Complete JavaScript Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>95.0%</td>
+                    </tr>
+                </table>
+
+                <br>
+                <h3>Attendance Record</h3>
+                <table border="1" width="100%">
+                    <tr>
+                        <th>Course Title</th>
+                        <th>Instructor</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr>
+                        <td>Complete HTML Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>Present</td>
+                    </tr>
+                    <tr>
+                        <td>Complete CSS Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>Present</td>
+                    </tr>
+                    <tr>
+                        <td>Complete JavaScript Tutorial</td>
+                        <td>Cmdr. Schenck</td>
+                        <td>Present</td>
+                    </tr>
+                </table>
             </div>
-            <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
-                <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Grade Level</p>
-                <p style="font-size: 1.8rem; font-weight: 700; color: #0B3D91;" id="gradeLevel">Grade 11</p>
-            </div>
-            <div style="background: #F8FAFC; padding: 1.5rem; border-radius: 8px; border: 1px solid #E2E8F0;">
-                <p style="color: #64748B; font-size: 1.3rem; margin-bottom: 0.3rem;">Current Cumulative GPA</p>
-                <p style="font-size: 1.8rem; font-weight: 700; color: #2563EB;" id="studentGpa">3.85 / 4.00</p>
+
+            <div id="parent-announcements" class="parent-tab-content" style="display: none;">
+                <h2>School & Course Announcements</h2>
+                <br>
+                <div class="course-card">
+                    <h3>Midterm Web Project Deadline</h3>
+                    <p>Reminder to parents and students that the final capstone project components are due by next week.</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Student Grades -->
-    <div class="box">
-        <h2>Grades & Course Performance</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Course</th>
-                    <th>Recorded Score</th>
-                </tr>
-            </thead>
-            <tbody id="gradeList">
-                <tr><td colspan="2" style="text-align: center; color: #64748B;">Connecting to Academia Backend...</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Attendance Record -->
-    <div class="box">
-        <h2>Attendance Record</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Course</th>
-                    <th>Attendance Status</th>
-                </tr>
-            </thead>
-            <tbody id="attendanceList">
-                <tr><td colspan="2" style="text-align: center; color: #64748B;">Loading attendance logs...</td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Announcements -->
-    <div class="box">
-        <h2>School & Course Announcements</h2>
-        <div id="announcementList">
-            <p style="color: #64748B;">Loading announcements...</p>
-        </div>
-    </div>
-
-    <!-- Footer -->
     <div class="footer">
-        LEARN. GROW. ACHIEVE. TOGETHER. &nbsp;|&nbsp; EDUCATION TODAY. A BRIGHTER TOMORROW.
+        <p>&copy; 2026 Academia Project</p>
     </div>
 
+    <script src="../JS/Academia.js"></script>
 </body>
 </html>

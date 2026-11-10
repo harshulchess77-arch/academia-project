@@ -5,36 +5,6 @@
    CS50 C Project
    Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
    ==========================================================================
-
-      WHAT THIS FILE DOES
-   -------------------
-   When a member of staff signs in, the server calls
-   update_staff_frontend_state(id). This file writes that teacher's profile,
-   the courses they teach, the students enrolled in those courses, every
-   grade and attendance record for those courses, and the announcements into
-   a JavaScript file:
-
-       FrontEnd/JS/staff_states.js
-
-   The Staff Portal reads that file, so a teacher sees only their own classes.
-
-   HOW IT IS ORGANISED
-   -------------------
-   1. write_js_text() / write_js_quoted() - helpers that copy text into the file
-   2. open_output_file()   - creates staff_states.js
-   3. one function per section of the state file:
-        write_staff_section()          - name, ID, phone
-        write_courses_section()        - the courses this teacher runs
-        write_enrollments_section()    - who is enrolled in those courses
-        write_grades_section()         - grades recorded in those courses
-        write_attendance_section()     - attendance for those courses
-        write_announcements_section()  - notices, newest first
-   4. update_staff_frontend_state() - the function the server calls
-
-   Note: the four questions about courses, enrollments, grades and attendance
-   all filter on the same value, the teacher's id, so each function is handed
-   that id and uses it in its own WHERE clause.
-
 */
 
 #include "Academia_Staff.h"
@@ -46,35 +16,27 @@
 
 /* -------------------------------------------------------------------------
    write_js_text
-   Copies one piece of text into the output file, adding a backslash before
-   any character that would otherwise break a JavaScript string.
-
-   Without this, a student called  Ann "Annie" Lee  would end the string
-   early and the browser would refuse to read the file.
+   Copies one piece of text into the output file, escaping anything that
+   would otherwise break a JavaScript string.
    ------------------------------------------------------------------------- */
 static void write_js_text(FILE *out, const unsigned char *text) {
     int i;
 
-    /* A database column can be empty. If so there is nothing to write. */
     if (text == NULL) {
         return;
     }
 
     for (i = 0; text[i] != '\0'; i++) {
         if (text[i] == '\\' || text[i] == '"') {
-            /* A quote or a backslash needs a backslash in front of it. */
             fputc('\\', out);
             fputc(text[i], out);
         } else if (text[i] == '\n') {
-            /* A new line becomes the two characters \ and n. */
             fputs("\\n", out);
         } else if (text[i] == '\t') {
-            /* A tab becomes the two characters \ and t. */
             fputs("\\t", out);
         } else if (text[i] == '\r') {
-            /* Carriage returns are dropped; they upset JavaScript. */
+            /* Carriage returns are dropped. */
         } else {
-            /* An ordinary character is copied as it is. */
             fputc(text[i], out);
         }
     }
@@ -82,8 +44,6 @@ static void write_js_text(FILE *out, const unsigned char *text) {
 
 /* -------------------------------------------------------------------------
    write_js_quoted
-   Writes a piece of text surrounded by quotation marks, using the helper
-   above for the text itself.
    ------------------------------------------------------------------------- */
 static void write_js_quoted(FILE *out, const unsigned char *text) {
     fputc('"', out);
@@ -92,8 +52,7 @@ static void write_js_quoted(FILE *out, const unsigned char *text) {
 }
 
 /* -------------------------------------------------------------------------
-   write_staff_section
-   Writes the teacher's own details.
+   write_staff_section - the teacher's own details.
    ------------------------------------------------------------------------- */
 static void write_staff_section(FILE *out, sqlite3 *db, int staff_id) {
     sqlite3_stmt *statement = NULL;
@@ -140,8 +99,7 @@ static void write_staff_section(FILE *out, sqlite3 *db, int staff_id) {
 }
 
 /* -------------------------------------------------------------------------
-   write_courses_section
-   Writes the courses this teacher runs.
+   write_courses_section - the courses this teacher runs.
    ------------------------------------------------------------------------- */
 static void write_courses_section(FILE *out, sqlite3 *db, int staff_id) {
     sqlite3_stmt *statement = NULL;
@@ -173,13 +131,13 @@ static void write_courses_section(FILE *out, sqlite3 *db, int staff_id) {
 
 /* -------------------------------------------------------------------------
    write_enrollments_section
-   Writes one row per student on each of this teacher's courses.
+   One row per student on each of this teacher's courses.
    ------------------------------------------------------------------------- */
 static void write_enrollments_section(FILE *out, sqlite3 *db, int staff_id) {
     sqlite3_stmt *statement = NULL;
 
-    /* The two pipe symbols join two text columns into one full name, so the
-       C code receives "Alex Rivera" instead of two separate words. */
+    /* DISTINCT: the join can otherwise emit the same student twice for a
+       course. The two pipe symbols join the name columns into one string. */
     const char *sql =
         "SELECT DISTINCT user.id, "
         "       user.first_name || ' ' || user.last_name, "
@@ -219,9 +177,7 @@ static void write_enrollments_section(FILE *out, sqlite3 *db, int staff_id) {
 }
 
 /* -------------------------------------------------------------------------
-   write_grades_section
-   Writes every grade recorded in this teacher's courses, so the grades table
-   on the staff page shows the whole class.
+   write_grades_section - every grade recorded in this teacher's courses.
    ------------------------------------------------------------------------- */
 static void write_grades_section(FILE *out, sqlite3 *db, int staff_id) {
     sqlite3_stmt *statement = NULL;
@@ -263,8 +219,7 @@ static void write_grades_section(FILE *out, sqlite3 *db, int staff_id) {
 }
 
 /* -------------------------------------------------------------------------
-   write_attendance_section
-   Writes every attendance record for this teacher's courses.
+   write_attendance_section - every attendance row for this teacher's courses.
    ------------------------------------------------------------------------- */
 static void write_attendance_section(FILE *out, sqlite3 *db, int staff_id) {
     sqlite3_stmt *statement = NULL;
@@ -309,8 +264,7 @@ static void write_attendance_section(FILE *out, sqlite3 *db, int staff_id) {
 }
 
 /* -------------------------------------------------------------------------
-   write_announcements_section
-   Writes the announcements, newest first.
+   write_announcements_section - the announcements, newest first.
    ------------------------------------------------------------------------- */
 static void write_announcements_section(FILE *out, sqlite3 *db) {
     sqlite3_stmt *statement = NULL;
@@ -360,8 +314,7 @@ static void write_announcements_section(FILE *out, sqlite3 *db) {
 
 /* -------------------------------------------------------------------------
    update_staff_frontend_state
-   The function the server calls. It opens the database and the output file,
-   writes every section and then closes both.
+   The function the server calls.
    ------------------------------------------------------------------------- */
 void update_staff_frontend_state(int staff_user_id) {
     sqlite3 *db = NULL;
@@ -398,7 +351,6 @@ void update_staff_frontend_state(int staff_user_id) {
     fputs("  success: true\n", out);
     fputs("};\n", out);
 
-    /* Step 3: close both. */
     fclose(out);
     sqlite3_close(db);
 

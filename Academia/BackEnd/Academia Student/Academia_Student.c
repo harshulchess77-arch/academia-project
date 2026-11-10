@@ -5,34 +5,6 @@
    CS50 C Project
    Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
    ==========================================================================
-
-      WHAT THIS FILE DOES
-   -------------------
-   When a student signs in, the server calls update_student_frontend_state(id).
-   This file then asks the database for that student's record, their courses,
-   grades, attendance, assignments and the school announcements, and writes
-   every answer into a JavaScript file:
-
-       FrontEnd/JS/student_states.js
-
-   The Student Portal page reads that file, so the page always shows the
-   records that are really in the database.
-
-   HOW IT IS ORGANISED
-   -------------------
-   1. write_js_text()      - copies one piece of text into the output file
-   2. write_js_quoted()    - the same, wrapped in quotation marks
-   3. open_output_file()   - creates student_states.js
-   4. one function per section of the state file:
-        write_student_section()      - name, ID, grade level, GPA
-        write_courses_section()      - the courses the student takes
-        write_grades_section()       - the score in each course
-        write_attendance_section()   - Present or Absent, per course
-        write_assignments_section()  - work due, earliest first
-        write_announcements_section()- school and course notices
-   5. update_student_frontend_state() - the function the server calls;
-      it opens everything, calls the functions above, then closes up.
-
 */
 
 #include "Academia_Student.h"
@@ -46,33 +18,25 @@
    write_js_text
    Copies one piece of text into the output file, adding a backslash before
    any character that would otherwise break a JavaScript string.
-
-   Without this, a student called  Ann "Annie" Lee  would end the string
-   early and the browser would refuse to read the file.
    ------------------------------------------------------------------------- */
 static void write_js_text(FILE *out, const unsigned char *text) {
     int i;
 
-    /* A database column can be empty. If so there is nothing to write. */
     if (text == NULL) {
         return;
     }
 
     for (i = 0; text[i] != '\0'; i++) {
         if (text[i] == '\\' || text[i] == '"') {
-            /* A quote or a backslash needs a backslash in front of it. */
             fputc('\\', out);
             fputc(text[i], out);
         } else if (text[i] == '\n') {
-            /* A new line becomes the two characters \ and n. */
             fputs("\\n", out);
         } else if (text[i] == '\t') {
-            /* A tab becomes the two characters \ and t. */
             fputs("\\t", out);
         } else if (text[i] == '\r') {
             /* Carriage returns are dropped; they upset JavaScript. */
         } else {
-            /* An ordinary character is copied as it is. */
             fputc(text[i], out);
         }
     }
@@ -80,8 +44,7 @@ static void write_js_text(FILE *out, const unsigned char *text) {
 
 /* -------------------------------------------------------------------------
    write_js_quoted
-   Writes a piece of text surrounded by quotation marks, using the helper
-   above for the text itself.
+   Writes a piece of text surrounded by quotation marks.
    ------------------------------------------------------------------------- */
 static void write_js_quoted(FILE *out, const unsigned char *text) {
     fputc('"', out);
@@ -91,15 +54,11 @@ static void write_js_quoted(FILE *out, const unsigned char *text) {
 
 /* -------------------------------------------------------------------------
    write_student_section
-   Writes the student's own details: name, username, ID, grade level and GPA.
+   The student's own details: name, username, ID, grade level and GPA.
    ------------------------------------------------------------------------- */
 static void write_student_section(FILE *out, sqlite3 *db, int student_id) {
     sqlite3_stmt *statement = NULL;
 
-    /* The student's name and grade details live in two tables: user holds the
-       name, student holds the grade level and GPA. The join pairs the two
-       rows that share the same id. The role test makes sure this id really
-       belongs to a student. */
     const char *sql =
         "SELECT user.id, user.username, user.first_name, user.last_name, "
         "       student.grade_level, student.gpa "
@@ -110,7 +69,6 @@ static void write_student_section(FILE *out, sqlite3 *db, int student_id) {
     fputs("  student: {\n", out);
 
     if (sqlite3_prepare_v2(db, sql, -1, &statement, NULL) != SQLITE_OK) {
-        /* The statement would not compile. Close the section and stop. */
         fputs("  },\n", out);
         return;
     }
@@ -142,20 +100,17 @@ static void write_student_section(FILE *out, sqlite3 *db, int student_id) {
         fprintf(out, "%.2f\n", sqlite3_column_double(statement, 5));
     }
 
-    /* Every prepared statement has to be finalised, or the memory leaks. */
     sqlite3_finalize(statement);
     fputs("  },\n", out);
 }
 
 /* -------------------------------------------------------------------------
    write_courses_section
-   Writes the courses this student is enrolled in.
+   The courses this student is enrolled in.
    ------------------------------------------------------------------------- */
 static void write_courses_section(FILE *out, sqlite3 *db, int student_id) {
     sqlite3_stmt *statement = NULL;
 
-    /* enrollment says who is on which course; course holds the course name.
-       The join gives us the name for each enrolment of this student. */
     const char *sql =
         "SELECT course.id, course.course_name, enrollment.status "
         "FROM enrollment "
@@ -171,7 +126,6 @@ static void write_courses_section(FILE *out, sqlite3 *db, int student_id) {
 
     sqlite3_bind_int(statement, 1, student_id);
 
-    /* sqlite3_step returns one row at a time until there are no rows left. */
     while (sqlite3_step(statement) == SQLITE_ROW) {
         int status;
 
@@ -196,7 +150,7 @@ static void write_courses_section(FILE *out, sqlite3 *db, int student_id) {
 
 /* -------------------------------------------------------------------------
    write_grades_section
-   Writes the score this student has in each course.
+   The score this student has in each course.
    ------------------------------------------------------------------------- */
 static void write_grades_section(FILE *out, sqlite3 *db, int student_id) {
     sqlite3_stmt *statement = NULL;
@@ -229,12 +183,11 @@ static void write_grades_section(FILE *out, sqlite3 *db, int student_id) {
 
 /* -------------------------------------------------------------------------
    write_attendance_section
-   Writes, for each course, whether the student was in class.
+   For each course, whether the student was in class.
    ------------------------------------------------------------------------- */
 static void write_attendance_section(FILE *out, sqlite3 *db, int student_id) {
     sqlite3_stmt *statement = NULL;
 
-    /* present is 1 when the student was there and 0 when they were not. */
     const char *sql =
         "SELECT course.course_name, attendance.present "
         "FROM attendance "
@@ -269,14 +222,11 @@ static void write_attendance_section(FILE *out, sqlite3 *db, int student_id) {
 
 /* -------------------------------------------------------------------------
    write_assignments_section
-   Writes the student's assignments, the nearest due date first.
+   The student's assignments, the nearest due date first.
    ------------------------------------------------------------------------- */
 static void write_assignments_section(FILE *out, sqlite3 *db, int student_id) {
     sqlite3_stmt *statement = NULL;
 
-    /* Only courses the student is enrolled on appear, and only the active
-       enrolments (status 1). ORDER BY due_date puts the next deadline at the
-       top of the list. */
     const char *sql =
         "SELECT course.course_name, assignment.assignment_name, assignment.due_date "
         "FROM assignment "
@@ -313,14 +263,11 @@ static void write_assignments_section(FILE *out, sqlite3 *db, int student_id) {
 
 /* -------------------------------------------------------------------------
    write_announcements_section
-   Writes the school announcements. Everyone sees these, so no id is needed.
+   The school announcements. Everyone sees these, so no id is needed.
    ------------------------------------------------------------------------- */
 static void write_announcements_section(FILE *out, sqlite3 *db) {
     sqlite3_stmt *statement = NULL;
 
-    /* An announcement may belong to one course, or to the whole school. In
-       that second case its course_id is empty, so LEFT JOIN keeps the row and
-       the course name comes back empty - the code below shows "General". */
     const char *sql =
         "SELECT course.course_name, announcement.title, announcement.message, "
         "       announcement.announcement_date "
@@ -392,8 +339,6 @@ void update_student_frontend_state(int student_user_id) {
         return;
     }
 
-    /* Step 3: write the file. The line below declares one JavaScript object
-       called studentState; each section function adds one field to it. */
     fputs("// Auto-generated by the Academia C backend. Do not edit by hand.\n", out);
     fputs("const studentState = {\n", out);
 
@@ -404,11 +349,9 @@ void update_student_frontend_state(int student_user_id) {
     write_assignments_section(out, db, student_user_id);
     write_announcements_section(out, db);
 
-    /* success is true when the student was found in the database. */
     fputs("  success: true\n", out);
     fputs("};\n", out);
 
-    /* Step 4: close both. Leaving either open keeps the file locked. */
     fclose(out);
     sqlite3_close(db);
 
