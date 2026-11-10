@@ -5,30 +5,6 @@
    CS50 C Project
    Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
    ==========================================================================
-
-      WHAT THIS FILE DOES
-   -------------------
-   Two jobs:
-
-     1. Check a sign-in. auth_login() looks the username and password up in
-        the user table. If they match, it builds a JSON reply for the browser
-        and remembers the person who signed in.
-
-     2. Check a session. Every later request carries a cookie. auth_check()
-        compares that cookie with the session held here, so a page can tell
-        whether the visitor is still signed in.
-
-   This is a small local server, so only one person is signed in at a time.
-   The four variables below hold that one session. A real website would use a
-   table of sessions and hashed passwords; that is future work.
-
-   HOW IT IS ORGANISED
-   -------------------
-   1. escape_json_text() - makes text safe to put inside a JSON string
-   2. auth_login()       - check the username and password, start a session
-   3. auth_check()       - is this cookie the current session?
-   4. auth_logout()      - forget the current session
-
 */
 
 #include "Academia_Auth.h"
@@ -39,15 +15,6 @@
 #include <time.h>
 #include <winsqlite/winsqlite3.h>
 
-/* -------------------------------------------------------------------------
-   The one active session.
-
-   active_token  is the cookie value given to the signed-in browser.
-   A blank token means nobody is signed in.
-
-   The other three hold who is signed in, so a page can show the right name
-   without asking the database again on every request.
-   ------------------------------------------------------------------------- */
 static char active_token[128] = "";
 static int active_user_id = 0;
 static char active_role[32] = "";
@@ -88,18 +55,20 @@ static void escape_json_text(const char *input, char *output, size_t output_size
 
 /* -------------------------------------------------------------------------
    start_session
-   Note down who has just signed in and make a session token for them. The
-   token is what the browser is given in its cookie, so later requests can be
-   matched to this person.
+   Notes who has signed in and makes a session token for them.
+   The token uses seconds, nanoseconds and a counter, so two logins in the
+   same second never collide.
    ------------------------------------------------------------------------- */
 static void start_session(int user_id, const char *role, const char *name, char *token,
                           size_t token_size) {
-    srand((unsigned int)time(NULL));
+    struct timespec ts;
+    static unsigned int counter = 0;
 
-    /* The token combines the time, a random number and the user id, which is
-       enough to keep one visit distinct from the next on a local server. */
-    snprintf(active_token, sizeof(active_token), "session-%ld-%d-%d",
-             (long)time(NULL), rand() % 10000, user_id);
+    timespec_get(&ts, TIME_UTC);
+    counter++;
+
+    snprintf(active_token, sizeof(active_token), "session-%lld-%ld-%u-%d",
+             (long long)ts.tv_sec, (long)ts.tv_nsec, counter, user_id);
     snprintf(token, token_size, "%s", active_token);
 
     active_user_id = user_id;
@@ -109,15 +78,12 @@ static void start_session(int user_id, const char *role, const char *name, char 
 
 /* -------------------------------------------------------------------------
    auth_login
-   The main sign-in check.
+   Checks the username and password against the user table.
 
    Inputs :  the database, the username and password typed into the form
-   Outputs:  a JSON reply in `response`, and the session details in `token`,
+   Outputs:  a JSON reply in `response`, the session details in `token`,
              `user_id`, `role` and `name`
    Returns:  1 when the password was right, 0 when it was not.
-
-   The username and password are put into the SQL with ? marks rather than
-   pasted into the text, which is what stops someone typing SQL into the form.
    ------------------------------------------------------------------------- */
 int auth_login(sqlite3 *database, const char *username, const char *password,
                char *response, size_t response_size, char *token,
@@ -134,14 +100,13 @@ int auth_login(sqlite3 *database, const char *username, const char *password,
     char safe_name[256];
     char safe_role[64];
 
-    /* Nothing can be checked without a database or a username. */
     if (database == NULL || username == NULL || password == NULL) {
         snprintf(response, response_size,
                  "{\"success\":false,\"message\":\"Database not connected.\"}");
         return 0;
     }
 
-    /* Look for a row whose username and password both match. */
+    /* The ? marks are what stop someone typing SQL into the form. */
     sql = "SELECT id, first_name, last_name, role "
           "FROM user WHERE username = ? AND password = ?;";
 
@@ -156,9 +121,8 @@ int auth_login(sqlite3 *database, const char *username, const char *password,
 
     step_result = sqlite3_step(statement);
 
-    /* No row means the pair is wrong. The same message is used whether the
-       username or the password was at fault, so a stranger cannot work out
-       which usernames exist. */
+    /* The same message is used whether the username or the password was at
+       fault, so a stranger cannot work out which usernames exist. */
     if (step_result != SQLITE_ROW) {
         sqlite3_finalize(statement);
         snprintf(response, response_size,
@@ -166,7 +130,6 @@ int auth_login(sqlite3 *database, const char *username, const char *password,
         return 0;
     }
 
-    /* The row was found: read each column out of it. */
     found_id = sqlite3_column_int(statement, 0);
     first = sqlite3_column_text(statement, 1);
     last = sqlite3_column_text(statement, 2);
@@ -181,12 +144,10 @@ int auth_login(sqlite3 *database, const char *username, const char *password,
 
     sqlite3_finalize(statement);
 
-    /* Remember the sign-in and build the token. */
     start_session(found_id, role, full_name, token, token_size);
     snprintf(name, name_size, "%s", full_name);
+    *user_id = found_id;
 
-    /* The reply travels inside JSON, so the two pieces of text taken from the
-       database are escaped first. */
     escape_json_text(full_name, safe_name, sizeof(safe_name));
     escape_json_text(role, safe_role, sizeof(safe_role));
 
@@ -201,16 +162,14 @@ int auth_login(sqlite3 *database, const char *username, const char *password,
 
 /* -------------------------------------------------------------------------
    auth_check
-   Is this cookie the current session? Returns 1 when it is, 0 when it is not.
+   Is this cookie the current session? 1 when it is, 0 when it is not.
    ------------------------------------------------------------------------- */
 int auth_check(const char *token, int *user_id, char *role, size_t role_size,
                char *name, size_t name_size) {
-    /* No session has been started yet, so nothing can match. */
     if (active_token[0] == '\0') {
         return 0;
     }
 
-    /* No cookie was sent, or it belongs to an earlier visit. */
     if (token == NULL || strcmp(token, active_token) != 0) {
         return 0;
     }
@@ -223,8 +182,7 @@ int auth_check(const char *token, int *user_id, char *role, size_t role_size,
 
 /* -------------------------------------------------------------------------
    auth_logout
-   Forget the session, but only if the caller holds its token. Blanking the
-   token is enough to end it, because every later check compares against it.
+   Forgets the session, but only if the caller holds its token.
    ------------------------------------------------------------------------- */
 void auth_logout(const char *token) {
     if (token == NULL || strcmp(token, active_token) != 0) {
