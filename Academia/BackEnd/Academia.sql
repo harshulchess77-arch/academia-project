@@ -1,6 +1,6 @@
 -- Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
 -- CS50 C Project - Academia Database Schema & Initial Data
--- Database Engine: SQLite3
+-- Database with SQLite3
 
 PRAGMA foreign_keys = ON;
 
@@ -114,43 +114,50 @@ INSERT OR IGNORE INTO staff (id, phone) VALUES
 (4, '(555) 987-6543');
 
 INSERT OR IGNORE INTO course (id, staff_id, course_name) VALUES
-(1, 4, 'AP Computer Science A'),
-(2, 4, 'Advanced Mathematics'),
-(3, 4, 'Physics with Calculus'),
-(4, 4, 'World History & Civics');
+(1, 4, 'Complete HTML Tutorial'),
+(2, 4, 'Complete CSS Tutorial'),
+(3, 4, 'Complete JavaScript Tutorial');
 
 INSERT OR IGNORE INTO enrollment (id, student_id, course_id, status) VALUES
 (1, 1, 1, 1),
 (2, 1, 2, 1),
 (3, 1, 3, 1),
-(4, 1, 4, 1),
-(5, 2, 1, 1),
-(6, 2, 2, 1);
+(4, 2, 1, 1),
+(5, 2, 2, 1);
 
 INSERT OR IGNORE INTO grade (id, student_id, course_id, score) VALUES
-(1, 1, 1, 96.5),
-(2, 1, 2, 92.0),
-(3, 1, 3, 94.5),
-(4, 1, 4, 89.0),
-(5, 2, 1, 98.0),
-(6, 2, 2, 95.5);
+(1, 1, 1, 97.0),
+(2, 1, 2, 96.5),
+(3, 1, 3, 95.0),
+(4, 2, 1, 98.0),
+(5, 2, 2, 94.0);
 
 INSERT OR IGNORE INTO attendance (id, course_id, student_id, present) VALUES
 (1, 1, 1, 1),
 (2, 2, 1, 1),
 (3, 3, 1, 1),
-(4, 4, 1, 0),
-(5, 1, 2, 1),
-(6, 2, 2, 1);
+(4, 1, 2, 1),
+(5, 2, 2, 1);
+[cite: 9]```
 
-INSERT OR IGNORE INTO assignment (id, course_id, assignment_name, due_date) VALUES
-(1, 1, 'C Language Binary Search Tree Lab', '2026-11-15'),
-(2, 2, 'Integral Calculus Problem Set 5', '2026-11-18'),
-(3, 3, 'Kinematics & Optics Lab Report', '2026-11-20'),
-(4, 4, 'Comparative Constitutional Analysis Essay', '2026-11-25');
+---
 
-INSERT OR IGNORE INTO announcement (id, course_id, title, message, announcement_date) VALUES
-(1, 1, 'CS Project Milestone Submission', 'Please submit your C server and database integration milestones by Friday 5:00 PM.', '2026-11-06'),
-(2, 2, 'Mathematics Review Session', 'Extra tutoring session this Thursday in Room 302 covering differentiation applications.', '2026-11-05'),
-(3, NULL, 'Academia Unified Digital Ecosystem Live', 'Welcome students, parents, and staff to the new unified digital portal. Education Today. A Brighter Tomorrow.', '2026-11-01');
+### 2. Database Module (`BackEnd/Database.h` & `BackEnd/Academia_Database.c`)
 
+#### `BackEnd/Database.h`
+```c
+/*
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia
+*/
+#ifndef DATABASE_H
+#define DATABASE_H
+
+#include <sqlite3.h>
+
+sqlite3 *open_database(void);
+void close_database(sqlite3 *database);
+int create_tables(sqlite3 *database);
+
+#endif
