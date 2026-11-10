@@ -4,12 +4,14 @@ CS50 C Project
 Academia
 November 1, 2026
 
-The login page. One rule: only a success:true reply from the server lets you
-into a portal. Anything else shows an error and stays put.
+DEMO MODE - for showing the portals before the C server is built.
 
-The old page redirected in the .catch() of its fetch() call, so a wrong
-password with the server unreachable - or simply no server at all - still put
-you on a dashboard. That redirect is gone.
+WARNING: the accounts below are written into this file, so anyone who opens
+this page can read them, and anyone who clicks the button gets into a portal.
+There is no password check that a real server does not have to do.
+
+Delete the "DEMO ACCOUNTS" block and the demo branch in the script once the
+C backend runs. Use the server version of this page for the real project.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -91,6 +93,19 @@ you on a dashboard. That redirect is gone.
         var errEl = document.getElementById("err");
         var button = document.getElementById("loginBtn");
 
+        /* ==========================================================
+           DEMO ACCOUNTS
+           These match the seeded rows in Academia.sql. They are here
+           only so the portals can be opened without the C server.
+           Delete this block when the backend is built.
+           ========================================================== */
+        var accounts = [
+            { username: "student1", password: "password123", role: "student", name: "Alex Rivera" },
+            { username: "parent1",  password: "password123", role: "parent",  name: "Marcus Rivera" },
+            { username: "staff1",   password: "password123", role: "staff",   name: "Dr. Eleanor Vance" }
+        ];
+        /* ===================== END DEMO ACCOUNTS ================== */
+
         /* The server decides where each role goes. */
         var portals = {
             student: "Academia_Student.html",
@@ -98,19 +113,14 @@ you on a dashboard. That redirect is gone.
             staff: "Academia_Staff.html"
         };
 
-        /* This page has to be served by the C server. Opened as a file it
-           cannot reach the backend at all. */
-        if (window.location.protocol === "file:") {
-            errEl.innerText = "Open this page through the Academia server, at http://localhost:3000/FrontEnd/HTML/Academia_Auth.html";
-            button.disabled = true;
-        }
-
         form.onsubmit = function (event) {
             event.preventDefault();
 
             var username = usernameField.value.trim();
             var password = passwordField.value;
             var role = roleField.value;
+            var found = null;
+            var j;
 
             errEl.innerText = "";
 
@@ -123,44 +133,27 @@ you on a dashboard. That redirect is gone.
                 return;
             }
 
-            button.disabled = true;
-            button.innerText = "Checking...";
-
-            fetch("http://localhost:3000/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                    role: role
-                })
-            })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                if (data.success === true && data.token) {
-                    /* Save the token so the portal pages can use it. */
-                    sessionStorage.setItem("academia_token", data.token);
-                    sessionStorage.setItem("academia_role", data.user.role);
-                    sessionStorage.setItem("academia_name", data.user.name);
-
-                    /* Go to the portal for the role the SERVER returned. */
-                    window.location.href = portals[data.user.role];
-                } else {
-                    button.disabled = false;
-                    button.innerText = "Login to Academia";
-                    errEl.innerText = data.message || "Wrong username, password or role.";
-                    passwordField.value = "";
+            /* Look for a demo account that matches all three fields. */
+            for (j = 0; j < accounts.length; j++) {
+                if (accounts[j].username === username &&
+                    accounts[j].password === password &&
+                    accounts[j].role === role) {
+                    found = accounts[j];
                 }
-            })
-            .catch(function () {
-                /* No redirect here. The old code sent you to a portal from
-                   this block, which is what made the login bypassable. */
-                button.disabled = false;
-                button.innerText = "Login to Academia";
-                errEl.innerText = "Cannot reach the Academia server. Start the backend and try again.";
-            });
+            }
+
+            if (found === null) {
+                errEl.innerText = "Wrong username, password or role.";
+                passwordField.value = "";
+                return;
+            }
+
+            /* Remember who signed in, so the portal pages can show a name. */
+            sessionStorage.setItem("academia_token", "demo-" + found.username);
+            sessionStorage.setItem("academia_role", found.role);
+            sessionStorage.setItem("academia_name", found.name);
+
+            window.location.href = portals[found.role];
         };
     </script>
 </body>

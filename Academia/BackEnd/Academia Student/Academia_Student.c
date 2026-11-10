@@ -17,9 +17,8 @@ Writes student_states.js, the file the Student Portal reads.
 #endif
 
 /* Runs one SELECT and writes it out as a JavaScript array.
-   Each row is written by one printf, so the sections below stay short. */
-static void list(FILE *out, sqlite3 *db, const char *name, const char *sql,
-                 int student_id) {
+   Each column is written under the name given to it in the query. */
+void write_list(FILE *out, sqlite3 *db, const char *name, const char *sql, int student_id) {
     sqlite3_stmt *row = NULL;
 
     fprintf(out, "  %s: [\n", name);
@@ -34,24 +33,16 @@ static void list(FILE *out, sqlite3 *db, const char *name, const char *sql,
         int i;
         fputs("    {", out);
         for (i = 0; i < sqlite3_column_count(row); i++) {
-            const char *label = sqlite3_column_name(row, i);
             const char *text = (const char *)sqlite3_column_text(row, i);
 
-            fprintf(out, "%s%s: ", i ? ", " : "", label);
+            fprintf(out, "%s%s: ", i ? ", " : "", sqlite3_column_name(row, i));
 
             if (sqlite3_column_type(row, i) == SQLITE_FLOAT) {
                 fprintf(out, "%.1f", sqlite3_column_double(row, i));
             } else if (sqlite3_column_type(row, i) == SQLITE_INTEGER) {
                 fprintf(out, "%d", sqlite3_column_int(row, i));
             } else {
-                fputc('"', out);
-                while (text != NULL && *text != '\0') {
-                    if (*text != '"' && *text != '\\' && *text != '\r' && *text != '\n') {
-                        fputc(*text, out);
-                    }
-                    text++;
-                }
-                fputc('"', out);
+                fprintf(out, "\"%s\"", text == NULL ? "" : text);
             }
         }
         fputs(" },\n", out);
@@ -65,16 +56,16 @@ static void list(FILE *out, sqlite3 *db, const char *name, const char *sql,
 int update_student_frontend_state(int student_user_id) {
     sqlite3 *db = open_database();
     sqlite3_stmt *row = NULL;
-    FILE *out;
+    FILE *out = NULL;
     int found = 0;
 
-    if (db == NULL) {
+    if (!db) {
         printf("[Student] Cannot open the database.\n");
         return 0;
     }
 
     out = fopen("Academia/FrontEnd/JS/student_states.js", "w");
-    if (out == NULL) {
+    if (!out) {
         printf("[Student] Cannot write student_states.js\n");
         close_database(db);
         return 0;
@@ -93,64 +84,43 @@ int update_student_frontend_state(int student_user_id) {
         if (sqlite3_step(row) == SQLITE_ROW) {
             int i, n = sqlite3_column_count(row);
             found = 1;
+            fprintf(out, "    userId: %d,\n", student_user_id);
             for (i = 0; i < n; i++) {
                 const char *text = (const char *)sqlite3_column_text(row, i);
-                fprintf(out, "    %s: ", sqlite3_column_name(row, i));
-                if (sqlite3_column_type(row, i) == SQLITE_INTEGER) {
-                    fprintf(out, "%d", sqlite3_column_int(row, i));
-                } else if (sqlite3_column_type(row, i) == SQLITE_FLOAT) {
-                    fprintf(out, "%.2f", sqlite3_column_double(row, i));
-                } else {
-                    fprintf(out, "\"%s\"", text == NULL ? "" : text);
-                }
-                fputs(i == n - 1 ? "\n" : ",\n", out);
+                fprintf(out, "    %s: \"%s\"%s\n", sqlite3_column_name(row, i),
+                        text == NULL ? "" : text, i == n - 1 ? "" : ",");
             }
         }
         sqlite3_finalize(row);
     }
     fputs("  },\n", out);
 
-    list(out, db, "courses",
-         "SELECT course.course_name AS course, enrollment.status AS status "
-         "FROM enrollment INNER JOIN course ON enrollment.course_id = course.id "
-         "WHERE enrollment.student_id = ? ORDER BY course.id;", student_user_id);
+    write_list(out, db, "courses",
+        "SELECT course.course_name AS course, enrollment.status AS status FROM enrollment "
+        "INNER JOIN course ON enrollment.course_id = course.id "
+        "WHERE enrollment.student_id = ? ORDER BY course.id;", student_user_id);
 
-    list(out, db, "grades",
-         "SELECT course.course_name AS course, grade.score AS score FROM grade "
-         "INNER JOIN course ON grade.course_id = course.id "
-         "WHERE grade.student_id = ? ORDER BY course.id;", student_user_id);
+    write_list(out, db, "grades",
+        "SELECT course.course_name AS course, grade.score AS score FROM grade "
+        "INNER JOIN course ON grade.course_id = course.id "
+        "WHERE grade.student_id = ? ORDER BY course.id;", student_user_id);
 
-    list(out, db, "attendance",
-         "SELECT course.course_name AS course, attendance.present AS present "
-         "FROM attendance INNER JOIN course ON attendance.course_id = course.id "
-         "WHERE attendance.student_id = ? ORDER BY course.id;", student_user_id);
+    write_list(out, db, "attendance",
+        "SELECT course.course_name AS course, attendance.present AS present FROM attendance "
+        "INNER JOIN course ON attendance.course_id = course.id "
+        "WHERE attendance.student_id = ? ORDER BY course.id;", student_user_id);
 
-    list(out, db, "assignments",
-         "SELECT course.course_name AS course, "
-         "assignment.assignment_name AS assignmentName, "
-         "assignment.due_date AS dueDate FROM assignment "
-         "INNER JOIN course ON assignment.course_id = course.id "
-         "INNER JOIN enrollment ON enrollment.course_id = course.id "
-         "WHERE enrollment.student_id = ? ORDER BY assignment.due_date;",
-         student_user_id);
+    write_list(out, db, "assignments",
+        "SELECT course.course_name AS course, assignment.assignment_name AS assignmentName, "
+        "assignment.due_date AS dueDate FROM assignment "
+        "INNER JOIN course ON assignment.course_id = course.id "
+        "INNER JOIN enrollment ON enrollment.course_id = course.id "
+        "WHERE enrollment.student_id = ? ORDER BY assignment.due_date;", student_user_id);
 
-    fputs("  announcements: [\n", out);
-    if (sqlite3_prepare_v2(db,
-            "SELECT course.course_name, announcement.title, announcement.message, "
-            "announcement.announcement_date FROM announcement "
-            "LEFT JOIN course ON announcement.course_id = course.id "
-            "ORDER BY announcement.id DESC;", -1, &row, NULL) == SQLITE_OK) {
-        while (sqlite3_step(row) == SQLITE_ROW) {
-            const char *course = (const char *)sqlite3_column_text(row, 0);
-            fprintf(out, "    { course: \"%s\", title: \"%s\", message: \"%s\", date: \"%s\" },\n",
-                    course == NULL ? "General" : course,
-                    (const char *)sqlite3_column_text(row, 1),
-                    (const char *)sqlite3_column_text(row, 2),
-                    (const char *)sqlite3_column_text(row, 3));
-        }
-        sqlite3_finalize(row);
-    }
-    fputs("  ],\n", out);
+    write_list(out, db, "announcements",
+        "SELECT announcement.title AS title, announcement.message AS message, "
+        "announcement.announcement_date AS date FROM announcement "
+        "ORDER BY announcement.id DESC;", 0);
 
     fprintf(out, "  success: %s\n};\n", found ? "true" : "false");
 

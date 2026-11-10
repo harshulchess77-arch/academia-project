@@ -13,26 +13,332 @@ November 1, 2026
     <title>Academia - Unified School Management System</title>
     <!-- We link our external CSS stylesheet using href so this page inherits our global design rules -->
     <link rel="stylesheet" href="../CSS/Academia.css">
+
+    <!-- We load Poppins, the font named in the brand guidelines -->
+    <style type="text/css">@font-face {font-family:'Poppins';font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/300/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/300/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.2.7/latin/300/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/400/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.2.7/latin/400/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/400/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/600/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/600/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.2.7/latin/600/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:700;src:url(/cf-fonts/s/poppins/5.2.7/devanagari/700/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:700;src:url(/cf-fonts/s/poppins/5.2.7/latin/700/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:'Poppins';font-style:normal;font-weight:700;src:url(/cf-fonts/s/poppins/5.2.7/latin-ext/700/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}</style>
+
+    <!-- The styling for this one page lives here, so Academia.css is left untouched -->
+    <style>
+        /* The shared stylesheet makes body a flex row for the login page, so we set it back to a block here */
+        body {
+            display: block;
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: #F7F9FC;
+            color: #1E293B;
+            margin: 0;
+        }
+
+        /* ---------- Navigation ---------- */
+
+        .lp-nav {
+            background-color: #0B3D91;
+            color: #FFFFFF;
+            padding: 16px 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lp-nav h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+
+        .lp-nav h2 em {
+            font-style: normal;
+            color: #FACC15;
+            margin-left: 2px;
+        }
+
+        .lp-nav a {
+            background-color: #FACC15;
+            color: #0B3D91;
+            padding: 10px 22px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.92rem;
+        }
+
+        .lp-nav a:hover {
+            background-color: #EAB308;
+        }
+
+        /* ---------- Hero ---------- */
+
+        .lp-hero {
+            background: linear-gradient(140deg, #0B3D91 0%, #1B3EA8 50%, #2563EB 100%);
+            color: #FFFFFF;
+            text-align: center;
+            padding: 96px 24px 104px 24px;
+        }
+
+        .lp-hero h1 {
+            font-size: 3.1rem;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            line-height: 1.14;
+        }
+
+        .lp-motto {
+            color: #FACC15;
+            font-weight: 600;
+            letter-spacing: 3.4px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 24px;
+        }
+
+        .lp-lead {
+            font-size: 1.12rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.93;
+            line-height: 1.85;
+        }
+
+        .lp-button {
+            display: inline-block;
+            background-color: #FACC15;
+            color: #0B3D91;
+            padding: 15px 36px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 34px;
+        }
+
+        .lp-button:hover {
+            background-color: #EAB308;
+        }
+
+        /* ---------- Numbers ---------- */
+
+        .lp-stats {
+            display: flex;
+            justify-content: center;
+            gap: 68px;
+            flex-wrap: wrap;
+            background-color: #0B3D91;
+            padding: 44px 24px;
+        }
+
+        .lp-stat {
+            text-align: center;
+            color: #FFFFFF;
+        }
+
+        .lp-stat strong {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #FACC15;
+            line-height: 1.2;
+        }
+
+        .lp-stat span {
+            font-size: 0.76rem;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            opacity: 0.82;
+        }
+
+        /* ---------- Updates ---------- */
+
+        .lp-section {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 68px 28px;
+        }
+
+        .lp-section h2 {
+            color: #0B3D91;
+            font-size: 1.65rem;
+            font-weight: 600;
+            margin: 0 0 6px 0;
+        }
+
+        .lp-section > p {
+            color: #64748B;
+            font-weight: 300;
+            line-height: 1.8;
+            margin: 0 0 28px 0;
+        }
+
+        .lp-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 22px 26px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+        }
+
+        .lp-card:hover {
+            border-color: #2563EB;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.1);
+        }
+
+        .lp-card h3 {
+            color: #0B3D91;
+            margin: 0 0 8px 0;
+            font-size: 1.02rem;
+            font-weight: 600;
+        }
+
+        .lp-card p {
+            color: #64748B;
+            font-weight: 300;
+            line-height: 1.7;
+            margin: 0;
+            font-size: 0.94rem;
+        }
+
+        /* ---------- Demo accounts ---------- */
+
+        .lp-demo {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-left: 4px solid #FACC15;
+            border-radius: 8px;
+            padding: 26px 30px;
+            margin-top: 28px;
+            color: #64748B;
+            font-weight: 300;
+            line-height: 2;
+        }
+
+        .lp-demo strong {
+            color: #0B3D91;
+            font-weight: 600;
+            font-size: 1.02rem;
+        }
+
+        .lp-demo code {
+            background: #F1F5F9;
+            color: #0B3D91;
+            padding: 3px 9px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        /* ---------- Footer ---------- */
+
+        .lp-footer {
+            background-color: #0B3D91;
+            color: #FFFFFF;
+            text-align: center;
+            padding: 28px 20px;
+            font-size: 0.85rem;
+            letter-spacing: 1.4px;
+        }
+
+        .lp-footer span {
+            display: block;
+            color: #FACC15;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        /* On a narrow screen, the numbers stack instead of squeezing */
+        @media (max-width: 620px) {
+            .lp-nav {
+                padding: 14px 20px;
+            }
+            .lp-hero h1 {
+                font-size: 2.2rem;
+            }
+            .lp-stats {
+                gap: 34px;
+            }
+            .lp-section {
+                padding: 48px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- We create a header div container to display our primary brand identity and quick navigation options -->
-    <div class="header">
-        <h2>Academia</h2>
+
+    <!-- ============================================================
+         1. NAVIGATION BAR
+         ============================================================ -->
+    <div class="lp-nav">
+        <h2>Academia<em>.</em></h2>
         <!-- We use an anchor tag with an href link so visitors can easily navigate to the secure authentication page -->
         <a href="Academia_Auth.html">Sign In</a>
     </div>
-    <!-- We create a main container div with custom styling to center the welcome message and call-to-action buttons -->
-    <div class="container" style="text-align: center; padding: 60px 20px;">
+
+    <!-- ============================================================
+         2. HERO
+         ============================================================ -->
+    <div class="lp-hero">
         <!-- We use an h1 tag to present the main welcome headline of the unified ecosystem -->
         <h1>Welcome to Academia</h1>
+        <p class="lp-motto">Education Today. A Brighter Tomorrow.</p>
         <!-- We use a paragraph tag to explain the core mission statement and purpose of the web application -->
-        <p style="font-size: 1.2rem; color: #555;">Education Today. A Brighter Tomorrow. Unified Portals for Students, Parents, and Staff.</p>
-        <br>
+        <p class="lp-lead">
+            Grades, attendance, courses and announcements all live in one place here, so
+            students, parents and staff are always looking at the same record.
+        </p>
         <!-- We use an anchor tag styled as a prominent button to encourage users to click and access the login portal -->
-        <a href="Academia_Auth.html" style="background-color: #0b3d91; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">Get Started</a>
+        <a class="lp-button" href="Academia_Auth.html">Sign In to Your Portal</a>
     </div>
+
+    <!-- ============================================================
+         3. NUMBERS
+         ============================================================ -->
+    <div class="lp-stats">
+        <div class="lp-stat"><strong>3</strong><span>Portals</span></div>
+        <div class="lp-stat"><strong>3</strong><span>Courses Running</span></div>
+        <div class="lp-stat"><strong>10</strong><span>Database Tables</span></div>
+        <div class="lp-stat"><strong>1</strong><span>Login</span></div>
+    </div>
+
+    <!-- ============================================================
+         4. SCHOOL UPDATES AND DEMO ACCOUNTS
+         ============================================================ -->
+    <div class="lp-section">
+        <h2>School Updates</h2>
+        <p>A few things worth knowing this term.</p>
+
+        <div class="lp-card">
+            <h3>Report cards are now online</h3>
+            <p>Students and parents can open this term's grades as soon as a teacher saves them.</p>
+        </div>
+
+        <div class="lp-card">
+            <h3>Spring courses are open</h3>
+            <p>Complete HTML, CSS and JavaScript Tutorials are running again this term.</p>
+        </div>
+
+        <div class="lp-card">
+            <h3>Attendance is checked daily</h3>
+            <p>A student's attendance record is kept for every course they are enrolled in.</p>
+        </div>
+
+        <!-- We create a box listing the demo accounts so the portals can be tried straight away -->
+        <div class="lp-demo">
+            <strong>Demo Accounts</strong><br>
+            Student: <code>student1</code> (Alex Rivera)<br>
+            Parent: <code>parent1</code> (Marcus Rivera)<br>
+            Staff: <code>staff1</code> (Dr. Eleanor Vance)<br>
+            Passwords are set in <code>Academia.sql</code>.
+        </div>
+    </div>
+
+    <!-- ============================================================
+         5. FOOTER
+         ============================================================ -->
     <!-- We create a footer div container at the bottom of the page to display our institutional motto -->
-    <div class="footer">EDUCATION TODAY. A BRIGHTER TOMORROW.</div>
+    <div class="lp-footer">
+        <span>ACADEMIA</span>
+        EDUCATION TODAY. A BRIGHTER TOMORROW.
+    </div>
 
 </body>
 </html>

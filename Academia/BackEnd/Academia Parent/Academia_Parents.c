@@ -20,8 +20,7 @@ This file also still had git conflict markers in the repository
 #endif
 
 /* Runs one SELECT and writes it out as a JavaScript array. */
-static void list(FILE *out, sqlite3 *db, const char *name, const char *sql,
-                 int parent_id) {
+void write_list(FILE *out, sqlite3 *db, const char *name, const char *sql, int parent_id) {
     sqlite3_stmt *row = NULL;
 
     fprintf(out, "  %s: [\n", name);
@@ -45,14 +44,7 @@ static void list(FILE *out, sqlite3 *db, const char *name, const char *sql,
             } else if (sqlite3_column_type(row, i) == SQLITE_INTEGER) {
                 fprintf(out, "%d", sqlite3_column_int(row, i));
             } else {
-                fputc('"', out);
-                while (text != NULL && *text != '\0') {
-                    if (*text != '"' && *text != '\\' && *text != '\r' && *text != '\n') {
-                        fputc(*text, out);
-                    }
-                    text++;
-                }
-                fputc('"', out);
+                fprintf(out, "\"%s\"", text == NULL ? "" : text);
             }
         }
         fputs(" },\n", out);
@@ -66,16 +58,16 @@ static void list(FILE *out, sqlite3 *db, const char *name, const char *sql,
 int update_parent_frontend_state(int parent_user_id) {
     sqlite3 *db = open_database();
     sqlite3_stmt *row = NULL;
-    FILE *out;
+    FILE *out = NULL;
     int found = 0;
 
-    if (db == NULL) {
+    if (!db) {
         printf("[Parent] Cannot open the database.\n");
         return 0;
     }
 
     out = fopen("Academia/FrontEnd/JS/parents_states.js", "w");
-    if (out == NULL) {
+    if (!out) {
         printf("[Parent] Cannot write parents_states.js\n");
         close_database(db);
         return 0;
@@ -104,35 +96,32 @@ int update_parent_frontend_state(int parent_user_id) {
     }
     fputs("  },\n", out);
 
-    list(out, db, "children",
-         "SELECT user.id AS studentId, user.first_name || ' ' || user.last_name AS name, "
-         "user.username AS username, student.grade_level AS gradeLevel, "
-         "student.gpa AS gpa FROM student INNER JOIN user ON student.id = user.id "
-         "WHERE student.parent_id = ? ORDER BY user.id;", parent_user_id);
+    write_list(out, db, "children",
+        "SELECT user.first_name || ' ' || user.last_name AS name, "
+        "user.username AS username, student.grade_level AS gradeLevel, "
+        "student.gpa AS gpa FROM student INNER JOIN user ON student.id = user.id "
+        "WHERE student.parent_id = ? ORDER BY user.id;", parent_user_id);
 
-    list(out, db, "grades",
-         "SELECT user.first_name || ' ' || user.last_name AS student, "
-         "course.course_name AS course, grade.score AS score FROM grade "
-         "INNER JOIN student ON grade.student_id = student.id "
-         "INNER JOIN user ON student.id = user.id "
-         "INNER JOIN course ON grade.course_id = course.id "
-         "WHERE student.parent_id = ? ORDER BY user.id, course.id;", parent_user_id);
+    write_list(out, db, "grades",
+        "SELECT user.first_name || ' ' || user.last_name AS student, "
+        "course.course_name AS course, grade.score AS score FROM grade "
+        "INNER JOIN student ON grade.student_id = student.id "
+        "INNER JOIN user ON student.id = user.id "
+        "INNER JOIN course ON grade.course_id = course.id "
+        "WHERE student.parent_id = ? ORDER BY user.id, course.id;", parent_user_id);
 
-    list(out, db, "attendance",
-         "SELECT user.first_name || ' ' || user.last_name AS student, "
-         "course.course_name AS course, attendance.present AS present "
-         "FROM attendance "
-         "INNER JOIN student ON attendance.student_id = student.id "
-         "INNER JOIN user ON student.id = user.id "
-         "INNER JOIN course ON attendance.course_id = course.id "
-         "WHERE student.parent_id = ? ORDER BY user.id, course.id;", parent_user_id);
+    write_list(out, db, "attendance",
+        "SELECT user.first_name || ' ' || user.last_name AS student, "
+        "course.course_name AS course, attendance.present AS present FROM attendance "
+        "INNER JOIN student ON attendance.student_id = student.id "
+        "INNER JOIN user ON student.id = user.id "
+        "INNER JOIN course ON attendance.course_id = course.id "
+        "WHERE student.parent_id = ? ORDER BY user.id, course.id;", parent_user_id);
 
-    list(out, db, "announcements",
-         "SELECT course.course_name AS course, announcement.title AS title, "
-         "announcement.message AS message, "
-         "announcement.announcement_date AS date FROM announcement "
-         "LEFT JOIN course ON announcement.course_id = course.id "
-         "ORDER BY announcement.id DESC;", parent_user_id);
+    write_list(out, db, "announcements",
+        "SELECT announcement.title AS title, announcement.message AS message, "
+        "announcement.announcement_date AS date FROM announcement "
+        "ORDER BY announcement.id DESC;", 0);
 
     fprintf(out, "  success: %s,\n  parentId: %d\n};\n",
             found ? "true" : "false", parent_user_id);

@@ -21,8 +21,7 @@ compiled and the backend would not build.
 #endif
 
 /* Runs one SELECT and writes it out as a JavaScript array. */
-static void list(FILE *out, sqlite3 *db, const char *name, const char *sql,
-                 int staff_id) {
+void write_list(FILE *out, sqlite3 *db, const char *name, const char *sql, int staff_id) {
     sqlite3_stmt *row = NULL;
 
     fprintf(out, "  %s: [\n", name);
@@ -46,14 +45,7 @@ static void list(FILE *out, sqlite3 *db, const char *name, const char *sql,
             } else if (sqlite3_column_type(row, i) == SQLITE_INTEGER) {
                 fprintf(out, "%d", sqlite3_column_int(row, i));
             } else {
-                fputc('"', out);
-                while (text != NULL && *text != '\0') {
-                    if (*text != '"' && *text != '\\' && *text != '\r' && *text != '\n') {
-                        fputc(*text, out);
-                    }
-                    text++;
-                }
-                fputc('"', out);
+                fprintf(out, "\"%s\"", text == NULL ? "" : text);
             }
         }
         fputs(" },\n", out);
@@ -67,16 +59,16 @@ static void list(FILE *out, sqlite3 *db, const char *name, const char *sql,
 int update_staff_frontend_state(int staff_user_id) {
     sqlite3 *db = open_database();
     sqlite3_stmt *row = NULL;
-    FILE *out;
+    FILE *out = NULL;
     int found = 0;
 
-    if (db == NULL) {
+    if (!db) {
         printf("[Staff] Cannot open the database.\n");
         return 0;
     }
 
     out = fopen("Academia/FrontEnd/JS/staff_states.js", "w");
-    if (out == NULL) {
+    if (!out) {
         printf("[Staff] Cannot write staff_states.js\n");
         close_database(db);
         return 0;
@@ -105,37 +97,36 @@ int update_staff_frontend_state(int staff_user_id) {
     }
     fputs("  },\n", out);
 
-    list(out, db, "courses",
-         "SELECT course.id AS courseId, course.course_name AS course, "
-         "(SELECT COUNT(*) FROM enrollment WHERE enrollment.course_id = course.id "
-         "AND enrollment.status = 1) AS students FROM course "
-         "WHERE course.staff_id = ? ORDER BY course.id;", staff_user_id);
+    write_list(out, db, "courses",
+        "SELECT course.id AS courseId, course.course_name AS course, "
+        "(SELECT COUNT(*) FROM enrollment WHERE enrollment.course_id = course.id "
+        "AND enrollment.status = 1) AS students FROM course "
+        "WHERE course.staff_id = ? ORDER BY course.id;", staff_user_id);
 
-    list(out, db, "students",
-         "SELECT user.id AS studentId, user.first_name || ' ' || user.last_name AS name, "
-         "user.username AS username, course.course_name AS course, "
-         "(SELECT score FROM grade WHERE grade.student_id = user.id "
-         "AND grade.course_id = course.id) AS score FROM enrollment "
-         "INNER JOIN student ON enrollment.student_id = student.id "
-         "INNER JOIN user ON student.id = user.id "
-         "INNER JOIN course ON enrollment.course_id = course.id "
-         "WHERE course.staff_id = ? ORDER BY user.last_name;", staff_user_id);
+    write_list(out, db, "students",
+        "SELECT user.id AS studentId, user.first_name || ' ' || user.last_name AS name, "
+        "user.username AS username, course.course_name AS course, "
+        "(SELECT score FROM grade WHERE grade.student_id = user.id "
+        "AND grade.course_id = course.id) AS score FROM enrollment "
+        "INNER JOIN student ON enrollment.student_id = student.id "
+        "INNER JOIN user ON student.id = user.id "
+        "INNER JOIN course ON enrollment.course_id = course.id "
+        "WHERE course.staff_id = ? ORDER BY user.last_name;", staff_user_id);
 
-    list(out, db, "attendance",
-         "SELECT course.course_name AS course, "
-         "user.first_name || ' ' || user.last_name AS student, "
-         "attendance.present AS present FROM attendance "
-         "INNER JOIN course ON attendance.course_id = course.id "
-         "INNER JOIN student ON attendance.student_id = student.id "
-         "INNER JOIN user ON student.id = user.id "
-         "WHERE course.staff_id = ? ORDER BY course.id;", staff_user_id);
+    write_list(out, db, "attendance",
+        "SELECT course.course_name AS course, "
+        "user.first_name || ' ' || user.last_name AS student, "
+        "attendance.present AS present FROM attendance "
+        "INNER JOIN course ON attendance.course_id = course.id "
+        "INNER JOIN student ON attendance.student_id = student.id "
+        "INNER JOIN user ON student.id = user.id "
+        "WHERE course.staff_id = ? ORDER BY course.id;", staff_user_id);
 
-    list(out, db, "announcements",
-         "SELECT course.course_name AS course, announcement.title AS title, "
-         "announcement.message AS message, "
-         "announcement.announcement_date AS date FROM announcement "
-         "INNER JOIN course ON announcement.course_id = course.id "
-         "WHERE course.staff_id = ? ORDER BY announcement.id DESC;", staff_user_id);
+    write_list(out, db, "announcements",
+        "SELECT course.course_name AS course, announcement.title AS title, "
+        "announcement.message AS message, announcement.announcement_date AS date "
+        "FROM announcement INNER JOIN course ON announcement.course_id = course.id "
+        "WHERE course.staff_id = ? ORDER BY announcement.id DESC;", staff_user_id);
 
     fprintf(out, "  success: %s,\n  staffId: %d\n};\n",
             found ? "true" : "false", staff_user_id);

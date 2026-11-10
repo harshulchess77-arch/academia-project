@@ -7,6 +7,7 @@ Academia - Authentication
 #include "Academia_Auth.h"
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #define MAX_USERS 32
 

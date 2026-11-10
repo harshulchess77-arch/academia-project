@@ -145,8 +145,10 @@ void handle_client_request(SOCKET client) {
         return;
     }
 
+    // The landing page links to its sister pages without a folder, so it has to be opened from /HTML/
     if (strcmp(path, "/") == 0 || strcmp(path, "/index.html") == 0) {
-        send_file(client, "Academia/FrontEnd/HTML/Academia_Landing.html", "text/html; charset=utf-8");
+        const char *redirect = "HTTP/1.1 302 Found\r\nLocation: /HTML/Academia_Landing.html\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+        send(client, redirect, (int)strlen(redirect), 0);
         return;
     }
 
