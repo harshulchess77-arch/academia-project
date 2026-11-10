@@ -6,7 +6,6 @@ body {
     color: #333;
 }
 
-/* Header bar */
 .header {
     background-color: #0b3d91;
     color: white;
@@ -25,13 +24,11 @@ body {
     text-decoration: underline;
 }
 
-/* Layout container for sidebar and content */
 .main-layout {
     display: flex;
     min-height: 500px;
 }
 
-/* Left Sidebar */
 .sidebar {
     width: 200px;
     background-color: #ffffff;
@@ -61,14 +58,12 @@ body {
     font-weight: bold;
 }
 
-/* Main Content Area */
 .container {
     flex: 1;
     padding: 20px;
     background: #ffffff;
 }
 
-/* Simple Tables */
 table {
     border-collapse: collapse;
     margin-top: 8px;
@@ -86,7 +81,6 @@ th {
     color: white;
 }
 
-/* Course Cards / Generic Cards */
 .course-card {
     border: 1px solid #ccc;
     padding: 15px;
@@ -109,7 +103,6 @@ th {
     border-radius: 3px;
 }
 
-/* Workspace Layout */
 .workspace-layout {
     display: flex;
     gap: 15px;
@@ -130,7 +123,6 @@ th {
     max-height: 380px;
 }
 
-/* Right Playlist Sidebar */
 .right-sidebar {
     flex: 1;
     background: #f1f5f9;
@@ -178,7 +170,6 @@ th {
     color: #1e293b;
 }
 
-/* Footer */
 .footer {
     text-align: center;
     background: #0b3d91;

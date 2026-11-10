@@ -1,4 +1,4 @@
-<!--
+﻿<!--
    Academia Student Portal
    Created for CS50 / School Web Project
 -->
@@ -8,18 +8,6 @@
     <meta charset="UTF-8">
     <title>Academia - Student Portal</title>
     <link rel="stylesheet" href="../CSS/Academia.css">
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-
-    <!-- Connects the JavaScript files -->
-=======
-    <link rel="stylesheet" href="Academia.css">
-    <script src="../JS/student_states.js" onerror="this.onerror=null;"></script>
-    <script src="../JS/script.js" defer></script>
->>>>>>> 57558642637b144e2b83d4799c7f861c409ca802
-    <script src="../JS/Academia.js" defer></script>
-=======
->>>>>>> Stashed changes
 </head>
 <body>
 
@@ -142,13 +130,12 @@
                     </div>
                 </div>
 
-                <!-- Course Workspace (Video Player + Right Playlist Sidebar) -->
+                <!-- Course Workspace -->
                 <div id="course-workspace-view" style="display: none;">
                     <button onclick="backToList()" style="padding: 5px 10px; cursor: pointer;">&larr; Back to Courses</button>
                     <h2 id="workspace-title" style="margin-top: 10px;">Course Title</h2>
                     
                     <div class="workspace-layout">
-                        <!-- Left Side: Video Player & Discussion -->
                         <div class="main-video-area">
                             <video id="my-video" width="100%" controls>
                                 <source id="video-source" src="" type="video/mp4">
@@ -168,12 +155,9 @@
                             </div>
                         </div>
 
-                        <!-- Right Side Playlist Bar with 6 Lessons & Proper Thumbnails -->
                         <div class="right-sidebar">
                             <h3>Playlist Lessons (6)</h3>
-                            <div id="playlist-links">
-                                <!-- Populated dynamically by JS -->
-                            </div>
+                            <div id="playlist-links"></div>
                         </div>
                     </div>
                 </div>
@@ -184,7 +168,6 @@
 
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         <p>&copy; 2026 Academia Project</p>
     </div>

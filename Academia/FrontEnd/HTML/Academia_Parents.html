@@ -1,4 +1,4 @@
-<!--
+﻿<!--
    Academia Parent Portal
    Created for CS50 / School Web Project
 -->
@@ -8,48 +8,18 @@
     <meta charset="UTF-8">
     <title>Academia - Parent Portal</title>
     <link rel="stylesheet" href="../CSS/Academia.css">
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-
-    <!-- Connects the Parent JavaScript file -->
-=======
-    <link rel="stylesheet" href="Academia.css">
-    <script src="../JS/parents_states.js" onerror="this.onerror=null;"></script>
->>>>>>> 57558642637b144e2b83d4799c7f861c409ca802
-    <script src="../JS/Academia.js" defer></script>
-=======
->>>>>>> Stashed changes
 </head>
 <body>
 
-    <!-- Top Header Bar -->
     <div class="header">
         <b>Academia Parent Portal</b>
-<<<<<<< Updated upstream
-        <a href="Academia_Auth.html">Log Out</a>
-    </div>
-
-    <p id="error" style="color: #EF4444; text-align: center; margin-top: 1rem;"></p>
-
-    <!-- Parent Profile Banner -->
-    <div class="blue-box">
-        <h2 id="welcome">Welcome, Marcus Rivera!</h2>
-        <p>Monitor your child's academic progress, attendance history, and school notices.</p>
-        <div style="margin-top: 1.5rem; display: inline-flex; gap: 2rem; background: rgba(255,255,255,0.12); padding: 0.8rem 1.8rem; border-radius: 8px;">
-            <span>Username: <strong id="parentUsername" style="color: #FACC15;">parent1</strong></span>
-            <span>Contact Phone: <strong id="parentPhone" style="color: #FACC15;">(555) 234-5678</strong></span>
-=======
         <div>
             <span>Welcome, Parent</span> | 
             <a href="Academia_Auth.html">Logout</a>
->>>>>>> Stashed changes
         </div>
     </div>
 
-    <!-- Main Layout (Sidebar + Container) -->
     <div class="main-layout">
-        
-        <!-- Left Sidebar Navigation -->
         <div class="sidebar">
             <h3>Parent Menu</h3>
             <a href="#" onclick="showParentTab('overview')">Student Overview</a>
@@ -57,13 +27,10 @@
             <a href="Academia_Auth.html">Logout</a>
         </div>
 
-        <!-- Main Content Area -->
         <div class="container">
-
-            <!-- TAB 1: STUDENT OVERVIEW -->
             <div id="parent-overview" class="parent-tab-content">
                 <h2>Linked Student Profile: Alex Rivera</h2>
-                <p><b>Student ID:</b> 10948 | <b>Grade:</b> 11th Grade | <b>Cumulative GPA:</b> 3.85 / 4.00[cite: 3]</p>
+                <p><b>Student ID:</b> 10948 | <b>Grade:</b> 11th Grade | <b>Cumulative GPA:</b> 3.85 / 4.00</p>
 
                 <br>
                 <h3>Student Grades (HTML, CSS, JavaScript)</h3>
@@ -116,27 +83,17 @@
                 </table>
             </div>
 
-            <!-- TAB 2: ANNOUNCEMENTS -->
             <div id="parent-announcements" class="parent-tab-content" style="display: none;">
                 <h2>School & Course Announcements</h2>
                 <br>
                 <div class="course-card">
                     <h3>Midterm Web Project Deadline</h3>
-                    <p><b>Target:</b> All Courses (HTML, CSS, JavaScript)</p>
-                    <p>Reminder to parents and students that the final capstone project components are due by the end of next week. Please review lecture videos with Cmdr. Schenck if assistance is needed.</p>
-                </div>
-                <div class="course-card">
-                    <h3>Parent-Teacher Conferences</h3>
-                    <p><b>Target:</b> School-Wide</p>
-                    <p>Conferences will be held online via the Academia portal next Thursday evening from 5:00 PM to 8:00 PM.</p>
+                    <p>Reminder to parents and students that the final capstone project components are due by next week.</p>
                 </div>
             </div>
-
         </div>
-
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         <p>&copy; 2026 Academia Project</p>
     </div>
