@@ -4,36 +4,34 @@ CS50 C Project
 Academia
 November 1, 2026
 -->
+
+<!-- We declare the document type using DOCTYPE so the web browser knows to render this file as an HTML5 document -->
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Academia - Error</title>
-    <link rel="stylesheet" href="../CSS/Academia.css">
+    <!-- We use the title tag to show the specific name of the page on the browser tab -->
+        <title>Academia - Error</title>
+    <!-- We link our external CSS stylesheet using href so this page inherits the same design rules as the rest of Academia -->
+        <link rel="stylesheet" href="../CSS/Academia.css">
 </head>
-
 <body>
-
-    <!--this lets users to go back to the landing page-->
-    <div class="navbar">
-        <h2>Academia</h2>
-        <a href="Academia_Landing.html">Home</a>
-    </div>
-
-
-    <!--showing the error img-->
-    <!--also let the user go back to the landing page-->
-    <div class="error-box">
-        <img src="../Images/403Error.png" onerror="this.src='images/403Error.png'; this.onerror=null;" alt="Error"
-            class="error-img">
+    <!-- We create a navbar div container to display our header branding and navigation options -->
+        <div class="navbar">
+            <h2>Academia</h2>
+            <!-- We use an anchor tag with an href link so users can easily click and go back to the landing page -->
+            <a href="Academia_Landing.html">Home</a>
+        </div>
+    <!-- We create an error-box div container to center the error graphic and return button on the screen -->
+        <div class="error-box">
+            <!-- We use an img tag to display the error image, and we use the onerror event handler to automatically fallback to a secondary directory if the original file path fails to resolve -->
+            <img src="../Images/403Error.png" onerror="this.src='images/403Error.png'; this.onerror=null;" alt="Error"class="error-img">
         <br>
+        <!-- We use an anchor tag styled as a home button to give users a clear way back to the landing page -->
         <a href="Academia_Landing.html" class="home-btn">
             Back to Landing Page
         </a>
     </div>
-
-    <!--add a line of words at the bottom of the page-->
+    <!-- We create a footer div container at the bottom of the page to display our institutional motto -->
     <div class="footer">EDUCATION TODAY. A BRIGHTER TOMORROW.</div>
 </body>
-
 </html>
