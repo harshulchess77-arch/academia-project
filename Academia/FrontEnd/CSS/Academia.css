@@ -4,8 +4,97 @@ body {
     padding: 0;
     background-color: #f4f4f4;
     color: #333;
+    display: flex;
+    min-height: 100vh;
 }
 
+/* Auth Split Screen Layout */
+.left-side {
+    flex: 1;
+    background-color: #0b3d91;
+    color: white;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.left-side h1 {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+}
+
+.left-side h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.left-side p {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.right-side {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8fafc;
+}
+
+.box {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 420px;
+}
+
+.box h2 {
+    color: #0b3d91;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.box p {
+    margin: 10px 0 5px 0;
+    font-weight: bold;
+    color: #333;
+}
+
+.box input[type="text"],
+.box input[type="password"],
+.box select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.btn {
+    background-color: #0b3d91;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.btn:hover {
+    background-color: #092c6b;
+}
+
+/* General Portal Layouts */
 .header {
     background-color: #0b3d91;
     color: white;
@@ -27,6 +116,7 @@ body {
 .main-layout {
     display: flex;
     min-height: 500px;
+    width: 100%;
 }
 
 .sidebar {

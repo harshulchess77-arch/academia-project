@@ -1,4 +1,66 @@
-﻿// STUDENT PORTAL FUNCTIONS
+﻿// ==========================================
+// AUTHENTICATION & LOGIN LOGIC
+// ==========================================
+function goPortal() {
+    var usernameField = document.getElementById("username");
+    var passwordField = document.getElementById("password");
+    var roleField = document.getElementById("role");
+    var errEl = document.getElementById("err");
+
+    if (!usernameField || !passwordField || !roleField) return;
+
+    var username = usernameField.value.trim();
+    var password = passwordField.value.trim();
+    var role = roleField.value;
+
+    if (username === "" || password === "") {
+        if (errEl) errEl.innerText = "Please enter both username and password.";
+        return;
+    }
+
+    // Connects to the C backend server endpoint /api/login
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password,
+            role: role
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Redirect based on role
+            if (role === 'student') {
+                window.location.href = 'Academia_Student.html';
+            } else if (role === 'parent') {
+                window.location.href = 'Academia_Parents.html';
+            } else if (role === 'staff') {
+                window.location.href = 'Academia_Staff.html';
+            }
+        } else {
+            if (errEl) errEl.innerText = data.message || "Invalid login credentials.";
+        }
+    })
+    .catch(error => {
+        console.error('Backend connection notice:', error);
+        // Fallback direct redirection for offline testing/static preview
+        if (role === 'student') {
+            window.location.href = 'Academia_Student.html';
+        } else if (role === 'parent') {
+            window.location.href = 'Academia_Parents.html';
+        } else if (role === 'staff') {
+            window.location.href = 'Academia_Staff.html';
+        }
+    });
+}
+
+// ==========================================
+// STUDENT PORTAL FUNCTIONS
+// ==========================================
 function showPage(pageId) {
     var dash = document.getElementById("dashboard-page");
     var courses = document.getElementById("courses-page");
@@ -111,7 +173,9 @@ function addComment() {
     box.value = "";
 }
 
+// ==========================================
 // STAFF PORTAL FUNCTIONS
+// ==========================================
 function showStaffTab(tabId) {
     var tabs = ['management', 'directory', 'profile', 'courses', 'lectures'];
     for (var i = 0; i < tabs.length; i++) {
@@ -171,7 +235,9 @@ function postStaffComment() {
     box.value = "";
 }
 
+// ==========================================
 // PARENT PORTAL FUNCTIONS
+// ==========================================
 function showParentTab(tabId) {
     var overview = document.getElementById("parent-overview");
     var announcements = document.getElementById("parent-announcements");
