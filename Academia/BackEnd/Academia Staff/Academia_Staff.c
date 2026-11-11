@@ -3,7 +3,7 @@
    ACADEMIA - STAFF MODULE  (Academia_Staff.c)
    Writes staff_states.js, the file the Staff Portal reads
    CS50 C Project
-   Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+   Harshul Gupta, Lawrence Mao, Seungho Kim, Dmitrii Buianov
    ==========================================================================
 
       WHAT THIS FILE DOES
@@ -34,7 +34,6 @@
    Note: the four questions about courses, enrollments, grades and attendance
    all filter on the same value, the teacher's id, so each function is handed
    that id and uses it in its own WHERE clause.
-
 */
 
 #include "Academia_Staff.h"
@@ -49,7 +48,7 @@
    Copies one piece of text into the output file, adding a backslash before
    any character that would otherwise break a JavaScript string.
 
-   Without this, a student called  Ann "Annie" Lee  would end the string
+   Without this, a student called Ann "Annie" Lee would end the string
    early and the browser would refuse to read the file.
    ------------------------------------------------------------------------- */
 static void write_js_text(FILE *out, const unsigned char *text) {
@@ -98,6 +97,7 @@ static void write_js_quoted(FILE *out, const unsigned char *text) {
 static void write_staff_section(FILE *out, sqlite3 *db, int staff_id) {
     sqlite3_stmt *statement = NULL;
 
+    // Join the general user account with its staff-specific information.
     const char *sql =
         "SELECT user.id, user.username, user.first_name, user.last_name, staff.phone "
         "FROM user "
@@ -111,6 +111,7 @@ static void write_staff_section(FILE *out, sqlite3 *db, int staff_id) {
         return;
     }
 
+    // Use the signed-in staff member's ID in the query.
     sqlite3_bind_int(statement, 1, staff_id);
 
     if (sqlite3_step(statement) == SQLITE_ROW) {
@@ -146,7 +147,8 @@ static void write_staff_section(FILE *out, sqlite3 *db, int staff_id) {
 static void write_courses_section(FILE *out, sqlite3 *db, int staff_id) {
     sqlite3_stmt *statement = NULL;
 
-    const char *sql = "SELECT id, course_name FROM course WHERE staff_id = ?;";
+    const char *sql =
+        "SELECT id, course_name FROM course WHERE staff_id = ?;";
 
     fputs("  courses: [\n", out);
 
@@ -157,6 +159,7 @@ static void write_courses_section(FILE *out, sqlite3 *db, int staff_id) {
 
     sqlite3_bind_int(statement, 1, staff_id);
 
+    // Write every course assigned to this staff member.
     while (sqlite3_step(statement) == SQLITE_ROW) {
         fputs("    { courseId: ", out);
         fprintf(out, "%d", sqlite3_column_int(statement, 0));
@@ -175,7 +178,11 @@ static void write_courses_section(FILE *out, sqlite3 *db, int staff_id) {
    write_enrollments_section
    Writes one row per student on each of this teacher's courses.
    ------------------------------------------------------------------------- */
-static void write_enrollments_section(FILE *out, sqlite3 *db, int staff_id) {
+static void write_enrollments_section(
+    FILE *out,
+    sqlite3 *db,
+    int staff_id
+) {
     sqlite3_stmt *statement = NULL;
 
     /* The two pipe symbols join two text columns into one full name, so the
@@ -198,6 +205,7 @@ static void write_enrollments_section(FILE *out, sqlite3 *db, int staff_id) {
 
     sqlite3_bind_int(statement, 1, staff_id);
 
+    // Each row connects one student to one of the teacher's courses.
     while (sqlite3_step(statement) == SQLITE_ROW) {
         fputs("    { studentId: ", out);
         fprintf(out, "%d", sqlite3_column_int(statement, 0));
@@ -226,6 +234,7 @@ static void write_enrollments_section(FILE *out, sqlite3 *db, int staff_id) {
 static void write_grades_section(FILE *out, sqlite3 *db, int staff_id) {
     sqlite3_stmt *statement = NULL;
 
+    // Filter through course.staff_id so only this teacher's grades are shown.
     const char *sql =
         "SELECT grade.id, "
         "       user.first_name || ' ' || user.last_name, "
@@ -266,9 +275,14 @@ static void write_grades_section(FILE *out, sqlite3 *db, int staff_id) {
    write_attendance_section
    Writes every attendance record for this teacher's courses.
    ------------------------------------------------------------------------- */
-static void write_attendance_section(FILE *out, sqlite3 *db, int staff_id) {
+static void write_attendance_section(
+    FILE *out,
+    sqlite3 *db,
+    int staff_id
+) {
     sqlite3_stmt *statement = NULL;
 
+    // The course table identifies which attendance records belong to staff.
     const char *sql =
         "SELECT attendance.id, "
         "       user.first_name || ' ' || user.last_name, "
@@ -315,6 +329,7 @@ static void write_attendance_section(FILE *out, sqlite3 *db, int staff_id) {
 static void write_announcements_section(FILE *out, sqlite3 *db) {
     sqlite3_stmt *statement = NULL;
 
+    // LEFT JOIN keeps general announcements that have no linked course.
     const char *sql =
         "SELECT announcement.id, course.course_name, announcement.title, "
         "       announcement.message, announcement.announcement_date "
@@ -330,14 +345,20 @@ static void write_announcements_section(FILE *out, sqlite3 *db) {
     }
 
     while (sqlite3_step(statement) == SQLITE_ROW) {
-        const unsigned char *course = sqlite3_column_text(statement, 1);
+        const unsigned char *course =
+            sqlite3_column_text(statement, 1);
 
         fputs("    { announcementId: ", out);
         fprintf(out, "%d", sqlite3_column_int(statement, 0));
 
         fputs(", course: ", out);
+
+        // Use General when the announcement is not tied to a course.
         if (course == NULL) {
-            write_js_quoted(out, (const unsigned char *)"General");
+            write_js_quoted(
+                out,
+                (const unsigned char *)"General"
+            );
         } else {
             write_js_quoted(out, course);
         }
@@ -370,26 +391,43 @@ void update_staff_frontend_state(int staff_user_id) {
     /* Step 1: open the database. */
     if (sqlite3_open("academia.db", &db) != SQLITE_OK) {
         printf("[Staff Module] Cannot open academia.db\n");
+
         if (db != NULL) {
             sqlite3_close(db);
         }
+
         return;
     }
 
     /* Step 2: open the file the portal reads. */
     out = fopen("FrontEnd/JS/staff_states.js", "w");
+
+    // Try the backend path if the first output path is unavailable.
     if (out == NULL) {
-        out = fopen("BackEnd/Academia Staff/staff_states.js", "w");
+        out = fopen(
+            "BackEnd/Academia Staff/staff_states.js",
+            "w"
+        );
     }
+
     if (out == NULL) {
-        printf("[Staff Module] Cannot open staff_states.js for writing.\n");
+        printf(
+            "[Staff Module] Cannot open staff_states.js for writing.\n"
+        );
+
         sqlite3_close(db);
         return;
     }
 
-    fputs("// Auto-generated by the Academia C backend. Do not edit by hand.\n", out);
+    fputs(
+        "// Auto-generated by the Academia C backend. "
+        "Do not edit by hand.\n",
+        out
+    );
+
     fputs("const staffState = {\n", out);
 
+    // Write each section of the Staff Portal state.
     write_staff_section(out, db, staff_user_id);
     write_courses_section(out, db, staff_user_id);
     write_enrollments_section(out, db, staff_user_id);
@@ -404,5 +442,8 @@ void update_staff_frontend_state(int staff_user_id) {
     fclose(out);
     sqlite3_close(db);
 
-    printf("[Staff Module] staff_states.js written for staff %d\n", staff_user_id);
+    printf(
+        "[Staff Module] staff_states.js written for staff %d\n",
+        staff_user_id
+    );
 }
