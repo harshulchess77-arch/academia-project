@@ -15,14 +15,14 @@
     <div class="header">
         <b>Academia Student Portal</b>
         <div>
-            <span>Welcome, Alex Rivera</span> | 
+            <span>Welcome, Alex Rivera</span> |
             <a href="Academia_Auth.html">Logout</a>
         </div>
     </div>
 
     <!-- Main Layout (Sidebar + Container) -->
     <div class="main-layout">
-        
+
         <!-- Left Sidebar Navigation -->
         <div class="sidebar">
             <h3>Menu</h3>
@@ -37,6 +37,7 @@
             <!-- PAGE 1: DASHBOARD -->
             <div id="dashboard-page" class="page-content">
                 <h2>Student Dashboard</h2>
+                <!-- Basic information about student-->
                 <p><b>Name:</b> Alex Rivera</p>
                 <p><b>Student ID:</b> 10948 | <b>Grade:</b> 11th Grade</p>
                 <p><b>Current GPA:</b> 3.85 / 4.00</p>
@@ -94,12 +95,12 @@
 
             <!-- PAGE 2: COURSES & VIDEO WORKSPACE -->
             <div id="courses-page" class="page-content" style="display: none;">
-                
+
                 <!-- Course List View -->
                 <div id="course-list-view">
                     <h2>Enrolled Courses by Cmdr. Schenck</h2>
                     <br>
-                    
+
                     <!-- HTML Course Card -->
                     <div class="course-card" onclick="openWorkspace('Complete HTML Tutorial')">
                         <img src="../Images/thumb-1.png" alt="HTML Thumbnail" style="width: 100px; height: 60px; float: left; margin-right: 15px;">
@@ -134,7 +135,7 @@
                 <div id="course-workspace-view" style="display: none;">
                     <button onclick="backToList()" style="padding: 5px 10px; cursor: pointer;">&larr; Back to Courses</button>
                     <h2 id="workspace-title" style="margin-top: 10px;">Course Title</h2>
-                    
+
                     <div class="workspace-layout">
                         <div class="main-video-area">
                             <video id="my-video" width="100%" controls>
@@ -144,12 +145,12 @@
                             <h3 id="video-title" style="margin-top: 10px;">Select a lesson from the playlist</h3>
                             <p>Instructor: <b>Cmdr. Schenck</b></p>
                             <button onclick="likeVideo()">Like Video (<span id="likes">44</span>)</button>
-                            
+
                             <br><br>
                             <h3>Discussion Board</h3>
                             <textarea id="comment-box" placeholder="Ask Cmdr. Schenck a question..." rows="3" cols="40"></textarea><br>
                             <button onclick="addComment()" style="margin-top: 5px;">Post Comment</button>
-                            
+
                             <div id="comments-section" style="margin-top: 15px;">
                                 <p><b>Alex Rivera:</b> Ready to learn!</p>
                             </div>
