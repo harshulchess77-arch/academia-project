@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <!-- Defines the character encoding used by the webpage -->
+   <meta charset="UTF-8">
+
+   <!-- Improves compatibility with older versions of Internet Explorer -->
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+   <!-- Makes the page responsive on phones, tablets, and computers -->
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <!-- Sets the text displayed on the browser tab -->
+   <title>Watch</title>
+
+   <!-- Loads Font Awesome icons used throughout the page -->
+   <link rel="stylesheet"
+         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+
+   <!-- Connects the custom stylesheet that controls the page design -->
+   <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- Creates the top navigation header -->
+<header class="header">
+
+   <!-- Keeps the logo, search bar, and icons aligned in one section -->
+   <section class="flex">
+
+      <!-- Displays the website logo and returns the user to the home page -->
+      <a href="home.html" class="logo">Educa.</a>
+
+      <!-- Allows users to search for courses -->
+      <form action="search.html" method="post" class="search-form">
+         <input
+            type="text"
+            name="search_box"
+            required
+            placeholder="search courses..."
+            maxlength="100"
+         >
+
+         <!-- Submits the search form using a search icon -->
+         <button type="submit" class="fas fa-search"></button>
+      </form>
+
+      <!-- Contains buttons for the menu, search, profile, and theme -->
+      <div class="icons">
+
+         <!-- Opens the sidebar menu on smaller screens -->
+         <div id="menu-btn" class="fas fa-bars"></div>
+
+         <!-- Opens or displays the responsive search bar -->
+         <div id="search-btn" class="fas fa-search"></div>
+
+         <!-- Opens the user profile menu -->
+         <div id="user-btn" class="fas fa-user"></div>
+
+         <!-- Switches between light mode and dark mode -->
+         <div id="toggle-btn" class="fas fa-sun"></div>
+      </div>
+
+      <!-- Displays the user's quick profile menu -->
+      <div class="profile">
+
+         <!-- Shows the user's profile picture -->
+         <img src="images/pic-1.jpg" class="image" alt="User profile picture">
+
+         <!-- Displays the user's name and account role -->
+         <h3 class="name">shaikh anas</h3>
+         <p class="role">student</p>
+
+         <!-- Opens the complete profile page -->
+         <a href="profile.html" class="btn">view profile</a>
+
+         <!-- Provides login and registration options -->
+         <div class="flex-btn">
+            <a href="login.html" class="option-btn">login</a>
+            <a href="register.html" class="option-btn">register</a>
+         </div>
+      </div>
+
+   </section>
+
+</header>
+
+<!-- Creates the sidebar navigation menu -->
+<div class="side-bar">
+
+   <!-- Closes the sidebar when the user clicks the X icon -->
+   <div id="close-btn">
+      <i class="fas fa-times"></i>
+   </div>
+
+   <!-- Displays the user's profile information inside the sidebar -->
+   <div class="profile">
+      <img src="images/pic-1.jpg" class="image" alt="User profile picture">
+      <h3 class="name">shaikh anas</h3>
+      <p class="role">student</p>
+      <a href="profile.html" class="btn">view profile</a>
+   </div>
+
+   <!-- Provides links to the main pages of the website -->
+   <nav class="navbar">
+
+      <!-- Opens the website home page -->
+      <a href="home.html">
+         <i class="fas fa-home"></i>
+         <span>home</span>
+      </a>
+
+      <!-- Opens the page containing information about the website -->
+      <a href="about.html">
+         <i class="fas fa-question"></i>
+         <span>about</span>
+      </a>
+
+      <!-- Opens the available courses page -->
+      <a href="courses.html">
+         <i class="fas fa-graduation-cap"></i>
+         <span>courses</span>
+      </a>
+
+      <!-- Opens the page containing teacher profiles -->
+      <a href="teachers.html">
+         <i class="fas fa-chalkboard-user"></i>
+         <span>teachers</span>
+      </a>
+
+      <!-- Opens the contact page for user support -->
+      <a href="contact.html">
+         <i class="fas fa-headset"></i>
+         <span>contact us</span>
+      </a>
+
+   </nav>
+
+</div>
+
+<!-- Contains the selected course video and its information -->
+<section class="watch-video">
+
+   <!-- Groups the video, title, tutor, and description together -->
+   <div class="video-container">
+
+      <!-- Displays the course video with playback controls -->
+      <div class="video">
+         <video
+            src="images/vid-1.mp4"
+            controls
+            poster="images/post-1-1.png"
+            id="video">
+         </video>
+      </div>
+
+      <!-- Displays the title of the current lesson -->
+      <h3 class="title">complete HTML tutorial (part 01)</h3>
+
+      <!-- Shows lesson information such as the date and number of likes -->
+      <div class="info">
+         <p class="date">
+            <i class="fas fa-calendar"></i>
+            <span>22-10-2022</span>
+         </p>
+
+         <p class="date">
+            <i class="fas fa-heart"></i>
+            <span>44 likes</span>
+         </p>
+      </div>
+
+      <!-- Displays information about the tutor who created the lesson -->
+      <div class="tutor">
+         <img src="images/pic-2.jpg" alt="Tutor profile picture">
+
+         <div>
+            <h3>john deo</h3>
+            <span>developer</span>
+         </div>
+      </div>
+
+      <!-- Provides playlist navigation and a lesson-like button -->
+      <form action="" method="post" class="flex">
+
+         <!-- Returns the user to the complete course playlist -->
+         <a href="playlist.html" class="inline-btn">view playlist</a>
+
+         <!-- Allows the user to like the current lesson -->
+         <button type="submit">
+            <i class="far fa-heart"></i>
+            <span>like</span>
+         </button>
+      </form>
+
+      <!-- Provides a written description of the video lesson -->
+      <p class="description">
+         Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+         Itaque labore ratione, hic exercitationem mollitia obcaecati
+         culpa dolor placeat provident porro. Lorem, ipsum dolor sit
+         amet consectetur adipisicing elit. Aliquid iure autem non
+         fugit sint. A, sequi rerum architecto dolor fugiat illo,
+         iure velit nihil laboriosam cupiditate voluptatum facere
+         cumque nemo!
+      </p>
+
+   </div>
+
+</section>
+
+<!-- Contains the comment form and existing user comments -->
+<section class="comments">
+
+   <!-- Displays the total number of comments -->
+   <h1 class="heading">5 comments</h1>
+
+   <!-- Allows the current user to write and submit a new comment -->
+   <form action="" method="post" class="add-comment">
+      <h3>add comments</h3>
+
+      <!-- Collects the user's comment and limits it to 1,000 characters -->
+      <textarea
+         name="comment_box"
+         placeholder="enter your comment"
+         required
+         maxlength="1000"
+         cols="30"
+         rows="10">
+      </textarea>
+
+      <!-- Submits the new comment -->
+      <input
+         type="submit"
+         value="add comment"
+         class="inline-btn"
+         name="add_comment"
+      >
+   </form>
+
+   <!-- Introduces the section containing submitted comments -->
+   <h1 class="heading">user comments</h1>
+
+   <!-- Groups all comment boxes in one container -->
+   <div class="box-container">
+
+      <!-- Displays a comment written by the current user -->
+      <div class="box">
+
+         <!-- Shows the comment author's profile information -->
+         <div class="user">
+            <img src="images/pic-1.jpg" alt="Comment author's profile picture">
+
+            <div>
+               <h3>shaikh anas</h3>
+               <span>22-10-2022</span>
+            </div>
+         </div>
+
+         <!-- Displays the content of the comment -->
+         <div class="comment-box">
+            this is a comment from shaikh anas
+         </div>
+
+         <!-- Allows the current user to edit or delete their own comment -->
+         <form action="" method="post" class="flex-btn">
+            <input
+               type="submit"
+               value="edit comment"
+               name="edit_comment"
+               class="inline-option-btn"
+            >
+
+            <input
+               type="submit"
+               value="delete comment"
+               name="delete_comment"
+               class="inline-delete-btn"
+            >
+         </form>
+
+      </div>
+
+      <!-- Displays a comment written by another user -->
+      <div class="box">
+         <div class="user">
+            <img src="images/pic-2.jpg" alt="Comment author's profile picture">
+
+            <div>
+               <h3>john deo</h3>
+               <span>22-10-2022</span>
+            </div>
+         </div>
+
+         <div class="comment-box">
+            awesome tutorial! keep going!
+         </div>
+      </div>
+
+      <!-- Displays another comment and its author information -->
+      <div class="box">
+         <div class="user">
+            <img src="images/pic-3.jpg" alt="Comment author's profile picture">
+
+            <div>
+               <h3>john deo</h3>
+               <span>22-10-2022</span>
+            </div>
+         </div>
+
+         <div class="comment-box">
+            amazing way of teaching! thank you so much!
+         </div>
+      </div>
+
+      <!-- Displays another saved user comment -->
+      <div class="box">
+         <div class="user">
+            <img src="images/pic-4.jpg" alt="Comment author's profile picture">
+
+            <div>
+               <h3>john deo</h3>
+               <span>22-10-2022</span>
+            </div>
+         </div>
+
+         <div class="comment-box">
+            loved it, thanks for the tutorial!
+         </div>
+      </div>
+
+      <!-- Displays another saved user comment -->
+      <div class="box">
+         <div class="user">
+            <img src="images/pic-5.jpg" alt="Comment author's profile picture">
+
+            <div>
+               <h3>john deo</h3>
+               <span>22-10-2022</span>
+            </div>
+         </div>
+
+         <div class="comment-box">
+            this is what I have been looking for! thank you so much!
+         </div>
+      </div>
+
+      <!-- Displays a user question about downloading the source code -->
+      <div class="box">
+         <div class="user">
+            <img src="images/pic-2.jpg" alt="Comment author's profile picture">
+
+            <div>
+               <h3>john deo</h3>
+               <span>22-10-2022</span>
+            </div>
+         </div>
+
+         <div class="comment-box">
+            thanks for the tutorial! how to download source code file?
+         </div>
+      </div>
+
+   </div>
+
+</section>
+
+<!-- Displays copyright and ownership information at the bottom -->
+<footer class="footer">
+   &copy; copyright @ 2022 by
+   <span>mr. web designer</span>
+   | all rights reserved!
+</footer>
+
+<!-- Loads the JavaScript that controls menus, profiles, and theme switching -->
+<script src="js/script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <!-- Defines the character encoding used by the webpage -->
+   <meta charset="UTF-8">
+
+   <!-- Improves compatibility with older versions of Internet Explorer -->
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+   <!-- Makes the page responsive on phones, tablets, and computers -->
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <!-- Sets the text displayed on the browser tab -->
+   <title>Update Profile</title>
+
+   <!-- Loads Font Awesome so icons can be displayed on the page -->
+   <link rel="stylesheet"
+         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+
+   <!-- Loads the custom stylesheet used to design the page -->
+   <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- Creates the header displayed at the top of the page -->
+<header class="header">
+
+   <!-- Aligns the logo, search form, icons, and profile menu -->
+   <section class="flex">
+
+      <!-- Displays the website logo and links it to the home page -->
+      <a href="home.html" class="logo">Educa.</a>
+
+      <!-- Allows users to search for courses -->
+      <form action="search.html" method="post" class="search-form">
+         <input
+            type="text"
+            name="search_box"
+            required
+            placeholder="search courses..."
+            maxlength="100"
+         >
+
+         <!-- Submits the user's course search -->
+         <button type="submit" class="fas fa-search"></button>
+      </form>
+
+      <!-- Contains the menu, search, profile, and theme buttons -->
+      <div class="icons">
+
+         <!-- Opens the sidebar navigation menu -->
+         <div id="menu-btn" class="fas fa-bars"></div>
+
+         <!-- Shows the responsive search form on smaller screens -->
+         <div id="search-btn" class="fas fa-search"></div>
+
+         <!-- Opens or closes the user profile menu -->
+         <div id="user-btn" class="fas fa-user"></div>
+
+         <!-- Switches the website between light and dark mode -->
+         <div id="toggle-btn" class="fas fa-sun"></div>
+      </div>
+
+      <!-- Displays a quick summary of the current user's profile -->
+      <div class="profile">
+
+         <!-- Shows the current user's profile picture -->
+         <img
+            src="images/pic-1.jpg"
+            class="image"
+            alt="User profile picture"
+         >
+
+         <!-- Displays the user's name and account role -->
+         <h3 class="name">shaikh anas</h3>
+         <p class="role">student</p>
+
+         <!-- Opens the complete user profile page -->
+         <a href="profile.html" class="btn">view profile</a>
+
+         <!-- Provides links for logging in or creating an account -->
+         <div class="flex-btn">
+            <a href="login.html" class="option-btn">login</a>
+            <a href="register.html" class="option-btn">register</a>
+         </div>
+      </div>
+
+   </section>
+
+</header>
+
+<!-- Creates the sidebar used to navigate between website pages -->
+<div class="side-bar">
+
+   <!-- Closes the sidebar when the X icon is selected -->
+   <div id="close-btn">
+      <i class="fas fa-times"></i>
+   </div>
+
+   <!-- Shows the user's profile information inside the sidebar -->
+   <div class="profile">
+      <img
+         src="images/pic-1.jpg"
+         class="image"
+         alt="User profile picture"
+      >
+
+      <h3 class="name">shaikh anas</h3>
+      <p class="role">student</p>
+
+      <!-- Opens the complete profile page -->
+      <a href="profile.html" class="btn">view profile</a>
+   </div>
+
+   <!-- Contains navigation links to the main website pages -->
+   <nav class="navbar">
+
+      <!-- Navigates to the website's home page -->
+      <a href="home.html">
+         <i class="fas fa-home"></i>
+         <span>home</span>
+      </a>
+
+      <!-- Navigates to the page describing the website -->
+      <a href="about.html">
+         <i class="fas fa-question"></i>
+         <span>about</span>
+      </a>
+
+      <!-- Navigates to the available courses page -->
+      <a href="courses.html">
+         <i class="fas fa-graduation-cap"></i>
+         <span>courses</span>
+      </a>
+
+      <!-- Navigates to the page containing teacher profiles -->
+      <a href="teachers.html">
+         <i class="fas fa-chalkboard-user"></i>
+         <span>teachers</span>
+      </a>
+
+      <!-- Navigates to the contact and support page -->
+      <a href="contact.html">
+         <i class="fas fa-headset"></i>
+         <span>contact us</span>
+      </a>
+
+   </nav>
+
+</div>
+
+<!-- Contains the form used to update the user's profile -->
+<section class="form-container">
+
+   <!-- Sends the updated profile information to the server -->
+   <!-- multipart/form-data is required because the form accepts an image file -->
+   <form action="" method="post" enctype="multipart/form-data">
+
+      <!-- Displays the purpose of the form -->
+      <h3>update profile</h3>
+
+      <!-- Allows the user to replace their current display name -->
+      <p>update name</p>
+      <input
+         type="text"
+         name="name"
+         placeholder="shaikh anas"
+         maxlength="50"
+         class="box"
+      >
+
+      <!-- Allows the user to replace their current email address -->
+      <p>update email</p>
+      <input
+         type="email"
+         name="email"
+         placeholder="shaikh@gmail.com"
+         maxlength="50"
+         class="box"
+      >
+
+      <!-- Requests the current password before changing account details -->
+      <p>previous password</p>
+      <input
+         type="password"
+         name="old_pass"
+         placeholder="enter your old password"
+         maxlength="20"
+         class="box"
+      >
+
+      <!-- Allows the user to enter a new account password -->
+      <p>new password</p>
+      <input
+         type="password"
+         name="new_pass"
+         placeholder="enter your new password"
+         maxlength="20"
+         class="box"
+      >
+
+      <!-- Confirms that the new password was entered correctly -->
+      <p>confirm password</p>
+      <input
+         type="password"
+         name="c_pass"
+         placeholder="confirm your new password"
+         maxlength="20"
+         class="box"
+      >
+
+      <!-- Allows the user to select a new profile image -->
+      <!-- accept="image/*" limits the file picker to image files -->
+      <p>update pic</p>
+      <input
+         type="file"
+         name="image"
+         accept="image/*"
+         class="box"
+      >
+
+      <!-- Submits all updated profile information -->
+      <input
+         type="submit"
+         value="update profile"
+         name="submit"
+         class="btn"
+      >
+   </form>
+
+</section>
+
+<!-- Displays copyright information at the bottom of the page -->
+<footer class="footer">
+   &copy; copyright @ 2022 by
+   <span>mr. web designer</span>
+   | all rights reserved!
+</footer>
+
+<!-- Loads JavaScript for the sidebar, profile menu, search, and theme controls -->
+<script src="js/script.js"></script>
+
+</body>
+</html>
