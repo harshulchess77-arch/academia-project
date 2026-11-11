@@ -37,65 +37,63 @@
 */
 
 #include "Academia_Staff.h"
+#include "../Database.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <winsqlite/winsqlite3.h>
 
-/* -------------------------------------------------------------------------
-   write_js_text
-   Copies one piece of text into the output file, adding a backslash before
-   any character that would otherwise break a JavaScript string.
+#ifndef _WIN32
+#include <sqlite3.h>
+#endif
 
-   Without this, a student called Ann "Annie" Lee would end the string
+/* without this, a student called Ann "Annie" Lee would end the string
    early and the browser would refuse to read the file.
-   ------------------------------------------------------------------------- */
+------------------------------------------------------------------------- */
 static void write_js_text(FILE *out, const unsigned char *text) {
     int i;
 
-    /* A database column can be empty. If so there is nothing to write. */
-    if (text == NULL) {
+    fprintf(out, "  %s: [\n", name);
+
+    if (sqlite3_prepare_v2(db, sql, -1, &row, NULL) != SQLITE_OK) {
+        fputs("  ],\n", out);
         return;
     }
+    sqlite3_bind_int(row, 1, staff_id);
 
-    for (i = 0; text[i] != '\0'; i++) {
-        if (text[i] == '\\' || text[i] == '"') {
-            /* A quote or a backslash needs a backslash in front of it. */
-            fputc('\\', out);
-            fputc(text[i], out);
-        } else if (text[i] == '\n') {
-            /* A new line becomes the two characters \ and n. */
-            fputs("\\n", out);
-        } else if (text[i] == '\t') {
-            /* A tab becomes the two characters \ and t. */
-            fputs("\\t", out);
-        } else if (text[i] == '\r') {
-            /* Carriage returns are dropped; they upset JavaScript. */
-        } else {
-            /* An ordinary character is copied as it is. */
-            fputc(text[i], out);
+    while (sqlite3_step(row) == SQLITE_ROW) {
+        int i;
+        fputs("    {", out);
+        for (i = 0; i < sqlite3_column_count(row); i++) {
+            const char *text = (const char *)sqlite3_column_text(row, i);
+
+            fprintf(out, "%s%s: ", i ? ", " : "", sqlite3_column_name(row, i));
+
+            if (sqlite3_column_type(row, i) == SQLITE_FLOAT) {
+                fprintf(out, "%.1f", sqlite3_column_double(row, i));
+            } else if (sqlite3_column_type(row, i) == SQLITE_INTEGER) {
+                fprintf(out, "%d", sqlite3_column_int(row, i));
+            } else {
+                fprintf(out, "\"%s\"", text == NULL ? "" : text);
+            }
         }
+        fputs(" },\n", out);
     }
+
+    sqlite3_finalize(row);
+    fputs("  ],\n", out);
 }
 
-/* -------------------------------------------------------------------------
-   write_js_quoted
-   Writes a piece of text surrounded by quotation marks, using the helper
-   above for the text itself.
-   ------------------------------------------------------------------------- */
-static void write_js_quoted(FILE *out, const unsigned char *text) {
-    fputc('"', out);
-    write_js_text(out, text);
-    fputc('"', out);
-}
+/* Called by the server. Returns 1 if the staff member was found. */
+int update_staff_frontend_state(int staff_user_id) {
+    sqlite3 *db = open_database();
+    sqlite3_stmt *row = NULL;
+    FILE *out = NULL;
+    int found = 0;
 
-/* -------------------------------------------------------------------------
-   write_staff_section
-   Writes the teacher's own details.
-   ------------------------------------------------------------------------- */
-static void write_staff_section(FILE *out, sqlite3 *db, int staff_id) {
-    sqlite3_stmt *statement = NULL;
+    if (!db) {
+        printf("[Staff] Cannot open the database.\n");
+        return 0;
+    }
 
     // Join the general user account with its staff-specific information.
     const char *sql =
@@ -105,10 +103,23 @@ static void write_staff_section(FILE *out, sqlite3 *db, int staff_id) {
         "WHERE user.id = ? AND user.role = 'staff';";
 
     fputs("  staff: {\n", out);
-
-    if (sqlite3_prepare_v2(db, sql, -1, &statement, NULL) != SQLITE_OK) {
-        fputs("  },\n", out);
-        return;
+    if (sqlite3_prepare_v2(db,
+            "SELECT user.username AS username, user.first_name AS firstName, "
+            "user.last_name AS lastName, staff.phone AS phone FROM user "
+            "INNER JOIN staff ON user.id = staff.id WHERE user.id = ?;",
+            -1, &row, NULL) == SQLITE_OK) {
+        sqlite3_bind_int(row, 1, staff_user_id);
+        if (sqlite3_step(row) == SQLITE_ROW) {
+            int i, n = sqlite3_column_count(row);
+            found = 1;
+            fprintf(out, "    userId: %d,\n", staff_user_id);
+            for (i = 0; i < n; i++) {
+                const char *text = (const char *)sqlite3_column_text(row, i);
+                fprintf(out, "    %s: \"%s\"%s\n", sqlite3_column_name(row, i),
+                        text == NULL ? "" : text, i == n - 1 ? "" : ",");
+            }
+        }
+        sqlite3_finalize(row);
     }
 
     // Use the signed-in staff member's ID in the query.
@@ -138,14 +149,12 @@ static void write_staff_section(FILE *out, sqlite3 *db, int staff_id) {
 
     sqlite3_finalize(statement);
     fputs("  },\n", out);
-}
 
-/* -------------------------------------------------------------------------
-   write_courses_section
-   Writes the courses this teacher runs.
-   ------------------------------------------------------------------------- */
-static void write_courses_section(FILE *out, sqlite3 *db, int staff_id) {
-    sqlite3_stmt *statement = NULL;
+    write_list(out, db, "courses",
+        "SELECT course.id AS courseId, course.course_name AS course, "
+        "(SELECT COUNT(*) FROM enrollment WHERE enrollment.course_id = course.id "
+        "AND enrollment.status = 1) AS students FROM course "
+        "WHERE course.staff_id = ? ORDER BY course.id;", staff_user_id);
 
     const char *sql =
         "SELECT id, course_name FROM course WHERE staff_id = ?;";
@@ -194,8 +203,9 @@ static void write_enrollments_section(
         "FROM enrollment "
         "INNER JOIN user ON enrollment.student_id = user.id "
         "INNER JOIN course ON enrollment.course_id = course.id "
-        "WHERE course.staff_id = ?;";
+        "WHERE course.staff_id = ? ORDER BY user.last_name;", staff_user_id);
 
+<<<<<<< HEAD
     fputs("  enrollments: [\n", out);
 
     if (sqlite3_prepare_v2(db, sql, -1, &statement, NULL) != SQLITE_OK) {
@@ -289,15 +299,25 @@ static void write_attendance_section(
         "       course.course_name, attendance.present "
         "FROM attendance "
         "INNER JOIN user ON attendance.student_id = user.id "
+=======
+    write_list(out, db, "attendance",
+        "SELECT course.course_name AS course, "
+        "user.first_name || ' ' || user.last_name AS student, "
+        "attendance.present AS present FROM attendance "
+>>>>>>> 4589ef827824c44d3008ef83abaa599c2ef01fe9
         "INNER JOIN course ON attendance.course_id = course.id "
-        "WHERE course.staff_id = ?;";
+        "INNER JOIN student ON attendance.student_id = student.id "
+        "INNER JOIN user ON student.id = user.id "
+        "WHERE course.staff_id = ? ORDER BY course.id;", staff_user_id);
 
-    fputs("  attendance: [\n", out);
+    write_list(out, db, "announcements",
+        "SELECT course.course_name AS course, announcement.title AS title, "
+        "announcement.message AS message, announcement.announcement_date AS date "
+        "FROM announcement INNER JOIN course ON announcement.course_id = course.id "
+        "WHERE course.staff_id = ? ORDER BY announcement.id DESC;", staff_user_id);
 
-    if (sqlite3_prepare_v2(db, sql, -1, &statement, NULL) != SQLITE_OK) {
-        fputs("  ],\n", out);
-        return;
-    }
+    fprintf(out, "  success: %s,\n  staffId: %d\n};\n",
+            found ? "true" : "false", staff_user_id);
 
     sqlite3_bind_int(statement, 1, staff_id);
 

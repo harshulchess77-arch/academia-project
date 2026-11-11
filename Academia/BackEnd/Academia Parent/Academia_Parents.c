@@ -1,10 +1,7 @@
 /*
-   ==========================================================================
-   ACADEMIA - PARENT MODULE  (Academia_Parents.c)
-   Writes parents_states.js, the file the Parent Portal reads
-   CS50 C Project
-   Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
-   ==========================================================================
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
+Academia - Parent Module
 
    WHAT THIS FILE DOES
    -------------------
@@ -34,58 +31,58 @@
 */
 
 #include "Academia_Parents.h"
+#include "../Database.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <winsqlite/winsqlite3.h>
 
-/* -------------------------------------------------------------------------
-   write_js_text
-   Copies one piece of text into the output file, adding a backslash before
-   any character that would otherwise break a JavaScript string.
+#ifndef _WIN32
+#include <sqlite3.h>
+#endif
 
-   Without this, a student called Ann "Annie" Lee would end the string
-   early and the browser would refuse to read the file.
-   ------------------------------------------------------------------------- */
+/* without this, a student called Ann "Annie" Lee would end the string
+early and the browser would refuse to read the file.
+------------------------------------------------------------------------- */
 static void write_js_text(FILE *out, const unsigned char *text) {
     int i;
 
-    /* A database column can be empty. If so there is nothing to write. */
-    if (text == NULL) {
+    fprintf(out, "  %s: [\n", name);
+
+    if (sqlite3_prepare_v2(db, sql, -1, &row, NULL) != SQLITE_OK) {
+        fputs("  ],\n", out);
         return;
     }
+    sqlite3_bind_int(row, 1, parent_id);
 
-    for (i = 0; text[i] != '\0'; i++) {
-        if (text[i] == '\\' || text[i] == '"') {
-            /* A quote or a backslash needs a backslash in front of it. */
-            fputc('\\', out);
-            fputc(text[i], out);
-        } else if (text[i] == '\n') {
-            /* A new line becomes the two characters \ and n. */
-            fputs("\\n", out);
-        } else if (text[i] == '\t') {
-            /* A tab becomes the two characters \ and t. */
-            fputs("\\t", out);
-        } else if (text[i] == '\r') {
-            /* Carriage returns are dropped; they upset JavaScript. */
-        } else {
-            /* An ordinary character is copied as it is. */
-            fputc(text[i], out);
+    while (sqlite3_step(row) == SQLITE_ROW) {
+        int i;
+        fputs("    {", out);
+        for (i = 0; i < sqlite3_column_count(row); i++) {
+            const char *text = (const char *)sqlite3_column_text(row, i);
+
+            fprintf(out, "%s%s: ", i ? ", " : "", sqlite3_column_name(row, i));
+
+            if (sqlite3_column_type(row, i) == SQLITE_FLOAT) {
+                fprintf(out, "%.1f", sqlite3_column_double(row, i));
+            } else if (sqlite3_column_type(row, i) == SQLITE_INTEGER) {
+                fprintf(out, "%d", sqlite3_column_int(row, i));
+            } else {
+                fprintf(out, "\"%s\"", text == NULL ? "" : text);
+            }
         }
+        fputs(" },\n", out);
     }
+
+    sqlite3_finalize(row);
+    fputs("  ],\n", out);
 }
 
-/* -------------------------------------------------------------------------
-   write_js_quoted
-   Writes a piece of text surrounded by quotation marks, using the helper
-   above for the text itself.
-   ------------------------------------------------------------------------- */
-static void write_js_quoted(FILE *out, const unsigned char *text) {
-    fputc('"', out);
-    write_js_text(out, text);
-    fputc('"', out);
-}
+/* Called by the server. Returns 1 if the parent was found. */
+int update_parent_frontend_state(int parent_user_id) {
+    sqlite3 *db = open_database();
+    sqlite3_stmt *row = NULL;
+    FILE *out = NULL;
+    int found = 0;
 
 /* -------------------------------------------------------------------------
    find_child_id
@@ -170,15 +167,12 @@ static void write_parent_section(FILE *out, sqlite3 *db, int parent_id) {
     // Release the query and close the parent object.
     sqlite3_finalize(statement);
     fputs("  },\n", out);
-}
 
-/* -------------------------------------------------------------------------
-   write_child_section
-   Writes the linked student's profile. child_id == 0 means the parent has no
-   student attached, in which case the section is written empty.
-   ------------------------------------------------------------------------- */
-static void write_child_section(FILE *out, sqlite3 *db, int child_id) {
-    sqlite3_stmt *statement = NULL;
+    write_list(out, db, "children",
+        "SELECT user.first_name || ' ' || user.last_name AS name, "
+        "user.username AS username, student.grade_level AS gradeLevel, "
+        "student.gpa AS gpa FROM student INNER JOIN user ON student.id = user.id "
+        "WHERE student.parent_id = ? ORDER BY user.id;", parent_user_id);
 
     // Join student with user because the name and school data use two tables.
     const char *sql =
@@ -242,7 +236,7 @@ static void write_grades_section(FILE *out, sqlite3 *db, int child_id) {
         "SELECT course.course_name, grade.score "
         "FROM grade "
         "INNER JOIN course ON grade.course_id = course.id "
-        "WHERE grade.student_id = ?;";
+        "WHERE student.parent_id = ? ORDER BY user.id, course.id;", parent_user_id);
 
     fputs("  grades: [\n", out);
 
@@ -282,14 +276,15 @@ static void write_attendance_section(FILE *out, sqlite3 *db, int child_id) {
         "SELECT course.course_name, attendance.present "
         "FROM attendance "
         "INNER JOIN course ON attendance.course_id = course.id "
-        "WHERE attendance.student_id = ?;";
+        "WHERE student.parent_id = ? ORDER BY user.id, course.id;", parent_user_id);
 
-    fputs("  attendance: [\n", out);
+    write_list(out, db, "announcements",
+        "SELECT announcement.title AS title, announcement.message AS message, "
+        "announcement.announcement_date AS date FROM announcement "
+        "ORDER BY announcement.id DESC;", 0);
 
-    if (child_id <= 0) {
-        fputs("  ],\n", out);
-        return;
-    }
+    fprintf(out, "  success: %s,\n  parentId: %d\n};\n",
+            found ? "true" : "false", parent_user_id);
 
     if (sqlite3_prepare_v2(db, sql, -1, &statement, NULL) != SQLITE_OK) {
         fputs("  ],\n", out);

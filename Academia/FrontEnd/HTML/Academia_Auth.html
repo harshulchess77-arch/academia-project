@@ -3,6 +3,15 @@ Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
 CS50 C Project
 Academia
 November 1, 2026
+
+DEMO MODE - for showing the portals before the C server is built.
+
+WARNING: the accounts below are written into this file, so anyone who opens
+this page can read them, and anyone who clicks the button gets into a portal.
+There is no password check that a real server does not have to do.
+
+Delete the "DEMO ACCOUNTS" block and the demo branch in the script once the
+C backend runs. Use the server version of this page for the real project.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -12,42 +21,46 @@ November 1, 2026
     <title>Academia - Secure Login</title>
     <link rel="stylesheet" href="../CSS/Academia.css">
     <link rel="stylesheet" href="Academia.css">
-    <!-- defer: the button calls goPortal(), which this file defines. -->
-    <script src="../JS/Academia.js" defer></script>
 </head>
 
 <body>
-    <!-- Left side of Auth Screen: Brand statement and slideshow -->
+    <!-- Left side: brand statement and slideshow -->
     <div class="left-side">
         <h1>Academia</h1>
         <h2>One System.<br>A Stronger School Community.</h2>
         <p>Students. Parents. Staff. All Connected.</p>
-        <img id="slide-pic" src="../Images/AuthPage1.png" onerror="this.src='../../Images/AuthPage1.png'; this.onerror=null;" width="380" alt="Academia Portal Preview">
+        <img id="slide-pic" src="../Images/AuthPage1.png"
+             onerror="this.src='../../Images/AuthPage1.png'; this.onerror=null;"
+             width="380" alt="Academia Portal Preview">
     </div>
 
-    <!-- Right side of Auth Screen: Clean Login Menu -->
+    <!-- Right side: login form -->
     <div class="right-side">
         <div class="box">
-            <h2>Sign In / Sign Up</h2>
+            <h2>Sign In</h2>
 
-            <p>Username:</p>
-            <input type="text" id="username" placeholder="e.g. student1, parent1, staff1" autocomplete="username">
+            <form id="login-form">
+                <p>Username:</p>
+                <input type="text" id="username" placeholder="e.g. student1, parent1, staff1" autocomplete="username">
 
-            <p>Password:</p>
-            <input type="password" id="password" placeholder="Default: password123" autocomplete="current-password">
+                <p>Password:</p>
+                <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
 
-            <p>Role:</p>
-            <select id="role">
-                <option value="student">Student Portal</option>
-                <option value="parent">Parent Portal</option>
-                <option value="staff">School Staff Portal</option>
-            </select>
+                <p>Role:</p>
+                <select id="role">
+                    <option value="">Choose your portal</option>
+                    <option value="student">Student Portal</option>
+                    <option value="parent">Parent Portal</option>
+                    <option value="staff">School Staff Portal</option>
+                </select>
 
-            <button class="btn" onclick="goPortal()" id="loginBtn">Login to Academia</button>
+                <button class="btn" type="submit" id="loginBtn">Login to Academia</button>
+            </form>
+
             <p id="err" style="color: #EF4444; margin-top: 1rem; text-align: center; font-weight: 500;"></p>
 
             <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 1.2rem; margin-top: 1.5rem; font-size: 1.25rem; color: #64748B;">
-                <strong style="color: #0B3D91;">Quick Demo Logins (Password: password123):</strong><br>
+                <strong style="color: #0B3D91;">Demo accounts (see Academia.sql for passwords):</strong><br>
                 • Student: <code>student1</code> (Alex Rivera)<br>
                 • Parent: <code>parent1</code> (Marcus Rivera)<br>
                 • Staff: <code>staff1</code> (Dr. Eleanor Vance)
@@ -57,7 +70,6 @@ November 1, 2026
         </div>
     </div>
 
-    <!-- Slideshow rotation -->
     <script>
         var pics = [
             "../Images/AuthPage1.png",
@@ -67,23 +79,82 @@ November 1, 2026
         ];
         var i = 0;
 
-        function changePic() {
+        setInterval(function () {
             i = (i + 1) % pics.length;
-            var el = document.getElementById("slide-pic");
-            if (el) {
-                el.src = pics[i];
-            }
-        }
-
-        setInterval(changePic, 4000);
-
-        // Allow Enter key to trigger login
-        document.addEventListener("keydown", function(e) {
-            if (e.key === "Enter") {
-                goPortal();
-            }
-        });
+            document.getElementById("slide-pic").src = pics[i];
+        }, 4000);
     </script>
 
+    <script>
+        var form = document.getElementById("login-form");
+        var usernameField = document.getElementById("username");
+        var passwordField = document.getElementById("password");
+        var roleField = document.getElementById("role");
+        var errEl = document.getElementById("err");
+        var button = document.getElementById("loginBtn");
+
+        /* ==========================================================
+           DEMO ACCOUNTS
+           These match the seeded rows in Academia.sql. They are here
+           only so the portals can be opened without the C server.
+           Delete this block when the backend is built.
+           ========================================================== */
+        var accounts = [
+            { username: "student1", password: "password123", role: "student", name: "Alex Rivera" },
+            { username: "parent1",  password: "password123", role: "parent",  name: "Marcus Rivera" },
+            { username: "staff1",   password: "password123", role: "staff",   name: "Dr. Eleanor Vance" }
+        ];
+        /* ===================== END DEMO ACCOUNTS ================== */
+
+        /* The server decides where each role goes. */
+        var portals = {
+            student: "Academia_Student.html",
+            parent: "Academia_Parents.html",
+            staff: "Academia_Staff.html"
+        };
+
+        form.onsubmit = function (event) {
+            event.preventDefault();
+
+            var username = usernameField.value.trim();
+            var password = passwordField.value;
+            var role = roleField.value;
+            var found = null;
+            var j;
+
+            errEl.innerText = "";
+
+            if (username === "" || password === "") {
+                errEl.innerText = "Please enter a username and a password.";
+                return;
+            }
+            if (role === "") {
+                errEl.innerText = "Please choose your portal.";
+                return;
+            }
+
+            /* Look for a demo account that matches all three fields. */
+            for (j = 0; j < accounts.length; j++) {
+                if (accounts[j].username === username &&
+                    accounts[j].password === password &&
+                    accounts[j].role === role) {
+                    found = accounts[j];
+                }
+            }
+
+            if (found === null) {
+                errEl.innerText = "Wrong username, password or role.";
+                passwordField.value = "";
+                return;
+            }
+
+            /* Remember who signed in, so the portal pages can show a name. */
+            sessionStorage.setItem("academia_token", "demo-" + found.username);
+            sessionStorage.setItem("academia_role", found.role);
+            sessionStorage.setItem("academia_name", found.name);
+
+            window.location.href = portals[found.role];
+        };
+    </script>
 </body>
 </html>
