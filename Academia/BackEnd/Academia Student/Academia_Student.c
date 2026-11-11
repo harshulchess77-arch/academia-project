@@ -1,9 +1,79 @@
 /*
-Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
-CS50 C Project
-Academia - Student Module
+================================================================================
+ Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+ CS50 C Project
+ Academia - Student Module  (Academia_Student.c)
+================================================================================
 
-Writes student_states.js, the file the Student Portal reads.
+ FULL DOCUMENTATION
+ ------------------
+
+ 1. PURPOSE
+    This module builds everything the Student Portal needs and hands it to the
+    browser. It does not talk HTTP itself. The server (Academia_Server.c) calls
+    update_student_frontend_state() after it has checked the login token.
+    The function reads SQLite and writes a JavaScript file,
+        Academia/FrontEnd/JS/student_states.js
+    which the server then sends back for GET /api/student-data.
+
+ 2. REQUEST FLOW
+      Browser (Academia.js, initStudent)
+        -> GET /api/student-data   with header  X-Auth-Token: <token>
+      Academia_Server.c
+        -> get_token()  reads the header
+        -> auth_check() looks the token up in the in-memory session table
+           (no token / unknown token -> 401, wrong role -> 403)
+        -> update_student_frontend_state(user_id)      <-- THIS FILE
+        -> send_file("Academia/FrontEnd/JS/student_states.js")
+      Browser
+        -> reads the response as text, evaluates it, gets `studentState`
+
+    SECURITY NOTE: user_id comes from the server-side session, never from the
+    URL or the body. A student therefore can only ever load their own data.
+
+ 3. DATABASE TABLES READ (see Academia.sql)
+      user        id, username, first_name, last_name
+      student     id (= user.id), grade_level, gpa, parent_id
+      enrollment  student_id, course_id, status          (1 = active)
+      course      id, course_name, staff_id
+      grade       student_id, course_id, score           (0..100)
+      attendance  student_id, course_id, present         (1 present, 0 absent)
+      assignment  course_id, assignment_name, due_date
+      announcement title, message, announcement_date
+
+ 4. OUTPUT FILE SHAPE (student_states.js)
+      // Written by the Academia C backend.
+      const studentState = {
+        student: { userId: 1, username: "student1", firstName: "Alex",
+                   lastName: "Rivera", gradeLevel: "11", gpa: "3.85" },
+        courses:       [ { course: "Complete HTML Tutorial", status: 1 }, ... ],
+        grades:        [ { course: "Complete HTML Tutorial", score: 97.0 }, ... ],
+        attendance:    [ { course: "Complete HTML Tutorial", present: 1 }, ... ],
+        assignments:   [ { course: "...", assignmentName: "...", dueDate: "..." } ],
+        announcements: [ { title: "...", message: "...", date: "..." } ],
+        success: true
+      };
+    `success` is false when no student row exists for the session's user id.
+
+ 5. FUNCTIONS
+      static void write_list(...)         shared "SELECT -> JS array" writer
+      int update_student_frontend_state() public entry point, called by server
+
+ 6. KNOWN LIMITS
+      - Strings are not escaped. A double quote or backslash in the database
+        text (an announcement, for example) would break the generated file.
+      - The output path is relative, so the server must be started from the
+        repository root.
+      - Announcements are not filtered per course: every student sees all.
+      - The output file is shared, so concurrent requests would overwrite each
+        other. The current server is single threaded, so this cannot happen yet.
+      - Passwords in the user table are plain text (see Academia_Auth.c).
+
+ 7. CHANGES FROM THE VERSION IN THE REPOSITORY
+      write_list() is now `static`. The Staff and Parent modules each define a
+      function with the same name; as non-static functions they collide at link
+      time. Nothing else in the logic was changed.
+================================================================================
 */
 
 #include "Academia_Student.h"
@@ -16,9 +86,33 @@ Writes student_states.js, the file the Student Portal reads.
 #include <sqlite3.h>
 #endif
 
-/* Runs one SELECT and writes it out as a JavaScript array.
-   Each column is written under the name given to it in the query. */
-void write_list(FILE *out, sqlite3 *db, const char *name, const char *sql, int student_id) {
+/*
+ write_list
+ ----------
+ Runs ONE SELECT and writes the result as a property holding a JS array.
+
+ Parameters
+   out         the already-open student_states.js
+   db          an open SQLite connection
+   name        the property name to write ("courses", "grades", ...)
+   sql         a SELECT with EXACTLY ONE `?` placeholder
+   student_id  the integer bound to that placeholder
+
+ How it works
+   1. Writes "  <name>: [".
+   2. Prepares the statement. If preparing fails, it closes the array and
+      returns, so the page receives an empty list instead of broken JavaScript.
+   3. Binds student_id with sqlite3_bind_int. Binding (instead of building the
+      SQL with sprintf) means the id can never inject SQL.
+   4. For every row it writes { column: value, ... }. The property names are the
+      `AS` aliases used in each query, so the SQL decides the JS field names.
+      Value type handling:
+         SQLITE_FLOAT   -> printed with one decimal ("%.1f")
+         SQLITE_INTEGER -> printed as an int ("%d")
+         anything else  -> printed as a quoted string ("" when NULL)
+   3. Finalizes the statement and writes "],".
+*/
+static void write_list(FILE *out, sqlite3 *db, const char *name, const char *sql, int student_id) {
     sqlite3_stmt *row = NULL;
 
     fprintf(out, "  %s: [\n", name);
@@ -52,7 +146,37 @@ void write_list(FILE *out, sqlite3 *db, const char *name, const char *sql, int s
     fputs("  ],\n", out);
 }
 
-/* Called by the server. Returns 1 if the student was found. */
+/*
+ update_student_frontend_state
+ -----------------------------
+ Called by the server for GET /api/student-data (role "student" only).
+
+ Parameter
+   student_user_id   the logged in user's id (user.id, which equals student.id)
+
+ Returns
+   1  the student row was found and the file was written
+   0  the database or the output file could not be opened, or no such student
+
+ Steps
+   1. Open the database (open_database from Database.h).
+   2. Open student_states.js for writing.
+   3. Write "const studentState = {".
+   4. "student" block: user JOIN student for this id. Every column is written as
+      a quoted string, plus userId as a number. Sets `found`.
+   5. Write the five lists with write_list:
+        courses       enrollment JOIN course        -> course, status
+        grades        grade JOIN course             -> course, score
+        attendance    attendance JOIN course        -> course, present
+        assignments   assignment JOIN course JOIN enrollment, ordered by due date
+                                                    -> course, assignmentName, dueDate
+        announcements every announcement, newest first
+                                                    -> title, message, date
+      (The announcements query has no placeholder-dependent filter; 0 is bound
+       only because write_list always binds one value.)
+   6. Write "success: true|false" and close the object.
+   7. Close the file and the database, log a line, return `found`.
+*/
 int update_student_frontend_state(int student_user_id) {
     sqlite3 *db = open_database();
     sqlite3_stmt *row = NULL;
@@ -73,6 +197,7 @@ int update_student_frontend_state(int student_user_id) {
 
     fputs("// Written by the Academia C backend.\nconst studentState = {\n", out);
 
+    /* ---- student profile ---- */
     fputs("  student: {\n", out);
     if (sqlite3_prepare_v2(db,
             "SELECT user.username AS username, user.first_name AS firstName, "
@@ -95,21 +220,25 @@ int update_student_frontend_state(int student_user_id) {
     }
     fputs("  },\n", out);
 
+    /* ---- enrolled courses ---- */
     write_list(out, db, "courses",
         "SELECT course.course_name AS course, enrollment.status AS status FROM enrollment "
         "INNER JOIN course ON enrollment.course_id = course.id "
         "WHERE enrollment.student_id = ? ORDER BY course.id;", student_user_id);
 
+    /* ---- grades ---- */
     write_list(out, db, "grades",
         "SELECT course.course_name AS course, grade.score AS score FROM grade "
         "INNER JOIN course ON grade.course_id = course.id "
         "WHERE grade.student_id = ? ORDER BY course.id;", student_user_id);
 
+    /* ---- attendance ---- */
     write_list(out, db, "attendance",
         "SELECT course.course_name AS course, attendance.present AS present FROM attendance "
         "INNER JOIN course ON attendance.course_id = course.id "
         "WHERE attendance.student_id = ? ORDER BY course.id;", student_user_id);
 
+    /* ---- assignments of the courses the student is enrolled in ---- */
     write_list(out, db, "assignments",
         "SELECT course.course_name AS course, assignment.assignment_name AS assignmentName, "
         "assignment.due_date AS dueDate FROM assignment "
@@ -117,6 +246,7 @@ int update_student_frontend_state(int student_user_id) {
         "INNER JOIN enrollment ON enrollment.course_id = course.id "
         "WHERE enrollment.student_id = ? ORDER BY assignment.due_date;", student_user_id);
 
+    /* ---- announcements (school wide) ---- */
     write_list(out, db, "announcements",
         "SELECT announcement.title AS title, announcement.message AS message, "
         "announcement.announcement_date AS date FROM announcement "

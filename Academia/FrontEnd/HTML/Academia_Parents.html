@@ -1,103 +1,264 @@
-﻿<!--
-   Academia Parent Portal
-   Created for CS50 / School Web Project
+﻿<!DOCTYPE html>
+<!--
+================================================================================
+ ACADEMIA - PARENT PORTAL  (Academia_Parents.html)
+================================================================================
+
+ WHAT THIS PAGE IS
+   The Parent Portal. A parent signs in on Academia_Auth.html with the role
+   "parent", the login code stores the session token, and the browser lands
+   here. This page then asks the C server for THIS parent's children and fills
+   itself in.
+
+ HOW A PARENT IS LINKED TO A CHILD
+   Through one column: student.parent_id points at parent.id. In the seed data
+   parent1 (id 3, Marcus Rivera) has student1 (Alex Rivera) as a child, and
+   student2 (Sophia Chen) has no parent at all. A parent can have several
+   children; a student has at most one parent. The C module uses that link in
+   every query, so a parent can never see another family's records.
+
+ THE FULL PATH A REQUEST TAKES
+   1. This page loads and runs the script at the bottom.
+   2. The script checks sessionStorage for "academiaToken". No token -> back to
+      the login page.
+   3. The script calls  GET /api/parent-data  with header X-Auth-Token.
+   4. The C server reads the header, checks the token with auth_check()
+      (401 if there is no valid token, 403 if the token's role is not "parent"),
+      then calls update_parent_frontend_state(user_id).
+   5. That C function opens Academia/FrontEnd/JS/parents_states.js and writes
+      "const parentState = {...}" into it, and the server sends the file back.
+   6. The response is JavaScript, not JSON, so the script reads it as TEXT and
+      evaluates it with new Function(...), then checks parentState.success.
+      Everything on the page is written from that object.
+
+ WHY THERE IS NO DATA IN THIS FILE
+   The old version had "Alex Rivera", student ID 10948 and three courses typed
+   into the HTML, plus a fixed announcement. All of it is gone. This file holds
+   no student data: only empty elements with ids, filled from the database.
+
+ ELEMENT MAP
+   welcome-name       "Welcome, <parent name>"        parentState.parent
+   children-table     student, username, grade, GPA   parentState.children
+   grades-table       student, course, score          parentState.grades
+   attendance-table   student, course, Present/Absent parentState.attendance
+   announcements      one card per announcement       parentState.announcements
+   page-error         hidden until something fails
+
+ A NOTE ON SEVERAL CHILDREN
+   Every grades and attendance row carries the child's name as its first column,
+   so a parent with more than one child can tell the rows apart. That name is
+   built inside the SQL query as  first_name || ' ' || last_name.
+
+ SHARED CODE
+   The functions live in ../JS/Academia.js and are shared with the Student and
+   Staff portals. A guarded inline copy is at the bottom of this page.
+================================================================================
 -->
-<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Academia - Parent Portal</title>
     <link rel="stylesheet" href="../CSS/Academia.css">
 </head>
-<body>
 
+<!-- data-portal tells the shared script to run initParent() on this page. -->
+<body data-portal="parent">
+
+    <!-- ================= HEADER BAR ================= -->
     <div class="header">
         <b>Academia Parent Portal</b>
         <div>
-            <span>Welcome, Parent</span> | 
-            <a href="Academia_Auth.html">Logout</a>
+            <!-- Filled by the script with "Welcome, Marcus Rivera". -->
+            <span id="welcome-name">Loading...</span> |
+            <a href="#" onclick="logout(); return false;">Logout</a>
         </div>
     </div>
 
+    <!-- ============ MAIN LAYOUT: SIDEBAR + CONTENT ============ -->
     <div class="main-layout">
+
         <div class="sidebar">
             <h3>Parent Menu</h3>
+            <!-- showParentTab() swaps the two content blocks, no reload. -->
             <a href="#" onclick="showParentTab('overview')">Student Overview</a>
             <a href="#" onclick="showParentTab('announcements')">Announcements</a>
-            <a href="Academia_Auth.html">Logout</a>
+            <a href="#" onclick="logout(); return false;">Logout</a>
         </div>
 
         <div class="container">
+
+            <!-- Error banner: filled and shown only when something fails. -->
+            <p id="page-error"
+               style="display:none; color:#b00020; font-weight:bold;"></p>
+
+            <!-- ---------- TAB 1: STUDENT OVERVIEW (visible on load) ---------- -->
             <div id="parent-overview" class="parent-tab-content">
-                <h2>Linked Student Profile: Alex Rivera</h2>
-                <p><b>Student ID:</b> 10948 | <b>Grade:</b> 11th Grade | <b>Cumulative GPA:</b> 3.85 / 4.00</p>
+
+                <h2>Linked Students</h2>
+                <!--
+                     One row per student whose parent_id equals this parent's id
+                     (parentState.children): name, username, grade level, GPA.
+                     With no linked student it says so instead of staying blank.
+                -->
+                <table border="1" width="100%" id="children-table"></table>
 
                 <br>
-                <h3>Student Grades (HTML, CSS, JavaScript)</h3>
-                <table border="1" width="100%">
-                    <tr>
-                        <th>Course Title</th>
-                        <th>Instructor</th>
-                        <th>Recorded Score</th>
-                    </tr>
-                    <tr>
-                        <td>Complete HTML Tutorial</td>
-                        <td>Cmdr. Schenck</td>
-                        <td>97.0%</td>
-                    </tr>
-                    <tr>
-                        <td>Complete CSS Tutorial</td>
-                        <td>Cmdr. Schenck</td>
-                        <td>96.5%</td>
-                    </tr>
-                    <tr>
-                        <td>Complete JavaScript Tutorial</td>
-                        <td>Cmdr. Schenck</td>
-                        <td>95.0%</td>
-                    </tr>
-                </table>
+                <h3>Student Grades</h3>
+                <!-- parentState.grades: student name, course, recorded score. -->
+                <table border="1" width="100%" id="grades-table"></table>
 
                 <br>
                 <h3>Attendance Record</h3>
-                <table border="1" width="100%">
-                    <tr>
-                        <th>Course Title</th>
-                        <th>Instructor</th>
-                        <th>Status</th>
-                    </tr>
-                    <tr>
-                        <td>Complete HTML Tutorial</td>
-                        <td>Cmdr. Schenck</td>
-                        <td>Present</td>
-                    </tr>
-                    <tr>
-                        <td>Complete CSS Tutorial</td>
-                        <td>Cmdr. Schenck</td>
-                        <td>Present</td>
-                    </tr>
-                    <tr>
-                        <td>Complete JavaScript Tutorial</td>
-                        <td>Cmdr. Schenck</td>
-                        <td>Present</td>
-                    </tr>
-                </table>
+                <!-- parentState.attendance: student name, course, Present/Absent. -->
+                <table border="1" width="100%" id="attendance-table"></table>
             </div>
 
-            <div id="parent-announcements" class="parent-tab-content" style="display: none;">
-                <h2>School & Course Announcements</h2>
+            <!-- ---------- TAB 2: ANNOUNCEMENTS (hidden on load) ---------- -->
+            <div id="parent-announcements" class="parent-tab-content" style="display:none;">
+                <h2>School &amp; Course Announcements</h2>
                 <br>
-                <div class="course-card">
-                    <h3>Midterm Web Project Deadline</h3>
-                    <p>Reminder to parents and students that the final capstone project components are due by next week.</p>
-                </div>
+                <!-- One card per announcement: title, message, date. -->
+                <div id="announcements"></div>
             </div>
+
         </div>
     </div>
 
-    <div class="footer">
-        <p>&copy; 2026 Academia Project</p>
-    </div>
+    <div class="footer"><p>&copy; 2026 Academia Project</p></div>
 
     <script src="../JS/Academia.js"></script>
+
+<!--
+================================================================================
+ OPTIONAL: THE SAME LOGIC INLINE. Runs only when ../JS/Academia.js did not load,
+ so the page can work as a single file.
+================================================================================
+-->
+<script>
+if (typeof loadState !== "function") {
+
+    var TOKEN_KEY = "academiaToken";
+
+    function esc(v) {
+        return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+    }
+    function $(id) { return document.getElementById(id); }
+    function setHtml(id, html) { var el = $(id); if (el) el.innerHTML = html; }
+    function setText(id, txt) { var el = $(id); if (el) el.innerText = txt; }
+
+    function showError(msg) {
+        var el = $("page-error");
+        if (!el) { alert(msg); return; }
+        el.style.display = "block";
+        el.innerText = msg;
+    }
+
+    function table(headers, rows, emptyText) {
+        var h = "<tr>" + headers.map(function (x) { return "<th>" + esc(x) + "</th>"; }).join("") + "</tr>";
+        if (!rows.length) {
+            return h + "<tr><td colspan='" + headers.length + "'>" + esc(emptyText) + "</td></tr>";
+        }
+        return h + rows.map(function (r) {
+            return "<tr>" + r.map(function (c) { return "<td>" + esc(c) + "</td>"; }).join("") + "</tr>";
+        }).join("");
+    }
+    function pct(score) { return Number(score).toFixed(1) + "%"; }
+    function presentText(p) { return p ? "Present" : "Absent"; }
+
+    function logout() {
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem("academiaUser");
+        window.location.href = "Academia_Auth.html";
+    }
+    function authHeaders(extra) {
+        var h = extra || {};
+        h["X-Auth-Token"] = sessionStorage.getItem(TOKEN_KEY) || "";
+        return h;
+    }
+
+    function loadState(path, varName) {
+        return fetch(path, { headers: authHeaders() }).then(function (res) {
+            if (res.status === 401) { logout(); throw new Error("Session expired. Please sign in again."); }
+            if (res.status === 403) { throw new Error("This account is not allowed to view that page."); }
+            if (!res.ok) { throw new Error("Server error (" + res.status + ")."); }
+            return res.text();
+        }).then(function (text) {
+            var state = new Function(text + "\nreturn " + varName + ";")();
+            if (!state || state.success !== true) { throw new Error("The database has no record for this account."); }
+            return state;
+        });
+    }
+
+    var ROLE_PAGE = { student: "Academia_Student.html", parent: "Academia_Parents.html", staff: "Academia_Staff.html" };
+
+    function goPortal() {
+        var u = $("username"), p = $("password"), r = $("role"), err = $("err");
+        if (!u || !p || !r) return;
+        if (err) err.innerText = "";
+        var username = u.value.trim(), password = p.value.trim(), role = r.value;
+        if (username === "" || password === "") {
+            if (err) err.innerText = "Please enter both username and password.";
+            return;
+        }
+        fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: username, password: password, role: role })
+        }).then(function (res) { return res.json(); }).then(function (data) {
+            if (!data.success) {
+                if (err) err.innerText = data.message || "Invalid login credentials.";
+                return;
+            }
+            sessionStorage.setItem(TOKEN_KEY, data.token);
+            sessionStorage.setItem("academiaUser", JSON.stringify(data.user));
+            window.location.href = ROLE_PAGE[data.user.role] || "Academia_Auth.html";
+        }).catch(function () {
+            if (err) err.innerText = "Cannot reach the Academia server. Start it and open http://localhost:3000.";
+        });
+    }
+
+    /* ---------- parent page logic ---------- */
+    function showParentTab(tabId) {
+        var o = $("parent-overview"), a = $("parent-announcements");
+        if (!o || !a) return;
+        o.style.display = tabId === "overview" ? "block" : "none";
+        a.style.display = tabId === "announcements" ? "block" : "none";
+    }
+
+    function initParent() {
+        loadState("/api/parent-data", "parentState").then(function (s) {
+            setText("welcome-name", "Welcome, " + s.parent.firstName + " " + s.parent.lastName);
+
+            setHtml("children-table", table(["Student", "Username", "Grade Level", "GPA"],
+                s.children.map(function (c) {
+                    return [c.name, c.username, c.gradeLevel, Number(c.gpa).toFixed(2)];
+                }),
+                "No student is linked to this account."));
+
+            setHtml("grades-table", table(["Student", "Course Title", "Recorded Score"],
+                s.grades.map(function (g) { return [g.student, g.course, pct(g.score)]; }),
+                "No grades recorded yet."));
+
+            setHtml("attendance-table", table(["Student", "Course Title", "Status"],
+                s.attendance.map(function (a) { return [a.student, a.course, presentText(a.present)]; }),
+                "No attendance recorded yet."));
+
+            setHtml("announcements", s.announcements.length ? s.announcements.map(function (a) {
+                return "<div class='course-card'><h3>" + esc(a.title) + "</h3><p>" + esc(a.message) +
+                       "</p><small>" + esc(a.date) + "</small></div><br>";
+            }).join("") : "<p>No announcements.</p>");
+        }).catch(function (e) { showError(e.message); });
+    }
+
+    window.addEventListener("load", function () {
+        var portal = document.body.getAttribute("data-portal");
+        if (portal !== "parent") return;
+        if (!sessionStorage.getItem(TOKEN_KEY)) { window.location.href = "Academia_Auth.html"; return; }
+        initParent();
+    });
+}
+</script>
 </body>
 </html>

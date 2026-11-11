@@ -1,339 +1,264 @@
 ﻿/*
-Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
-CS50 C Project
-Academia JavaScript Logic
-November 1, 2026
+Academia - live frontend client (no hardcoded data, no offline fallback)
+
+Browser -> C server (port 3000) -> SQLite database.
+Every value shown in the Student, Parent and Staff portals comes from:
+  GET /api/student-data | /api/staff-data | /api/parent-data   (header X-Auth-Token)
+Staff writes go to:
+  POST /api/staff/grade | /api/staff/attendance               (see BackEnd_Patch/)
+The data endpoints return JavaScript (const xState = {...};), not JSON, so
+they are read as text and evaluated.
 */
 
-// AUTHENTICATION & LOGIN LOGIC
-// We define the goPortal function to handle user sign-in verification and backend redirection
+var TOKEN_KEY = "academiaToken";
+var USER_KEY = "academiaUser";
+
+/* ---------- helpers ---------- */
+function esc(v) {
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+}
+function $(id) { return document.getElementById(id); }
+function setHtml(id, html) { var el = $(id); if (el) el.innerHTML = html; }
+function setText(id, txt) { var el = $(id); if (el) el.innerText = txt; }
+
+function showError(msg) {
+    var el = $("page-error");
+    if (!el) { alert(msg); return; }
+    el.style.display = "block";
+    el.innerText = msg;
+}
+
+function table(headers, rows, emptyText) {
+    var h = "<tr>" + headers.map(function (x) { return "<th>" + esc(x) + "</th>"; }).join("") + "</tr>";
+    if (!rows.length) {
+        return h + "<tr><td colspan='" + headers.length + "'>" + esc(emptyText) + "</td></tr>";
+    }
+    return h + rows.map(function (r) {
+        return "<tr>" + r.map(function (c) { return "<td>" + esc(c) + "</td>"; }).join("") + "</tr>";
+    }).join("");
+}
+function pct(score) { return Number(score).toFixed(1) + "%"; }
+function presentText(p) { return p ? "Present" : "Absent"; }
+
+/* ---------- session ---------- */
+function logout() {
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(USER_KEY);
+    window.location.href = "Academia_Auth.html";
+}
+function authHeaders(extra) {
+    var h = extra || {};
+    h["X-Auth-Token"] = sessionStorage.getItem(TOKEN_KEY) || "";
+    return h;
+}
+
+/* Reads one of the C-generated state files and returns the state object. */
+function loadState(path, varName) {
+    return fetch(path, { headers: authHeaders() }).then(function (res) {
+        if (res.status === 401) { logout(); throw new Error("Session expired. Please sign in again."); }
+        if (res.status === 403) { throw new Error("This account is not allowed to view that page."); }
+        if (!res.ok) { throw new Error("Server error (" + res.status + ")."); }
+        return res.text();
+    }).then(function (text) {
+        var state = new Function(text + "\nreturn " + varName + ";")();
+        if (!state || state.success !== true) { throw new Error("The database has no record for this account."); }
+        return state;
+    });
+}
+
+function postJson(path, body) {
+    return fetch(path, {
+        method: "POST",
+        headers: authHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify(body)
+    }).then(function (res) {
+        if (res.status === 401) { logout(); throw new Error("Session expired."); }
+        return res.json().catch(function () { return { success: false, message: "Server error (" + res.status + ")." }; });
+    });
+}
+
+/* ---------- login (Academia_Auth.html) ---------- */
+var ROLE_PAGE = { student: "Academia_Student.html", parent: "Academia_Parents.html", staff: "Academia_Staff.html" };
+
 function goPortal() {
-    /* We grab references to the input fields and error container from the DOM */
-    var usernameField = document.getElementById("username");
-    var passwordField = document.getElementById("password");
-    var roleField = document.getElementById("role");
-    var errEl = document.getElementById("err");
-    /* We check if any essential element is missing before proceeding */
-    if (!usernameField || !passwordField || !roleField) return;
-    /* We extract and trim the text values typed by the user */
-    var username = usernameField.value.trim();
-    var password = passwordField.value.trim();
-    var role = roleField.value;
-    /* We validate that neither username nor password fields are left blank */
+    var u = $("username"), p = $("password"), r = $("role"), err = $("err");
+    if (!u || !p || !r) return;
+    if (err) err.innerText = "";
+    var username = u.value.trim(), password = p.value.trim(), role = r.value;
     if (username === "" || password === "") {
-        if (errEl) errEl.innerText = "Please enter both username and password.";
+        if (err) err.innerText = "Please enter both username and password.";
         return;
     }
-    /* We use the fetch API to send a POST request to our C backend server endpoint '/api/login' */
-    fetch('/api/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            username: username,
-            password: password,
-            role: role
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        /* We check if the server returned a successful login flag */
-        if (data.success) {
-            /* We conditionally redirect the user to their respective portal page based on their role */
-            if (role === 'student') {
-                window.location.href = 'Academia_Student.html';
-            } else if (role === 'parent') {
-                window.location.href = 'Academia_Parents.html';
-            } else if (role === 'staff') {
-                window.location.href = 'Academia_Staff.html';
-            }
-        } else {
-            /* If login fails, we display the error message provided by the server */
-            if (errEl) errEl.innerText = data.message || "Invalid login credentials.";
+    fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username, password: password, role: role })
+    }).then(function (res) { return res.json(); }).then(function (data) {
+        if (!data.success) {
+            if (err) err.innerText = data.message || "Invalid login credentials.";
+            return;
         }
-    })
-    .catch(error => {
-        console.error('Backend connection notice:', error);
-        /* We provide a fallback redirection for offline testing or static preview environments */
-        if (role === 'student') {
-            window.location.href = 'Academia_Student.html';
-        } else if (role === 'parent') {
-            window.location.href = 'Academia_Parents.html';
-        } else if (role === 'staff') {
-            window.location.href = 'Academia_Staff.html';
-        }
+        sessionStorage.setItem(TOKEN_KEY, data.token);
+        sessionStorage.setItem(USER_KEY, JSON.stringify(data.user));
+        window.location.href = ROLE_PAGE[data.user.role] || "Academia_Auth.html";
+    }).catch(function () {
+        if (err) err.innerText = "Cannot reach the Academia server. Start it and open http://localhost:3000.";
     });
 }
 
-// STUDENT PORTAL FUNCTIONS
-// We define showPage to toggle between different views inside the student portal
+/* ---------- student portal ---------- */
 function showPage(pageId) {
-    var dash = document.getElementById("dashboard-page");
-    var courses = document.getElementById("courses-page");
-    if (!dash || !courses) return;
-    /* We display the dashboard view and hide the courses view when selected */
-    if (pageId === 'dashboard') {
-        dash.style.display = 'block';
-        courses.style.display = 'none';
-    /* We display the courses view, hide the dashboard, and reset the list view */
-    } else if (pageId === 'courses') {
-        dash.style.display = 'none';
-        courses.style.display = 'block';
-        backToList();
-    }
-}
-// We define openWorkspace to load specific course lecture modules and video players
-function openWorkspace(courseTitle) {
-    var listView = document.getElementById("course-list-view");
-    var workspaceView = document.getElementById("course-workspace-view");
-    var titleEl = document.getElementById("workspace-title");
-    
-    if (!listView || !workspaceView) return;
-    /* We hide the course list card layout and reveal the interactive workspace */
-    listView.style.display = "none";
-    workspaceView.style.display = "block";
-    if (titleEl) titleEl.innerText = courseTitle + " - Cmdr. Schenck";
-    var playlistDiv = document.getElementById("playlist-links");
-    var htmlContent = "";
-    var prefix = "post-1";
-    /* We assign custom thumbnail image prefixes depending on which course was selected */
-    if (courseTitle === "Complete CSS Tutorial") {
-        prefix = "post-2";
-    } else if (courseTitle === "Complete JavaScript Tutorial") {
-        prefix = "post-3";
-    }
-    /* We generate an array containing 6 lessons for the course playlist */
-    var lessons = [];
-    for (var i = 1; i <= 6; i++) {
-        lessons.push({
-            title: "Part 0" + i + " Lesson",
-            thumb: "../Images/" + prefix + "-" + i + ".png"
-        });
-    }
-    /* We loop through the lessons to build the clickable playlist HTML elements */
-    for (var j = 0; j < lessons.length; j++) {
-        var les = lessons[j];
-        htmlContent += '<div class="lesson-item" onclick="changeVideo(\'' + courseTitle + ' (' + les.title + ')\', \'' + les.thumb + '\', \'../Images/vid-1.mp4\')">';
-        htmlContent += '<img src="' + les.thumb + '" onerror="this.style.display=\'none\';">';
-        htmlContent += '<span>' + les.title + '</span></div>';
-    }
-    if (playlistDiv) playlistDiv.innerHTML = htmlContent;
-    var vid = document.getElementById("my-video");
-    var src = document.getElementById("video-source");
-    var vidTitle = document.getElementById("video-title");
-    
-    /* We reset the video player state with the first lesson's poster image */
-    if (vid && src) {
-        src.src = "";
-        vid.poster = lessons[0].thumb;
-        vid.load();
-    }
-    if (vidTitle) vidTitle.innerText = "Please select a lesson from the playlist";
-}
-// We define backToList to return the user from the video workspace back to the main course catalog
-function backToList() {
-    var listView = document.getElementById("course-list-view");
-    var workspaceView = document.getElementById("course-workspace-view");
-    if (listView && workspaceView) {
-        listView.style.display = "block";
-        workspaceView.style.display = "none";
-    }
-}
-// We define changeVideo to dynamically switch video sources and posters when a user clicks a playlist item
-function changeVideo(title, posterImg, videoFile) {
-    var vidTitle = document.getElementById("video-title");
-    var vid = document.getElementById("my-video");
-    var src = document.getElementById("video-source");
-    if (vidTitle) vidTitle.innerText = title;
-    if (vid && src) {
-        src.src = videoFile;
-        vid.poster = posterImg;
-        vid.load();
-        vid.play().catch(function() {});
-    }
-}
-/* We initialize a counter variable to track video likes */
-var likes = 44;
-// We define likeVideo to increment and update the like counter on screen
-function likeVideo() {
-    likes++;
-    var likesEl = document.getElementById("likes");
-    if (likesEl) likesEl.innerText = likes;
-}
-// We define addComment to let students post questions and feedback to the course discussion board
-function addComment() {
-    var box = document.getElementById("comment-box");
-    if (!box) return;
-    var txt = box.value;
-    /* We validate that the comment box is not empty before submitting */
-    if (txt === "") {
-        alert("Please write a comment first!");
-        return;
-    }
-    var section = document.getElementById("comments-section");
-    if (section) {
-        section.innerHTML += "<p><b>Alex Rivera:</b> " + txt + "</p>";
-    }
-    box.value = "";
+    var d = $("dashboard-page"), c = $("courses-page");
+    if (!d || !c) return;
+    d.style.display = pageId === "dashboard" ? "block" : "none";
+    c.style.display = pageId === "courses" ? "block" : "none";
 }
 
-// STAFF PORTAL FUNCTIONS
-// We define an array of grades to show on the page. The first few are sample
-// records so the roster is not empty when the page opens, and any grade saved
-// from the form is added to this same array
-var savedGrades = [
-    { student: "Alex Rivera",  course: "Complete HTML Tutorial",       score: "97.0" },
-    { student: "Alex Rivera",  course: "Complete CSS Tutorial",        score: "96.5" },
-    { student: "Alex Rivera",  course: "Complete JavaScript Tutorial", score: "95.0" },
-    { student: "Sophia Chen",  course: "Complete HTML Tutorial",       score: "98.0" },
-    { student: "Sophia Chen",  course: "Complete CSS Tutorial",        score: "94.0" },
-    { student: "Sophia Chen",  course: "Complete JavaScript Tutorial", score: "92.5" }
-];
-// We define an array of attendance records to show on the page. These first few
-// are sample records, and any attendance submitted is added to this same array
-var savedAttendance = [
-    { student: "Alex Rivera",  course: "Complete HTML Tutorial",       status: "Present" },
-    { student: "Alex Rivera",  course: "Complete CSS Tutorial",        status: "Present" },
-    { student: "Alex Rivera",  course: "Complete JavaScript Tutorial", status: "Absent"  },
-    { student: "Sophia Chen",  course: "Complete HTML Tutorial",       status: "Present" },
-    { student: "Sophia Chen",  course: "Complete CSS Tutorial",        status: "Present" }
-];
+function initStudent() {
+    loadState("/api/student-data", "studentState").then(function (s) {
+        var st = s.student, full = st.firstName + " " + st.lastName;
+        setText("welcome-name", "Welcome, " + full);
+        setText("student-name", full);
+        setText("student-id", st.userId);
+        setText("student-grade", st.gradeLevel);
+        setText("student-gpa", Number(st.gpa).toFixed(2) + " / 4.00");
 
-// We define showStaffTab to switch between different management tabs in the staff portal
-function showStaffTab(tabId) {
-    var tabs = ['management', 'directory', 'profile', 'courses', 'lectures'];
-    for (var i = 0; i < tabs.length; i++) {
-        var el = document.getElementById('staff-' + tabs[i]);
-        if (el) el.style.display = 'none';
-    }
-    var target = document.getElementById('staff-' + tabId);
-    if (target) target.style.display = 'block';
-    /* We redraw the tables whenever the class management tab is opened */
-    if (tabId === 'management') loadStaffRecords();
-}
-// We define loadStaffVideo to let teachers preview curriculum videos inside the faculty dashboard
-function loadStaffVideo(title, posterImg) {
-    var titleEl = document.getElementById("staff-video-title");
-    var vid = document.getElementById("staff-video");
-
-    if (titleEl) titleEl.innerText = title;
-    if (vid) {
-        vid.poster = posterImg;
-        vid.load();
-    }
-}
-// We define loadStaffRecords to draw the two tables from the arrays above
-function loadStaffRecords() {
-    /* We build the grade rows from the grades saved so far */
-    var grades = document.getElementById("grade-rows");
-    if (grades) {
-        var rows = "";
-        for (var i = 0; i < savedGrades.length; i++) {
-            rows += "<tr><td>" + savedGrades[i].student + "</td><td>" + savedGrades[i].course +
-                    "</td><td>" + savedGrades[i].score + "%</td></tr>";
-        }
-        if (rows === "") rows = "<tr><td colspan='3'>No grades recorded yet.</td></tr>";
-        grades.innerHTML = rows;
-    }
-
-    /* We build the attendance rows the same way */
-    var attendance = document.getElementById("attendance-rows");
-    if (attendance) {
-        var arows = "";
-        for (var j = 0; j < savedAttendance.length; j++) {
-            arows += "<tr><td>" + savedAttendance[j].student + "</td><td>" + savedAttendance[j].course +
-                     "</td><td>" + savedAttendance[j].status + "</td></tr>";
-        }
-        if (arows === "") arows = "<tr><td colspan='3'>No attendance recorded yet.</td></tr>";
-        attendance.innerHTML = arows;
-    }
-}
-// We define saveGrade to add the entered grade to the roster table on the page
-function saveGrade() {
-    var student = document.getElementById("grade-student");
-    var course = document.getElementById("grade-course");
-    var score = document.getElementById("grade-score");
-    var known;
-
-    if (!student || !course || !score) return;
-    /* We validate that a score has been typed before saving */
-    if (score.value === "") {
-        alert("Please enter a valid grade score!");
-        return;
-    }
-
-    known = false;
-
-    /* We replace the score if this student already has a grade for this course */
-    for (var i = 0; i < savedGrades.length; i++) {
-        if (savedGrades[i].student === student.value && savedGrades[i].course === course.value) {
-            savedGrades[i].score = score.value;
-            known = true;
-        }
-    }
-
-    if (!known) {
-        savedGrades.push({
-            student: student.value,
-            course: course.value,
-            score: score.value
-        });
-    }
-
-    alert("Successfully recorded " + score.value + "% for " + student.value + " in " + course.value + "!");
-    score.value = "";
-    /* We redraw the table so the new grade appears straight away */
-    loadStaffRecords();
-}
-// We define saveAttendance to add the chosen status to the attendance table on the page
-function saveAttendance() {
-    var student = document.getElementById("attendance-student");
-    var course = document.getElementById("attendance-course");
-    var status = document.getElementById("attendance-status");
-
-    if (!student || !course || !status) return;
-
-    savedAttendance.push({
-        student: student.value,
-        course: course.value,
-        status: status.value
-    });
-
-    alert("Successfully recorded attendance as '" + status.value + "' for " + student.value + " in " + course.value + "!");
-    /* We redraw the table so the new record appears straight away */
-    loadStaffRecords();
-}
-// We define postStaffComment to let instructors publish announcements or feedback responses
-function postStaffComment() {
-    var box = document.getElementById("staff-comment-box");
-    if (!box) return;
-    var txt = box.value;
-    if (txt === "") {
-        alert("Please write a message first!");
-        return;
-    }
-    var section = document.getElementById("staff-comments-section");
-    if (section) {
-        section.innerHTML += "<p><b>Cmdr. Schenck (Instructor):</b> " + txt + "</p>";
-    }
-    box.value = "";
+        setHtml("grades-table", table(["Course Title", "Grade"],
+            s.grades.map(function (g) { return [g.course, pct(g.score)]; }), "No grades recorded yet."));
+        setHtml("attendance-table", table(["Course Title", "Status"],
+            s.attendance.map(function (a) { return [a.course, presentText(a.present)]; }), "No attendance recorded yet."));
+        setHtml("assignments-table", table(["Course", "Assignment", "Due"],
+            s.assignments.map(function (a) { return [a.course, a.assignmentName, a.dueDate]; }), "No assignments."));
+        setHtml("courses-list", s.courses.length ? s.courses.map(function (c) {
+            return "<div class='course-card'><h3>" + esc(c.course) + "</h3><p>" +
+                   (c.status ? "Enrolled" : "Not active") + "</p></div><br>";
+        }).join("") : "<p>You are not enrolled in any course.</p>");
+        setHtml("announcements", s.announcements.length ? s.announcements.map(function (a) {
+            return "<div class='course-card'><h3>" + esc(a.title) + "</h3><p>" + esc(a.message) +
+                   "</p><small>" + esc(a.date) + "</small></div><br>";
+        }).join("") : "<p>No announcements.</p>");
+    }).catch(function (e) { showError(e.message); });
 }
 
-// PARENT PORTAL FUNCTIONS
-// We define showParentTab to toggle between viewing child grade summaries and school announcements
+/* ---------- parent portal ---------- */
 function showParentTab(tabId) {
-    var overview = document.getElementById("parent-overview");
-    var announcements = document.getElementById("parent-announcements");
-    if (!overview || !announcements) return;
-    if (tabId === 'overview') {
-        overview.style.display = 'block';
-        announcements.style.display = 'none';
-    } else if (tabId === 'announcements') {
-        overview.style.display = 'none';
-        announcements.style.display = 'block';
-    }
+    var o = $("parent-overview"), a = $("parent-announcements");
+    if (!o || !a) return;
+    o.style.display = tabId === "overview" ? "block" : "none";
+    a.style.display = tabId === "announcements" ? "block" : "none";
 }
 
-// We draw the staff tables as soon as the page opens
-window.addEventListener('load', loadStaffRecords);
+function initParent() {
+    loadState("/api/parent-data", "parentState").then(function (s) {
+        setText("welcome-name", "Welcome, " + s.parent.firstName + " " + s.parent.lastName);
+        setHtml("children-table", table(["Student", "Username", "Grade Level", "GPA"],
+            s.children.map(function (c) { return [c.name, c.username, c.gradeLevel, Number(c.gpa).toFixed(2)]; }),
+            "No student is linked to this account."));
+        setHtml("grades-table", table(["Student", "Course Title", "Recorded Score"],
+            s.grades.map(function (g) { return [g.student, g.course, pct(g.score)]; }), "No grades recorded yet."));
+        setHtml("attendance-table", table(["Student", "Course Title", "Status"],
+            s.attendance.map(function (a) { return [a.student, a.course, presentText(a.present)]; }), "No attendance recorded yet."));
+        setHtml("announcements", s.announcements.length ? s.announcements.map(function (a) {
+            return "<div class='course-card'><h3>" + esc(a.title) + "</h3><p>" + esc(a.message) +
+                   "</p><small>" + esc(a.date) + "</small></div><br>";
+        }).join("") : "<p>No announcements.</p>");
+    }).catch(function (e) { showError(e.message); });
+}
+
+/* ---------- staff portal ---------- */
+var staffState = null;   // last data loaded from the server (declared in staff_states.js as a const inside loadState, so no clash)
+
+function showStaffTab(tabId) {
+    ["management", "profile", "courses"].forEach(function (t) {
+        var el = $("staff-" + t);
+        if (el) el.style.display = t === tabId ? "block" : "none";
+    });
+}
+
+function option(value, label) { return "<option value='" + esc(value) + "'>" + esc(label) + "</option>"; }
+
+function renderStaff(s) {
+    staffState = s;
+    var me = s.staff, full = me.firstName + " " + me.lastName;
+    setText("staff-name", "Welcome, " + full);
+    setText("staff-fullname", full);
+    setText("staff-username", me.username);
+    setText("staff-phone", me.phone);
+    setText("staff-course-count", s.courses.length);
+
+    setHtml("courses-table", table(["Course", "Active Students"],
+        s.courses.map(function (c) { return [c.course, c.students]; }), "You are not assigned to any course."));
+
+    /* unique students from the roster */
+    var seen = {}, studentOpts = "";
+    s.students.forEach(function (x) {
+        if (!seen[x.studentId]) { seen[x.studentId] = 1; studentOpts += option(x.studentId, x.name); }
+    });
+    setText("staff-student-count", Object.keys(seen).length);
+    var courseOpts = s.courses.map(function (c) { return option(c.courseId, c.course); }).join("");
+    ["grade-student", "attendance-student"].forEach(function (id) { setHtml(id, studentOpts); });
+    ["grade-course", "attendance-course"].forEach(function (id) { setHtml(id, courseOpts); });
+
+    setHtml("grade-rows", s.students.length ? s.students.map(function (x) {
+        return "<tr><td>" + esc(x.name) + "</td><td>" + esc(x.course) + "</td><td>" +
+               (x.score === "" || x.score == null ? "-" : esc(pct(x.score))) + "</td></tr>";
+    }).join("") : "<tr><td colspan='3'>No students enrolled in your courses.</td></tr>");
+
+    setHtml("attendance-rows", s.attendance.length ? s.attendance.map(function (a) {
+        return "<tr><td>" + esc(a.student) + "</td><td>" + esc(a.course) + "</td><td>" +
+               presentText(a.present) + "</td></tr>";
+    }).join("") : "<tr><td colspan='3'>No attendance recorded yet.</td></tr>");
+
+    setHtml("announcements", s.announcements.length ? s.announcements.map(function (a) {
+        return "<div class='course-card'><h3>" + esc(a.title) + "</h3><p><b>" + esc(a.course) + ":</b> " +
+               esc(a.message) + "</p><small>" + esc(a.date) + "</small></div><br>";
+    }).join("") : "<p>No announcements for your courses.</p>");
+}
+
+function refreshStaff() {
+    return loadState("/api/staff-data", "staffState").then(renderStaff);
+}
+
+function initStaff() {
+    refreshStaff().catch(function (e) { showError(e.message); });
+}
+
+function saveGrade() {
+    var score = $("grade-score").value;
+    if (score === "" || isNaN(Number(score)) || Number(score) < 0 || Number(score) > 100) {
+        showError("Enter a score between 0 and 100.");
+        return;
+    }
+    postJson("/api/staff/grade", {
+        studentId: $("grade-student").value,
+        courseId: $("grade-course").value,
+        score: String(score)
+    }).then(function (res) {
+        if (!res.success) throw new Error(res.message || "The server rejected the grade.");
+        $("grade-score").value = "";
+        return refreshStaff();
+    }).catch(function (e) { showError(e.message); });
+}
+
+function saveAttendance() {
+    postJson("/api/staff/attendance", {
+        studentId: $("attendance-student").value,
+        courseId: $("attendance-course").value,
+        present: $("attendance-status").value
+    }).then(function (res) {
+        if (!res.success) throw new Error(res.message || "The server rejected the attendance.");
+        return refreshStaff();
+    }).catch(function (e) { showError(e.message); });
+}
+
+/* ---------- start ---------- */
+window.addEventListener("load", function () {
+    var portal = document.body.getAttribute("data-portal");
+    if (!portal) return;                       // login / landing pages
+    if (!sessionStorage.getItem(TOKEN_KEY)) { window.location.href = "Academia_Auth.html"; return; }
+    if (portal === "student") initStudent();
+    else if (portal === "parent") initParent();
+    else if (portal === "staff") initStaff();
+});
