@@ -1,84 +1,10 @@
 ﻿<!DOCTYPE html>
 <!--
-================================================================================
- ACADEMIA - STAFF / FACULTY PORTAL  (Academia_Staff.html)
-================================================================================
-
- WHAT THIS PAGE IS
-   The Faculty Portal. It has two jobs:
-     READ   show this teacher's courses, students, grades, attendance and
-            announcements.
-     WRITE  let the teacher save a grade and record attendance.
-   Both halves go through the C server to SQLite. Nothing is kept in the
-   browser: after every save the page re-reads from the server, so what you see
-   is what is actually in the database.
-
- WHAT WAS REMOVED FROM THE OLD PAGE
-   The old version carried fake data and features with no database behind them:
-   the hardcoded "Dr. Eleanor Vance" text, the fixed student and course option
-   lists, two hardcoded grade arrays, a fake email, office, office hours,
-   qualifications and "12 years teaching", the Faculty Directory tab, the Video
-   Lecture Viewer tab and the instructor comment box. All gone. This file has
-   no teacher or student data in it at all.
-
- THE READ PATH
-   1. Page loads, script checks sessionStorage for "academiaToken".
-      No token -> Academia_Auth.html.
-   2. GET /api/staff-data with header X-Auth-Token.
-   3. Server: get_token() -> auth_check() (401 no/unknown token, 403 wrong role)
-      -> update_staff_frontend_state(user_id).
-   4. That C function writes Academia/FrontEnd/JS/staff_states.js and the server
-      sends it back. The answer is JAVASCRIPT, not JSON, so the script reads it
-      as text, evaluates it and uses `staffState`.
-
- THE WRITE PATH  (this needs the server route to exist, see the warning below)
-   1. The teacher picks a student, a course and a score, then presses Save Grade.
-   2. The script validates the score locally (a number from 0 to 100).
-   3. POST /api/staff/grade with header X-Auth-Token and a JSON body:
-         { "studentId": "1", "courseId": "1", "score": "96.5" }
-      Every field is sent as a STRING, because the C helper get_value() only
-      reads string values out of the JSON body. Attendance posts "present"
-      as "1" or "0" instead of "score".
-   4. The server checks the token, requires the role "staff", then calls
-      staff_save_grade() or staff_save_attendance() in Academia_Staff.c.
-      Those functions refuse the write unless the teacher owns the course and
-      the student is actively enrolled in it. A grade save also recalculates
-      the student's GPA as AVG(score) / 25 over all their grades.
-   5. The server answers {"success":true} or a failure message with status 400.
-   6. On success the script calls refreshStaff(), which repeats the READ path,
-      so the tables show the database and not a local guess.
-
-  IMPORTANT - THE SERVER ROUTE
-    The repository's Academia_Server.c has NO /api/staff/grade or
-    /api/staff/attendance route. Until you paste the route block from
-    Academia_Staff.c into handle_client_request(), the two buttons will report
-    "Server error (404)". The read half works without any change.
-
- ELEMENT MAP
-   staff-name              "Welcome, <teacher>"     staffState.staff
-   grade-student           dropdown of the roster   staffState.students (unique)
-   grade-course            dropdown of courses     staffState.courses
-   grade-score             number input, 0 to 100
-   grade-rows              roster with current grade ("-" when none)
-   attendance-student      dropdown of the roster
-   attendance-course       dropdown of courses
-   attendance-status       Present / Absent  (values "1" and "0")
-   attendance-rows         attendance records
-   announcements           cards for the teacher's courses
-   courses-table           course + active student count
-   staff-fullname, staff-username, staff-phone, staff-course-count,
-   staff-student-count     profile, all from the database
-   page-error              hidden until something fails
-
- WHY THE DROPDOWNS ARE IDS, NOT NAMES
-   The <option value="..."> of the student selectors is the student's database
-   id, and of the course selectors the course id. That is what the save
-   endpoints expect. The visible label is the human name.
-
- SHARED CODE
-   The shared functions sit in ../JS/Academia.js; a guarded inline copy is at
-   the bottom of this page so it works as one file.
-================================================================================
+Academia - Staff portal
+Shows the teacher's courses, students, grades, attendance and announcements
+from GET /api/staff-data, and lets the teacher save grades and attendance. The
+page reloads from the server after each save, so it always matches the
+database. No token sends the visitor back to Academia_Auth.html.
 -->
 <html lang="en">
 <head>

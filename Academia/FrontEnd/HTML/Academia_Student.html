@@ -1,62 +1,10 @@
 ﻿<!DOCTYPE html>
 <!--
-================================================================================
- ACADEMIA - STUDENT PORTAL  (Academia_Student.html)
-================================================================================
-
- WHAT THIS PAGE IS
-   The Student Portal. After a student signs in on Academia_Auth.html, the login
-   code stores the session token in sessionStorage and sends the browser here.
-   This page then asks the C server for THIS student's data and fills itself in.
-
- THE FULL PATH A REQUEST TAKES
-   1. This page loads and runs the script at the bottom of <body>.
-   2. The script checks sessionStorage for "academiaToken".
-      No token -> the visitor is sent back to Academia_Auth.html.
-   3. The script calls  GET /api/student-data  with the header
-        X-Auth-Token: <token>
-      (fetch() defaults to GET, so the call passes no method.)
-   4. The C server (Academia_Server.c):
-        - reads the header with get_token()
-        - looks the token up with auth_check()
-            unknown/empty token -> answers 401
-            token belongs to another role -> answers 403
-        - calls update_student_frontend_state(user_id)
-        - sends back  Academia/FrontEnd/JS/student_states.js
-   5. IMPORTANT: the answer is not JSON. It is a JavaScript file that starts
-      with "const studentState = {" and ends with "};". So step 3 reads it as
-      TEXT, not as JSON, and then evaluates it with new Function(...).
-   6. The script checks studentState.success. If it is true, every table, name
-      and number on this page is written from that object. If it is false, the
-      server found no student row, and an error banner is shown.
-
- WHY THERE IS NO DATA IN THIS FILE
-   The old version of this page had "Alex Rivera", student ID 10948, three
-   hardcoded courses and three hardcoded grades typed straight into the HTML.
-   All of that is gone. This file now contains no student data at all: only
-   empty elements with an id, which the script fills from the database. If you
-   open this file directly from disk it will show the error banner, because
-   there is no server to ask.
-
- ELEMENT MAP (what the script fills, and with what)
-   welcome-name      "Welcome, <first name> <last name>"   studentState.student
-   student-name      <first name> <last name>              studentState.student
-   student-id        user id from the database             studentState.student
-   student-grade     grade level                           studentState.student
-   student-gpa       GPA out of 4.00                       studentState.student
-   grades-table      course + score      from studentState.grades
-   attendance-table  course + Present/Absent   from studentState.attendance
-   assignments-table course + assignment + due date  from studentState.assignments
-   courses-list      one card per enrolled course    from studentState.courses
-   announcements     one card per announcement      from studentState.announcements
-   page-error        hidden until something fails
-
- SHARED CODE
-   The functions used here (loadState, initStudent, showPage, esc, table, ...)
-   live in ../JS/Academia.js, so the same file serves the Parent and Staff
-   portals too. If you prefer one single file, copy those functions into the
-   <script> block at the bottom of this page instead of loading the file.
-================================================================================
+Academia - Student portal
+After login the token is kept in sessionStorage ("academiaToken"). This page
+sends it to GET /api/student-data, reads the reply (a JS file defining
+studentState) and fills in the grades, GPA, attendance, assignments and news.
+No token sends the visitor back to Academia_Auth.html.
 -->
 <html>
 <head>

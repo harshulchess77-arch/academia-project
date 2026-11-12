@@ -1,79 +1,15 @@
 /*
-================================================================================
- Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
- CS50 C Project
- Academia - Parent Module  (Academia_Parents.c)
-================================================================================
+Harshul Gupta, Lawrence Mao, Seungho Kim, Dmitrii Buianov
+CS50 C Project
+Academia - Parent module
 
- FULL DOCUMENTATION
- ------------------
+Builds the data for the parent dashboard. After the server checks the login
+token, it calls update_parent_frontend_state(), which reads SQLite and writes
+parents_states.js. A parent is linked to a child through student.parent_id,
+and every query uses that link, so families only see their own records.
 
- 1. PURPOSE
-    Builds everything the Parent Portal needs. The server calls
-    update_parent_frontend_state() after checking the login token. The function
-    reads SQLite and writes
-        Academia/FrontEnd/JS/parents_states.js
-    which the server sends back for GET /api/parent-data.
-
- 2. REQUEST FLOW
-      Browser (Academia.js, initParent)
-        -> GET /api/parent-data   with header  X-Auth-Token: <token>
-      Academia_Server.c
-        -> get_token(), auth_check()   (no token -> 401, wrong role -> 403)
-        -> update_parent_frontend_state(user_id)        <-- THIS FILE
-        -> send_file("Academia/FrontEnd/JS/parents_states.js")
-      Browser
-        -> evaluates the text and gets `parentState`
-
-    SECURITY NOTE: the parent id comes from the session. A parent only sees
-    students whose student.parent_id equals that id, so one parent can never
-    read another family's grades.
-
- 3. HOW A PARENT IS LINKED TO A CHILD
-    student.parent_id -> parent.id. One parent can have many children; each
-    student has at most one linked parent. In the seed data parent1 (id 3) is
-    linked to student1 (Alex Rivera); student2 (Sophia Chen) has no parent.
-
- 4. DATABASE TABLES READ (see Academia.sql)
-      user        id, username, first_name, last_name
-      parent      id (= user.id), phone
-      student     id, parent_id, grade_level, gpa
-      course      id, course_name
-      grade       student_id, course_id, score
-      attendance  student_id, course_id, present        (1 present, 0 absent)
-      announcement title, message, announcement_date
-
- 5. OUTPUT FILE SHAPE (parents_states.js)
-      const parentState = {
-        parent: { userId: 3, username: "parent1", firstName: "Marcus",
-                  lastName: "Rivera", phone: "(555) 234-5678" },
-        children:   [ { name: "Alex Rivera", username: "student1",
-                        gradeLevel: 11, gpa: 3.9 } ],
-        grades:     [ { student: "Alex Rivera", course: "...", score: 97.0 } ],
-        attendance: [ { student: "Alex Rivera", course: "...", present: 1 } ],
-        announcements: [ { title: "...", message: "...", date: "..." } ],
-        success: true,
-        parentId: 3
-      };
-
- 6. FUNCTIONS
-      static void write_list(...)          shared "SELECT -> JS array" writer
-      int update_parent_frontend_state()   public entry point, called by server
-
- 7. KNOWN LIMITS
-      - gpa is a REAL column, so write_list prints it with ONE decimal
-        (3.85 becomes 3.9). Change "%.1f" to "%.2f" in write_list, or select
-        the gpa as text, if you want two decimals.
-      - Strings are not escaped (a double quote in the data breaks the file).
-      - Relative output path: start the server from the repository root.
-      - Announcements are school wide, not filtered to the children's courses.
-      - Shared output file; safe only while the server is single threaded.
-      - Plain text passwords (see Academia_Auth.c).
-
- 8. CHANGES FROM THE VERSION IN THE REPOSITORY
-      write_list() is now `static` so it no longer collides with the functions
-      of the same name in the Student and Staff modules. Logic is unchanged.
-================================================================================
+Known limits: gpa prints with one decimal, text is not escaped in the output
+file, and announcements are school-wide.
 */
 
 #include "Academia_Parents.h"
@@ -253,4 +189,3 @@ int update_parent_frontend_state(int parent_user_id) {
     close_database(db);
     printf("[Parent] parents_states.js written for parent %d\n", parent_user_id);
     return found;
-}

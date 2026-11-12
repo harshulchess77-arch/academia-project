@@ -1,58 +1,9 @@
 ﻿<!DOCTYPE html>
 <!--
-================================================================================
- ACADEMIA - PARENT PORTAL  (Academia_Parents.html)
-================================================================================
-
- WHAT THIS PAGE IS
-   The Parent Portal. A parent signs in on Academia_Auth.html with the role
-   "parent", the login code stores the session token, and the browser lands
-   here. This page then asks the C server for THIS parent's children and fills
-   itself in.
-
- HOW A PARENT IS LINKED TO A CHILD
-   Through one column: student.parent_id points at parent.id. In the seed data
-   parent1 (id 3, Marcus Rivera) has student1 (Alex Rivera) as a child, and
-   student2 (Sophia Chen) has no parent at all. A parent can have several
-   children; a student has at most one parent. The C module uses that link in
-   every query, so a parent can never see another family's records.
-
- THE FULL PATH A REQUEST TAKES
-   1. This page loads and runs the script at the bottom.
-   2. The script checks sessionStorage for "academiaToken". No token -> back to
-      the login page.
-   3. The script calls  GET /api/parent-data  with header X-Auth-Token.
-   4. The C server reads the header, checks the token with auth_check()
-      (401 if there is no valid token, 403 if the token's role is not "parent"),
-      then calls update_parent_frontend_state(user_id).
-   5. That C function opens Academia/FrontEnd/JS/parents_states.js and writes
-      "const parentState = {...}" into it, and the server sends the file back.
-   6. The response is JavaScript, not JSON, so the script reads it as TEXT and
-      evaluates it with new Function(...), then checks parentState.success.
-      Everything on the page is written from that object.
-
- WHY THERE IS NO DATA IN THIS FILE
-   The old version had "Alex Rivera", student ID 10948 and three courses typed
-   into the HTML, plus a fixed announcement. All of it is gone. This file holds
-   no student data: only empty elements with ids, filled from the database.
-
- ELEMENT MAP
-   welcome-name       "Welcome, <parent name>"        parentState.parent
-   children-table     student, username, grade, GPA   parentState.children
-   grades-table       student, course, score          parentState.grades
-   attendance-table   student, course, Present/Absent parentState.attendance
-   announcements      one card per announcement       parentState.announcements
-   page-error         hidden until something fails
-
- A NOTE ON SEVERAL CHILDREN
-   Every grades and attendance row carries the child's name as its first column,
-   so a parent with more than one child can tell the rows apart. That name is
-   built inside the SQL query as  first_name || ' ' || last_name.
-
- SHARED CODE
-   The functions live in ../JS/Academia.js and are shared with the Student and
-   Staff portals. A guarded inline copy is at the bottom of this page.
-================================================================================
+Academia - Parent portal
+Same flow as the student page, but it calls GET /api/parent-data and shows the
+children linked to this parent (student.parent_id). No token sends the visitor
+back to Academia_Auth.html.
 -->
 <html>
 <head>

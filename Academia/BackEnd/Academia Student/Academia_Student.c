@@ -1,79 +1,15 @@
 /*
-================================================================================
- Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
- CS50 C Project
- Academia - Student Module  (Academia_Student.c)
-================================================================================
+Harshul Gupta, Lawrence Mao, Seungho Kim, Dmitrii Buianov
+CS50 C Project
+Academia - Student module
 
- FULL DOCUMENTATION
- ------------------
+Builds the data for the student dashboard. After the server checks the login
+token, it calls update_student_frontend_state(), which reads SQLite and writes
+student_states.js (profile, courses, grades, attendance, assignments, news).
+The student id comes from the session, so a student only sees their own data.
 
- 1. PURPOSE
-    This module builds everything the Student Portal needs and hands it to the
-    browser. It does not talk HTTP itself. The server (Academia_Server.c) calls
-    update_student_frontend_state() after it has checked the login token.
-    The function reads SQLite and writes a JavaScript file,
-        Academia/FrontEnd/JS/student_states.js
-    which the server then sends back for GET /api/student-data.
-
- 2. REQUEST FLOW
-      Browser (Academia.js, initStudent)
-        -> GET /api/student-data   with header  X-Auth-Token: <token>
-      Academia_Server.c
-        -> get_token()  reads the header
-        -> auth_check() looks the token up in the in-memory session table
-           (no token / unknown token -> 401, wrong role -> 403)
-        -> update_student_frontend_state(user_id)      <-- THIS FILE
-        -> send_file("Academia/FrontEnd/JS/student_states.js")
-      Browser
-        -> reads the response as text, evaluates it, gets `studentState`
-
-    SECURITY NOTE: user_id comes from the server-side session, never from the
-    URL or the body. A student therefore can only ever load their own data.
-
- 3. DATABASE TABLES READ (see Academia.sql)
-      user        id, username, first_name, last_name
-      student     id (= user.id), grade_level, gpa, parent_id
-      enrollment  student_id, course_id, status          (1 = active)
-      course      id, course_name, staff_id
-      grade       student_id, course_id, score           (0..100)
-      attendance  student_id, course_id, present         (1 present, 0 absent)
-      assignment  course_id, assignment_name, due_date
-      announcement title, message, announcement_date
-
- 4. OUTPUT FILE SHAPE (student_states.js)
-      // Written by the Academia C backend.
-      const studentState = {
-        student: { userId: 1, username: "student1", firstName: "Alex",
-                   lastName: "Rivera", gradeLevel: "11", gpa: "3.85" },
-        courses:       [ { course: "Complete HTML Tutorial", status: 1 }, ... ],
-        grades:        [ { course: "Complete HTML Tutorial", score: 97.0 }, ... ],
-        attendance:    [ { course: "Complete HTML Tutorial", present: 1 }, ... ],
-        assignments:   [ { course: "...", assignmentName: "...", dueDate: "..." } ],
-        announcements: [ { title: "...", message: "...", date: "..." } ],
-        success: true
-      };
-    `success` is false when no student row exists for the session's user id.
-
- 5. FUNCTIONS
-      static void write_list(...)         shared "SELECT -> JS array" writer
-      int update_student_frontend_state() public entry point, called by server
-
- 6. KNOWN LIMITS
-      - Strings are not escaped. A double quote or backslash in the database
-        text (an announcement, for example) would break the generated file.
-      - The output path is relative, so the server must be started from the
-        repository root.
-      - Announcements are not filtered per course: every student sees all.
-      - The output file is shared, so concurrent requests would overwrite each
-        other. The current server is single threaded, so this cannot happen yet.
-      - Passwords in the user table are plain text (see Academia_Auth.c).
-
- 7. CHANGES FROM THE VERSION IN THE REPOSITORY
-      write_list() is now `static`. The Staff and Parent modules each define a
-      function with the same name; as non-static functions they collide at link
-      time. Nothing else in the logic was changed.
-================================================================================
+Known limits: text is not escaped in the output file, announcements are
+school-wide, and the output path is relative to the project root.
 */
 
 #include "Academia_Student.h"
