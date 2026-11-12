@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
-<!--
-Harshul Gupta, Dmitrii Buianov, Lawrence Mao, Seungho Kim
-November 12, 2026
+﻿<!--
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
 Academia
-CS50 3rd period
+November 1, 2026
 -->
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -12,25 +12,25 @@ CS50 3rd period
     <link rel="stylesheet" href="../CSS/Academia.css">
 </head>
 
-<!-- data-portal tells the shared script to run initParent() on this page. -->
+<!-- data-portal tells the shared script to run initParent() on this page -->
 <body data-portal="parent">
 
-    <!-- ================= HEADER BAR ================= -->
+    <!-- HEADER BAR -->
     <div class="header">
         <b>Academia Parent Portal</b>
         <div>
-            <!-- Filled by the script with "Welcome, Marcus Rivera". -->
+            <!-- Filled by the script with "Welcome, Marcus Rivera" -->
             <span id="welcome-name">Loading...</span> |
             <a href="#" onclick="logout(); return false;">Logout</a>
         </div>
     </div>
 
-    <!-- ============ MAIN LAYOUT: SIDEBAR + CONTENT ============ -->
+    <!-- MAIN LAYOUT: SIDEBAR + CONTENT -->
     <div class="main-layout">
 
         <div class="sidebar">
             <h3>Parent Menu</h3>
-            <!-- showParentTab() swaps the two content blocks, no reload. -->
+            <!-- showParentTab() swaps the two content blocks, no reload -->
             <a href="#" onclick="showParentTab('overview')">Student Overview</a>
             <a href="#" onclick="showParentTab('announcements')">Announcements</a>
             <a href="#" onclick="logout(); return false;">Logout</a>
@@ -38,37 +38,33 @@ CS50 3rd period
 
         <div class="container">
 
-            <!-- Error banner: filled and shown only when something fails. -->
+            <!-- Error banner: filled and shown only when something fails -->
             <p id="page-error"
                style="display:none; color:#b00020; font-weight:bold;"></p>
 
-            <!-- ---------- TAB 1: STUDENT OVERVIEW (visible on load) ---------- -->
+            <!-- TAB 1: STUDENT OVERVIEW (visible on load) -->
             <div id="parent-overview" class="parent-tab-content">
 
                 <h2>Linked Students</h2>
-                <!--
-                     One row per student whose parent_id equals this parent's id
-                     (parentState.children): name, username, grade level, GPA.
-                     With no linked student it says so instead of staying blank.
-                -->
+                <!-- One row per student whose parent_id equals this parent's id (parentState -->
                 <table border="1" width="100%" id="children-table"></table>
 
                 <br>
                 <h3>Student Grades</h3>
-                <!-- parentState.grades: student name, course, recorded score. -->
+                <!-- parentState.grades: student name, course, recorded score -->
                 <table border="1" width="100%" id="grades-table"></table>
 
                 <br>
                 <h3>Attendance Record</h3>
-                <!-- parentState.attendance: student name, course, Present/Absent. -->
+                <!-- parentState.attendance: student name, course, Present/Absent -->
                 <table border="1" width="100%" id="attendance-table"></table>
             </div>
 
-            <!-- ---------- TAB 2: ANNOUNCEMENTS (hidden on load) ---------- -->
+            <!-- TAB 2: ANNOUNCEMENTS (hidden on load) -->
             <div id="parent-announcements" class="parent-tab-content" style="display:none;">
                 <h2>School &amp; Course Announcements</h2>
                 <br>
-                <!-- One card per announcement: title, message, date. -->
+                <!-- One card per announcement: title, message, date -->
                 <div id="announcements"></div>
             </div>
 
@@ -79,12 +75,7 @@ CS50 3rd period
 
     <script src="../JS/Academia.js"></script>
 
-<!--
-================================================================================
- OPTIONAL: THE SAME LOGIC INLINE. Runs only when ../JS/Academia.js did not load,
- so the page can work as a single file.
-================================================================================
--->
+<!-- OPTIONAL: THE SAME LOGIC INLINE. Runs only when ../JS/Academia -->
 <script>
 if (typeof loadState !== "function") {
 

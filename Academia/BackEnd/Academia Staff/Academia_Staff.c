@@ -1,8 +1,8 @@
 /*
-Harshul Gupta, Dmitrii Buianov, Lawrence Mao, Seungho Kim
-November 12, 2026
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
 Academia
-CS50 3rd period
+November 1, 2026
 */
 
 #include "Academia_Staff.h"
@@ -16,46 +16,27 @@ CS50 3rd period
 #endif
 
 <<<<<<< HEAD
-/*
- write_list
- ----------
- Runs ONE SELECT and writes the rows as a property holding a JS array.
-
- Parameters
-   out       the already-open staff_states.js
-   db        an open SQLite connection
-   name      property name to write ("courses", "students", ...)
-   sql       a SELECT with EXACTLY ONE `?` placeholder
-   staff_id  the integer bound to that placeholder
-
- How it works
-   1. Writes "  <name>: [".
-   2. If the statement cannot be prepared, closes the array and returns (empty
-      list instead of broken JavaScript).
-   3. Binds staff_id with sqlite3_bind_int (no SQL injection possible).
-   4. For each row writes { alias: value, ... }; the SQL `AS` names become the
-      JS property names. FLOAT -> "%.1f", INTEGER -> "%d", else quoted string
-      ("" for NULL).
-   5. Finalizes and writes "],".
-*/
+/* write_list runs one query and writes the rows as a JS array */
 static void write_list(FILE *out, sqlite3 *db, const char *name, const char *sql, int staff_id) {
     sqlite3_stmt *row = NULL;
 =======
-/* without this, a student called Ann "Annie" Lee would end the string
-   early and the browser would refuse to read the file.
-------------------------------------------------------------------------- */
+/* escapes quotes so a name like Ann "Annie" Lee cannot break the file */
 static void write_js_text(FILE *out, const unsigned char *text) {
     int i;
 >>>>>>> 343e1edff3a9b596c6861bf939d4762787ad76f4
 
+    /* start the array */
     fprintf(out, "  %s: [\n", name);
 
+    /* if the query will not prepare, close the array so the page still parses */
     if (sqlite3_prepare_v2(db, sql, -1, &row, NULL) != SQLITE_OK) {
         fputs("  ],\n", out);
         return;
     }
+    /* bind the id so the query can never be injected */
     sqlite3_bind_int(row, 1, staff_id);
 
+    /* one line of JavaScript per row */
     while (sqlite3_step(row) == SQLITE_ROW) {
         int i;
         fputs("    {", out);
@@ -64,6 +45,7 @@ static void write_js_text(FILE *out, const unsigned char *text) {
 
             fprintf(out, "%s%s: ", i ? ", " : "", sqlite3_column_name(row, i));
 
+            /* numbers go in as numbers, everything else as a quoted string */
             if (sqlite3_column_type(row, i) == SQLITE_FLOAT) {
                 fprintf(out, "%.1f", sqlite3_column_double(row, i));
             } else if (sqlite3_column_type(row, i) == SQLITE_INTEGER) {
@@ -79,39 +61,11 @@ static void write_js_text(FILE *out, const unsigned char *text) {
     fputs("  ],\n", out);
 }
 
-/*
- update_staff_frontend_state
- ---------------------------
- Called by the server for GET /api/staff-data (role "staff" only).
-
- Parameter
-   staff_user_id   the logged in user's id (user.id, which equals staff.id)
-
- Returns
-   1  staff member found and file written
-   0  database/file could not be opened, or no such staff member
-
- Steps
-   1. Open the database.
-   2. Open staff_states.js for writing.
-   3. Write "const staffState = {".
-   4. "staff" block: user JOIN staff for this id. Sets `found`.
-   5. Lists, ALL scoped by course.staff_id = ? (a teacher only sees their own):
-        courses       course + sub-select counting active enrollments
-                      -> courseId, course, students
-        students      enrollment JOIN student JOIN user JOIN course, with a
-                      sub-select for the current grade, ordered by last name
-                      -> studentId, name, username, course, score
-        attendance    attendance JOIN course JOIN student JOIN user
-                      -> course, student, present
-        announcements announcement JOIN course, newest first
-                      -> course, title, message, date
-   6. Write "success" and "staffId", close the object.
-   7. Close the file and database, log a line, return `found`.
-*/
+/* update_staff_frontend_state builds staff_states.js for the faculty portal */
 int update_staff_frontend_state(int staff_user_id) {
     sqlite3 *db = open_database();
     sqlite3_stmt *row = NULL;
+    /* found stays 0 until the staff row is seen */
     FILE *out = NULL;
     int found = 0;
 
@@ -127,7 +81,8 @@ int update_staff_frontend_state(int staff_user_id) {
         "INNER JOIN staff ON user.id = staff.id "
         "WHERE user.id = ? AND user.role = 'staff';";
 
-    /* ---- staff profile ---- */
+    /* staff profile */
+    /* profile block, written column by column */
     fputs("  staff: {\n", out);
     if (sqlite3_prepare_v2(db,
             "SELECT user.username AS username, user.first_name AS firstName, "
@@ -176,7 +131,8 @@ int update_staff_frontend_state(int staff_user_id) {
     sqlite3_finalize(statement);
     fputs("  },\n", out);
 
-    /* ---- the teacher's courses, with active student counts ---- */
+    /* the teacher's courses, with active student counts */
+    /* only the courses this teacher runs */
     write_list(out, db, "courses",
         "SELECT course.id AS courseId, course.course_name AS course, "
         "(SELECT COUNT(*) FROM enrollment WHERE enrollment.course_id = course.id "
@@ -184,7 +140,8 @@ int update_staff_frontend_state(int staff_user_id) {
         "WHERE course.staff_id = ? ORDER BY course.id;", staff_user_id);
 
 <<<<<<< HEAD
-    /* ---- roster with the current grade ---- */
+    /* roster with the current grade */
+    /* roster of those courses, with the current grade */
     write_list(out, db, "students",
         "SELECT user.id AS studentId, user.first_name || ' ' || user.last_name AS name, "
         "user.username AS username, course.course_name AS course, "
@@ -195,7 +152,7 @@ int update_staff_frontend_state(int staff_user_id) {
         "INNER JOIN course ON enrollment.course_id = course.id "
         "WHERE course.staff_id = ? ORDER BY user.last_name;", staff_user_id);
 
-    /* ---- attendance for the teacher's courses ---- */
+    /* attendance for the teacher's courses */
 =======
     const char *sql =
         "SELECT id, course_name FROM course WHERE staff_id = ?;";
@@ -224,10 +181,7 @@ int update_staff_frontend_state(int staff_user_id) {
     fputs("  ],\n", out);
 }
 
-/* -------------------------------------------------------------------------
-   write_enrollments_section
-   Writes one row per student on each of this teacher's courses.
-   ------------------------------------------------------------------------- */
+/* write_enrollments_section Writes one row per student on each of this teacher's courses */
 static void write_enrollments_section(
     FILE *out,
     sqlite3 *db,
@@ -235,8 +189,7 @@ static void write_enrollments_section(
 ) {
     sqlite3_stmt *statement = NULL;
 
-    /* The two pipe symbols join two text columns into one full name, so the
-       C code receives "Alex Rivera" instead of two separate words. */
+    /* The two pipe symbols join two text columns into one full name, so the C code receives */
     const char *sql =
         "SELECT DISTINCT user.id, "
         "       user.first_name || ' ' || user.last_name, "
@@ -277,11 +230,7 @@ static void write_enrollments_section(
     fputs("  ],\n", out);
 }
 
-/* -------------------------------------------------------------------------
-   write_grades_section
-   Writes every grade recorded in this teacher's courses, so the grades table
-   on the staff page shows the whole class.
-   ------------------------------------------------------------------------- */
+/* write_grades_section Writes every grade recorded in this teacher's courses, so the gr */
 static void write_grades_section(FILE *out, sqlite3 *db, int staff_id) {
     sqlite3_stmt *statement = NULL;
 
@@ -322,10 +271,7 @@ static void write_grades_section(FILE *out, sqlite3 *db, int staff_id) {
     fputs("  ],\n", out);
 }
 
-/* -------------------------------------------------------------------------
-   write_attendance_section
-   Writes every attendance record for this teacher's courses.
-   ------------------------------------------------------------------------- */
+/* write_attendance_section Writes every attendance record for this teacher's courses */
 static void write_attendance_section(
     FILE *out,
     sqlite3 *db,
@@ -342,6 +288,7 @@ static void write_attendance_section(
         "INNER JOIN user ON attendance.student_id = user.id "
 =======
 >>>>>>> 343e1edff3a9b596c6861bf939d4762787ad76f4
+    /* attendance for the same courses */
     write_list(out, db, "attendance",
         "SELECT course.course_name AS course, "
         "user.first_name || ' ' || user.last_name AS student, "
@@ -352,7 +299,7 @@ static void write_attendance_section(
         "INNER JOIN user ON student.id = user.id "
         "WHERE course.staff_id = ? ORDER BY course.id;", staff_user_id);
 
-    /* ---- announcements for the teacher's courses ---- */
+    /* announcements for the teacher's courses */
     write_list(out, db, "announcements",
         "SELECT course.course_name AS course, announcement.title AS title, "
         "announcement.message AS message, announcement.announcement_date AS date "
@@ -374,7 +321,7 @@ static void write_attendance_section(
         fputs(", course: ", out);
         write_js_quoted(out, sqlite3_column_text(statement, 2));
 
-        /* The JavaScript expects a number here: 1 for present, 0 for absent. */
+        /* The JavaScript expects a number here: 1 for present, 0 for absent */
         fputs(", present: ", out);
         fprintf(out, "%d", sqlite3_column_int(statement, 3));
 
@@ -385,10 +332,7 @@ static void write_attendance_section(
     fputs("  ],\n", out);
 }
 
-/* -------------------------------------------------------------------------
-   write_announcements_section
-   Writes the announcements, newest first.
-   ------------------------------------------------------------------------- */
+/* write_announcements_section Writes the announcements, newest first */
 static void write_announcements_section(FILE *out, sqlite3 *db) {
     sqlite3_stmt *statement = NULL;
 
@@ -442,16 +386,12 @@ static void write_announcements_section(FILE *out, sqlite3 *db) {
     fputs("  ],\n", out);
 }
 
-/* -------------------------------------------------------------------------
-   update_staff_frontend_state
-   The function the server calls. It opens the database and the output file,
-   writes every section and then closes both.
-   ------------------------------------------------------------------------- */
+/* update_staff_frontend_state is the function the server calls */
 void update_staff_frontend_state(int staff_user_id) {
     sqlite3 *db = NULL;
     FILE *out = NULL;
 
-    /* Step 1: open the database. */
+    /* Step 1: open the database */
     if (sqlite3_open("academia.db", &db) != SQLITE_OK) {
         printf("[Staff Module] Cannot open academia.db\n");
 
@@ -462,7 +402,7 @@ void update_staff_frontend_state(int staff_user_id) {
         return;
     }
 
-    /* Step 2: open the file the portal reads. */
+    /* Step 2: open the file the portal reads */
     out = fopen("FrontEnd/JS/staff_states.js", "w");
 
     // Try the backend path if the first output path is unavailable.
@@ -498,10 +438,11 @@ void update_staff_frontend_state(int staff_user_id) {
     write_attendance_section(out, db, staff_user_id);
     write_announcements_section(out, db);
 
+    /* the portal checks this flag */
     fputs("  success: true\n", out);
     fputs("};\n", out);
 
-    /* Step 3: close both. */
+    /* Step 3: close both */
     fclose(out);
     sqlite3_close(db);
 
@@ -511,15 +452,11 @@ void update_staff_frontend_state(int staff_user_id) {
     );
 }
 
-/* ========================= WRITE HALF (new) ============================== */
+/* WRITE HALF (new) */
 
-/*
- staff_owns_course
- -----------------
- Guard. Returns 1 only if course.staff_id equals this teacher, so one teacher
- cannot change another teacher's class. Returns 0 on any error.
-*/
+/* returns 1 only if this teacher owns the course */
 static int staff_owns_course(sqlite3 *db, int staff_id, int course_id) {
+    /* no write is allowed unless this is true */
     sqlite3_stmt *s = NULL;
     int ok = 0;
     if (sqlite3_prepare_v2(db, "SELECT 1 FROM course WHERE id = ? AND staff_id = ?;",
@@ -531,13 +468,9 @@ static int staff_owns_course(sqlite3 *db, int staff_id, int course_id) {
     return ok;
 }
 
-/*
- student_enrolled
- ----------------
- Guard. Returns 1 only if the student has an ACTIVE (status 1) enrollment in
- the course, so grades cannot be written for students who are not in the class.
-*/
+/* returns 1 only if the student is actively enrolled in the course */
 static int student_enrolled(sqlite3 *db, int student_id, int course_id) {
+    /* guards the grade and attendance saves below */
     sqlite3_stmt *s = NULL;
     int ok = 0;
     if (sqlite3_prepare_v2(db,
@@ -550,24 +483,9 @@ static int student_enrolled(sqlite3 *db, int student_id, int course_id) {
     return ok;
 }
 
-/*
- staff_save_grade
- ----------------
- Saves one grade and refreshes the student's GPA.
-
- Parameters: staff_id (from the session), student_id, course_id, score (0..100)
- Returns:    1 saved, 0 rejected or failed
-
- Steps
-   1. Reject if score is outside 0..100, the teacher does not own the course, or
-      the student is not enrolled.
-   2. UPDATE the existing grade row; if sqlite3_changes() is 0 there was none,
-      so INSERT a new row.
-   3. On success set student.gpa = AVG(score) / 25.0 over all of that student's
-      grades (an average of 100 gives 4.0).
-   4. Close the database.
-*/
+/* saves one grade and refreshes the student's GPA */
 int staff_save_grade(int staff_id, int student_id, int course_id, double score) {
+    /* update the row if there is one */
     sqlite3 *db = open_database();
     sqlite3_stmt *s = NULL;
     int ok = 0;
@@ -614,20 +532,9 @@ int staff_save_grade(int staff_id, int student_id, int course_id, double score) 
     return ok;
 }
 
-/*
- staff_save_attendance
- ---------------------
- Saves present/absent for one student in one course.
-
- Parameters: staff_id (from the session), student_id, course_id,
-             present (non-zero = present, 0 = absent)
- Returns:    1 saved, 0 rejected or failed
-
- Same two guards as staff_save_grade. Then UPDATE the existing row, or INSERT
- when none exists. There is no date column, so only the latest value per
- student and course is kept.
-*/
+/* saves present or absent for one student in one course */
 int staff_save_attendance(int staff_id, int student_id, int course_id, int present) {
+    /* attendance has no date column, so each save replaces the last */
     sqlite3 *db = open_database();
     sqlite3_stmt *s = NULL;
     int ok = 0;

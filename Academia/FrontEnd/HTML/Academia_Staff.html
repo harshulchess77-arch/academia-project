@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
-<!--
-Harshul Gupta, Dmitrii Buianov, Lawrence Mao, Seungho Kim
-November 12, 2026
+﻿<!--
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
 Academia
-CS50 3rd period
+November 1, 2026
 -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,25 +12,25 @@ CS50 3rd period
     <link rel="stylesheet" href="../CSS/Academia.css">
 </head>
 
-<!-- data-portal tells the shared script to run initStaff() on this page. -->
+<!-- data-portal tells the shared script to run initStaff() on this page -->
 <body data-portal="staff">
 
-    <!-- ================= HEADER BAR ================= -->
+    <!-- HEADER BAR -->
     <div class="header">
         <b>Academia Staff Portal</b>
         <div>
-            <!-- Filled from staffState.staff, never from the HTML. -->
+            <!-- Filled from staffState.staff, never from the HTML -->
             <span id="staff-name">Loading...</span> |
             <a href="#" onclick="logout(); return false;">Logout</a>
         </div>
     </div>
 
-    <!-- ============ MAIN LAYOUT: SIDEBAR + CONTENT ============ -->
+    <!-- MAIN LAYOUT: SIDEBAR + CONTENT -->
     <div class="main-layout">
 
         <div class="sidebar">
             <h3>Faculty Menu</h3>
-            <!-- showStaffTab() shows one of the three blocks below, no reload. -->
+            <!-- showStaffTab() shows one of the three blocks below, no reload -->
             <a href="#" onclick="showStaffTab('management')">Class Management</a>
             <a href="#" onclick="showStaffTab('courses')">My Courses</a>
             <a href="#" onclick="showStaffTab('profile')">Teacher Profile</a>
@@ -39,25 +39,18 @@ CS50 3rd period
 
         <div class="container">
 
-            <!-- Error banner for failed reads and rejected writes. -->
+            <!-- Error banner for failed reads and rejected writes -->
             <p id="page-error"
                style="display:none; color:#b00020; font-weight:bold;"></p>
 
-            <!-- ---------- TAB 1: CLASS MANAGEMENT (visible on load) ---------- -->
+            <!-- TAB 1: CLASS MANAGEMENT (visible on load) -->
             <div id="staff-management" class="staff-tab-content">
                 <h2>Class Management &amp; Grading</h2>
 
                 <h3>Enter Student Grades</h3>
                 <div class="course-card">
 
-                    <!--
-                         Both dropdowns are EMPTY in this file on purpose. The
-                         script fills them from the server: the student list is
-                         built from staffState.students with each student shown
-                         once (students can appear several times in that list,
-                         once per course they are enrolled in), and the course
-                         list comes from staffState.courses.
-                    -->
+                    <!-- Both dropdowns are EMPTY in this file on purpose -->
                     <div style="margin-bottom:10px;">
                         <label><b>Student:</b></label><br>
                         <select id="grade-student" style="width:100%; padding:8px; margin-top:5px;"></select>
@@ -67,14 +60,14 @@ CS50 3rd period
                         <select id="grade-course" style="width:100%; padding:8px; margin-top:5px;"></select>
                     </div>
 
-                    <!-- A number input, so the browser blocks non-numeric text. -->
+                    <!-- A number input, so the browser blocks non-numeric text -->
                     <div style="margin-bottom:10px;">
                         <label><b>Score (%):</b></label><br>
                         <input type="number" id="grade-score" min="0" max="100" step="0.1"
                                style="width:100%; padding:8px; margin-top:5px;">
                     </div>
 
-                    <!-- saveGrade() posts the three values and reloads the tables. -->
+                    <!-- saveGrade() posts the three values and reloads the tables -->
                     <button onclick="saveGrade()"
                             style="background-color:#0b3d91; color:white; border:none; padding:8px 15px; cursor:pointer; border-radius:3px;">
                         Save Grade</button>
@@ -84,7 +77,7 @@ CS50 3rd period
                 <h3>Current Class Roster &amp; Grades</h3>
                 <table border="1" width="100%">
                     <tr><th>Student</th><th>Course</th><th>Recorded Grade</th></tr>
-                    <!-- Only the tbody is filled; the header row stays here. -->
+                    <!-- Only the tbody is filled; the header row stays here -->
                     <tbody id="grade-rows"></tbody>
                 </table>
 
@@ -101,11 +94,7 @@ CS50 3rd period
                     </div>
                     <div style="margin-bottom:10px;">
                         <label><b>Status:</b></label><br>
-                        <!--
-                             The values "1" and "0" are what the attendance
-                             table stores (present INTEGER). The script sends
-                             the chosen value straight to the server.
-                        -->
+                        <!-- The values "1" and "0" are what the attendance table stores (present INTEGER) -->
                         <select id="attendance-status" style="width:100%; padding:8px; margin-top:5px;">
                             <option value="1">Present</option>
                             <option value="0">Absent</option>
@@ -125,29 +114,22 @@ CS50 3rd period
 
                 <br>
                 <h3>Announcements</h3>
-                <!-- Only announcements for this teacher's courses. -->
+                <!-- Only announcements for this teacher's courses -->
                 <div id="announcements"></div>
             </div>
 
-            <!-- ---------- TAB 2: MY COURSES (hidden on load) ---------- -->
+            <!-- TAB 2: MY COURSES (hidden on load) -->
             <div id="staff-courses" class="staff-tab-content" style="display:none;">
                 <h2>My Courses</h2>
-                <!-- One row per course: name and how many students are active. -->
+                <!-- One row per course: name and how many students are active -->
                 <table border="1" width="100%" id="courses-table"></table>
             </div>
 
-            <!-- ---------- TAB 3: TEACHER PROFILE (hidden on load) ---------- -->
+            <!-- TAB 3: TEACHER PROFILE (hidden on load) -->
             <div id="staff-profile" class="staff-tab-content" style="display:none;">
                 <h2>Teacher Profile</h2>
                 <br>
-                <!--
-                     Everything here comes from the user and staff tables:
-                     name, username, phone, and two counts taken from the course
-                     and roster lists. The old page showed invented details
-                     (email, office, office hours, qualifications, experience)
-                     that no table stores, so they were removed rather than kept
-                     as decoration.
-                -->
+                <!-- Everything here comes from the user and staff tables: name, username, phone, and two -->
                 <div class="course-card">
                     <h3 id="staff-fullname">-</h3>
                     <p><b>Username:</b> <span id="staff-username">-</span></p>
@@ -166,11 +148,7 @@ CS50 3rd period
 
     <script src="../JS/Academia.js"></script>
 
-<!--
-================================================================================
- OPTIONAL: THE SAME LOGIC INLINE. Runs only if ../JS/Academia.js did not load.
-================================================================================
--->
+<!-- OPTIONAL: THE SAME LOGIC INLINE. Runs only if ../JS/Academia.js did not load -->
 <script>
 if (typeof loadState !== "function") {
 

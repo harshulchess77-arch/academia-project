@@ -1,75 +1,58 @@
-﻿<!DOCTYPE html>
-<!--
-Harshul Gupta, Dmitrii Buianov, Lawrence Mao, Seungho Kim
-November 12, 2026
+﻿<!--
+Harshul Gupta, Lawrence Mao, Suengho Kim, Dmitrii Buianov
+CS50 C Project
 Academia
-CS50 3rd period
+November 1, 2026
 -->
+<!DOCTYPE html>
 <html>
 <head>
-    <!-- UTF-8 so names with accents or punctuation survive the round trip. -->
+    <!-- UTF-8 so names with accents or punctuation survive the round trip -->
     <meta charset="UTF-8">
     <title>Academia - Student Portal</title>
-    <!-- Shared brand stylesheet (navy, royal blue, gold, Poppins). -->
+    <!-- Shared brand stylesheet (navy, royal blue, gold, Poppins) -->
     <link rel="stylesheet" href="../CSS/Academia.css">
 </head>
 
-<!--
-     data-portal="student" is read by the script on page load. It tells the
-     shared code WHICH portal this is, so it knows to call initStudent() and not
-     the parent or staff function. The login and landing pages have no
-     data-portal attribute, and the script ignores them.
--->
+<!-- data-portal "student" is read by the script on page load -->
 <body data-portal="student">
 
-    <!-- ================= HEADER BAR ================= -->
+    <!-- HEADER BAR -->
     <div class="header">
         <b>Academia Student Portal</b>
         <div>
-            <!--
-                 Filled by the script with "Welcome, Alex Rivera".
-                 It shows "Loading..." first, which is what you see for the
-                 fraction of a second before the server answers.
-            -->
+            <!-- Filled by the script with "Welcome, Alex Rivera". It shows "Loading -->
             <span id="welcome-name">Loading...</span> |
-            <!-- Logout clears sessionStorage and returns to the login page. -->
+            <!-- Logout clears sessionStorage and returns to the login page -->
             <a href="#" onclick="logout(); return false;">Logout</a>
         </div>
     </div>
 
-    <!-- ============ MAIN LAYOUT: SIDEBAR + CONTENT ============ -->
+    <!-- MAIN LAYOUT: SIDEBAR + CONTENT -->
     <div class="main-layout">
 
-        <!-- ================= LEFT SIDEBAR ================= -->
+        <!-- LEFT SIDEBAR -->
         <div class="sidebar">
             <h3>Menu</h3>
-            <!--
-                 showPage() switches which of the two content blocks below is
-                 visible. It does not reload the page and does not ask the
-                 server again: the data was already fetched once on load.
-            -->
+            <!-- showPage() switches which of the two content blocks below is visible -->
             <a href="#" onclick="showPage('dashboard')">Dashboard</a>
             <a href="#" onclick="showPage('courses')">All Courses</a>
             <a href="#" onclick="logout(); return false;">Logout</a>
         </div>
 
-        <!-- ================= CONTENT AREA ================= -->
+        <!-- CONTENT AREA -->
         <div class="container">
 
-            <!--
-                 The error banner. The script shows it and writes a reason into
-                 it when the fetch fails: no server, 401 (session gone), 403
-                 (wrong role) or success:false. It stays hidden otherwise.
-            -->
+            <!-- The error banner. The script shows it and writes a reason into it when the fetch fail -->
             <p id="page-error"
                style="display:none; color:#b00020; font-weight:bold;"></p>
 
-            <!-- ---------- VIEW 1: DASHBOARD (visible on load) ---------- -->
+            <!-- VIEW 1: DASHBOARD (visible on load) -->
             <div id="dashboard-page" class="page-content">
 
                 <h2>Student Dashboard</h2>
 
-                <!-- Profile lines. Every "-" below is replaced on load. -->
+                <!-- Profile lines. Every "-" below is replaced on load -->
                 <p><b>Name:</b> <span id="student-name">-</span></p>
                 <p>
                     <b>Student ID:</b> <span id="student-id">-</span> |
@@ -79,42 +62,30 @@ CS50 3rd period
 
                 <br>
                 <h3>My Grades</h3>
-                <!--
-                     The whole table (header row and body rows) is written by
-                     the script from studentState.grades, which the C module
-                     filled from the grade table joined to course. When there
-                     are no grades it writes one row saying so, so the table is
-                     never blank without explanation.
-                -->
+                <!-- The whole table (header row and body rows) is written by the script from studentState -->
                 <table border="1" width="100%" id="grades-table"></table>
 
                 <br>
                 <h3>Attendance Record</h3>
-                <!-- From studentState.attendance; present 1 -> "Present". -->
+                <!-- From studentState.attendance; present 1 -> "Present" -->
                 <table border="1" width="100%" id="attendance-table"></table>
 
                 <br>
                 <h3>Upcoming Assignments</h3>
-                <!-- From studentState.assignments, already sorted by due date. -->
+                <!-- From studentState.assignments, already sorted by due date -->
                 <table border="1" width="100%" id="assignments-table"></table>
 
                 <br>
                 <h3>Announcements</h3>
-                <!--
-                     One card per announcement, built from
-                     studentState.announcements (title, message, date).
-                -->
+                <!-- One card per announcement, built from studentState.announcements (title, message, date) -->
                 <div id="announcements"></div>
             </div>
 
-            <!-- ---------- VIEW 2: COURSES (hidden on load) ---------- -->
+            <!-- VIEW 2: COURSES (hidden on load) -->
             <div id="courses-page" class="page-content" style="display:none;">
                 <h2>Enrolled Courses</h2>
                 <br>
-                <!--
-                     One card per row of studentState.courses: the course name
-                     and whether the enrollment status is active (1) or not.
-                -->
+                <!-- One card per row of studentState -->
                 <div id="courses-list"></div>
             </div>
 
@@ -123,19 +94,10 @@ CS50 3rd period
 
     <div class="footer"><p>&copy; 2026 Academia Project</p></div>
 
-    <!--
-         The shared script. It also contains an optional inline version below,
-         commented out, in case you prefer the page to be one single file.
-    -->
+    <!-- The shared script. It also contains an optional inline version below, commented out, -->
     <script src="../JS/Academia.js"></script>
 
-<!--
-================================================================================
- OPTIONAL: THE SAME LOGIC INLINE (copy after the Academia.js script tag if you
- want this page to work without the separate JS file). It is guarded so it does
- not run twice when Academia.js is already loaded.
-================================================================================
--->
+<!-- OPTIONAL: THE SAME LOGIC INLINE (copy after the Academia -->
 <script>
 if (typeof loadState !== "function") {
 
