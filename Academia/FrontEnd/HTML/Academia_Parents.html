@@ -166,7 +166,6 @@ if (typeof loadState !== "function") {
     }
     function pct(score) { return Number(score).toFixed(1) + "%"; }
     function presentText(p) { return p ? "Present" : "Absent"; }
-
     function logout() {
         sessionStorage.removeItem(TOKEN_KEY);
         sessionStorage.removeItem("academiaUser");
