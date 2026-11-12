@@ -1,15 +1,8 @@
 /*
-Harshul Gupta, Lawrence Mao, Seungho Kim, Dmitrii Buianov
-CS50 C Project
-Academia - Parent module
-
-Builds the data for the parent dashboard. After the server checks the login
-token, it calls update_parent_frontend_state(), which reads SQLite and writes
-parents_states.js. A parent is linked to a child through student.parent_id,
-and every query uses that link, so families only see their own records.
-
-Known limits: gpa prints with one decimal, text is not escaped in the output
-file, and announcements are school-wide.
+Harshul Gupta, Dmitrii Buianov, Lawrence Mao, Seungho Kim
+November 12, 2026
+Academia
+CS50 3rd period
 */
 
 #include "Academia_Parents.h"
@@ -189,3 +182,4 @@ int update_parent_frontend_state(int parent_user_id) {
     close_database(db);
     printf("[Parent] parents_states.js written for parent %d\n", parent_user_id);
     return found;
+}

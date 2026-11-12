@@ -1,13 +1,8 @@
 /*
-Harshul Gupta, Lawrence Mao, Seungho Kim, Dmitrii Buianov
-CS50 C Project
-Academia - Staff module
-
-Reading: update_staff_frontend_state() writes staff_states.js with the
-teacher's courses, students, grades, attendance and announcements.
-Writing: staff_save_grade() and staff_save_attendance() store what the teacher
-enters. The staff id always comes from the session, and queries are limited to
-that teacher's own courses.
+Harshul Gupta, Dmitrii Buianov, Lawrence Mao, Seungho Kim
+November 12, 2026
+Academia
+CS50 3rd period
 */
 
 #include "Academia_Staff.h"
@@ -667,3 +662,4 @@ int staff_save_attendance(int staff_id, int student_id, int course_id, int prese
 
     close_database(db);
     return ok;
+}

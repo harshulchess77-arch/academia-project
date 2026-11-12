@@ -1,15 +1,8 @@
 /*
-Harshul Gupta, Lawrence Mao, Seungho Kim, Dmitrii Buianov
-CS50 C Project
-Academia - Student module
-
-Builds the data for the student dashboard. After the server checks the login
-token, it calls update_student_frontend_state(), which reads SQLite and writes
-student_states.js (profile, courses, grades, attendance, assignments, news).
-The student id comes from the session, so a student only sees their own data.
-
-Known limits: text is not escaped in the output file, announcements are
-school-wide, and the output path is relative to the project root.
+Harshul Gupta, Dmitrii Buianov, Lawrence Mao, Seungho Kim
+November 12, 2026
+Academia
+CS50 3rd period
 */
 
 #include "Academia_Student.h"
